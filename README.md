@@ -1,4 +1,4 @@
-# Tirocinio (development branch)
+# Tirocinio
 
 ## Obiettivo
 Valutazione delle prestazioni di un servizio microcloud di task offloading in vehicular edge computing
@@ -18,6 +18,8 @@ Valutazione delle prestazioni di un servizio microcloud di task offloading in ve
 - Eseguire build di tutti i progetti
 - Importare questo progetto all'interno del workspace
 - Eseguire build del progetto
+
+***NOTE*** 🡆 all the last updates and features of the project can be found on `develop` branch
 
 @author Luca Parenti <br>
 @supervisor Christian Quadri
