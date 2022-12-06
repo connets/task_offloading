@@ -1,0 +1,3 @@
+package tirocinio;
+
+@license(LGPL);

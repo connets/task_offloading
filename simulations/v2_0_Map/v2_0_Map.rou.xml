@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on dom 4 dic 2022, 14:37:13 by Eclipse SUMO netedit Version 1.8.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="/opt/omnetpp-6.0.1/workspace/tirocinio/simulations/v2_0_Map/v2_0_Map.net.xml"/>
+    </input>
+
+    <output>
+        <output-file value="/opt/omnetpp-6.0.1/workspace/tirocinio/simulations/v2_0_Map/v2_0_Map.net.xml"/>
+    </output>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="false"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="0"/>
+        <junctions.limit-turn-speed value="-1"/>
+        <rectangular-lane-cut value="false"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="false"/>
+    </pedestrian>
+
+    <netedit>
+        <route-files value="/opt/omnetpp-6.0.1/workspace/tirocinio/simulations/v2_0_Map/v2_0_Map.rou.xml"/>
+    </netedit>
+
+    <report>
+        <aggregate-warnings value="5"/>
+    </report>
+
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <trip id="vehicle_0" depart="0.00" from="30405358#0" to="-125685391" via="32270592#0 -4006675 -23605600#0"/>
+    <trip id="vehicle_1" depart="0.00" from="30405358#0" to="-125685391" via="32270592#0 -4006675 -23605600#0"/>
+    <trip id="vehicle_2" depart="0.00" from="30405358#0" to="-125685391" via="32270592#0 -4006675 -23605600#0"/>
+    <trip id="vehicle_3" depart="0.00" from="30405358#0" to="-125685391" via="32270592#0 -4006675 -23605600#0"/>
+    <trip id="vehicle_4" depart="0.00" from="30405358#0" to="-125685391" via="32270592#0 -4006675 -23605600#0"/>
+</routes>
