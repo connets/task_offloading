@@ -20,4 +20,5 @@ Valutazione delle prestazioni di un servizio microcloud di task offloading in ve
 - Eseguire build del progetto
 
 @author Luca Parenti
+
 @supervisor Christian Quadri
