@@ -25,6 +25,10 @@
 #include "veins/veins.h"
 
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
+#include "app/messages/HelpMessage_m.h"
+#include "app/messages/OkMessage_m.h"
+#include "app/messages/DataMessage_m.h"
+#include "app/messages/ResponseMessage_m.h"
 
 using namespace omnetpp;
 
@@ -48,12 +52,11 @@ public:
 protected:
     simtime_t lastDroveAt;
     bool sentHelpMessage;
-    int currentSubscribedServiceId;
     bool helpReceived;
-    bool helpOffered;
-    int vehicleLoad;
-    int helperHostIndex;
-    bool connectionEstablished;
+    std::map<int, double> helpersLoad;
+    simtime_t newRandomTime;
+    int busIndex;
+    bool loadAlreadyBalanced;
 
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;
@@ -61,6 +64,12 @@ protected:
     void onWSA(veins::DemoServiceAdvertisment* wsa) override;
 
     void handleSelfMsg(cMessage* msg) override;
+    void handleHelpMessage(HelpMessage* helpMsg);
+    void handleOkMessage(OkMessage* okMsg);
+    void handleDataMessage(DataMessage* dataMsg);
+    void handleResponseMessage(ResponseMessage* responseMsg);
+    void sendAgainData(int index, double load);
+    void balanceLoad(simtime_t previousRandomTime);
     void handlePositionUpdate(cObject* obj) override;
 };
 

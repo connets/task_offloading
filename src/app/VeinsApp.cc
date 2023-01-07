@@ -22,7 +22,12 @@
 
 #include "app/VeinsApp.h"
 
-#include "app/HelpMessage_m.h"
+#include "app/messages/HelpMessage_m.h"
+#include "app/messages/OkMessage_m.h"
+#include "app/messages/DataMessage_m.h"
+#include "app/messages/ResponseMessage_m.h"
+#include "app/messages/LoadBalanceTimerMessage_m.h"
+#include "app/messages/ComputationTimerMessage_m.h"
 
 using namespace tirocinio;
 
@@ -33,162 +38,272 @@ void VeinsApp::initialize(int stage)
     veins::DemoBaseApplLayer::initialize(stage);
     if (stage == 0) {
         // Initializing members and pointers of your application goes here
-        // EV << "Initializing " << par("appName").stringValue() << std::endl;
-        sentHelpMessage = false;
         lastDroveAt = simTime();
-        currentSubscribedServiceId = -1;
+        sentHelpMessage = false;
         helpReceived = false;
-        helpOffered = false;
-        vehicleLoad = rand() % 30;
-        helperHostIndex = -1;
-        connectionEstablished = false;
-    }
-    else if (stage == 1) {
-        // Initializing members that require initialized other modules goes here
+        helpersLoad[0] = par("busVehicleLoad").doubleValue();
+        busIndex = 0;
+        newRandomTime = 0;
+        loadAlreadyBalanced = false;
     }
 }
 
 void VeinsApp::finish()
 {
     veins::DemoBaseApplLayer::finish();
-    // statistics recording goes here
 }
 
 void VeinsApp::onBSM(veins::DemoSafetyMessage* bsm)
 {
     // Your application has received a beacon message from another car or RSU
-    // code for handling the message goes here
 }
 
 void VeinsApp::onWSM(veins::BaseFrame1609_4* wsm)
 {
-    // Your application has received a data message from another car or RSU
-    // code for handling the message goes here, see TraciDemo11p.cc for examples
-    HelpMessage* msg = check_and_cast<HelpMessage*>(wsm);
+    /************************************************************************
+      Your application has received a data message from another car or RSU
+    ************************************************************************/
 
-    // Receive first WSM from BUS
-    if ((findHost()->getIndex() != 0) && (msg->getHelpReceived() == false) && (msg->getHelpOffered() == false)) {
-        // Offer help only if vehicle load is inferior to a certain threshold
-        if (vehicleLoad < msg->getVehicleLoad()) {
-            // Blue color to indicate vehicle ready to help with appropriate vehicle load
-            findHost()->getDisplayString().setTagArg("i", 1, "blue");
-
-            // Set msg fields
-            msg->setMsgContent("Ready to help!");
-            msg->setSenderAddress(myId);
-            msg->setHelperHostIndex(findHost()->getIndex());
-
-            // Set new vehicle load
-            msg->setVehicleLoad(vehicleLoad);
-
-            // Set offer helped for this host
-            helpOffered = true;
-            scheduleAt(simTime() + 2 + uniform(0.01, 0.2), msg->dup());
-        }
+    // SECTION - When the host receive an help message
+    if (HelpMessage* helpMsg = dynamic_cast<HelpMessage*>(wsm)) {
+        busIndex = helpMsg->getVehicleIndex();
+        handleHelpMessage(helpMsg);
     }
 
-    // If BUS receive WSM then save the host inside it's structure
-    if ((findHost()->getIndex() == 0) && (msg->getHelpReceived() == false)) {
-        // Check if vehicle load is inferior then save new vehicle load
-        if (msg->getVehicleLoad() < vehicleLoad) {
-            vehicleLoad = msg->getVehicleLoad();
-
-            // And then save also the host index
-            helperHostIndex = msg->getHelperHostIndex();
-
-            // Set help received at least from one host
-            helpReceived = true;
-        }
+    // SECTION - When the bus receives the ok messages
+    if (OkMessage* okMsg = dynamic_cast<OkMessage*>(wsm)) {
+        handleOkMessage(okMsg);
     }
 
-    // In this final section if we're receiving an ACK update all vehicles
-    // and set the one we choose for collaboration
-    if ((findHost()->getIndex() != 0) && (msg->getAck()) && (findHost()->getIndex() == msg->getHelperHostIndex())) {
-        findHost()->getDisplayString().setTagArg("i", 1, "green");
-    } else if ((findHost()->getIndex() != 0) && (msg->getAck()) && (findHost()->getIndex() != msg->getHelperHostIndex())) {
-        findHost()->getDisplayString().setTagArg("i", 1, "white");
+    // SECTION - When the host receive the data message
+    if (DataMessage* dataMsg = dynamic_cast<DataMessage*>(wsm)) {
+        handleDataMessage(dataMsg);
     }
+
+    // SECTION - When the bus receive the response message
+    if (ResponseMessage* responseMsg = dynamic_cast<ResponseMessage*>(wsm)) {
+        handleResponseMessage(responseMsg);
+    }
+
 }
 
 void VeinsApp::onWSA(veins::DemoServiceAdvertisment* wsa)
 {
     // Your application has received a service advertisement from another car or RSU
-    // code for handling the message goes here, see TraciDemo11p.cc for examples
 }
 
 void VeinsApp::handleSelfMsg(cMessage* msg)
 {
-    // this method is for self messages (mostly timers)
-    // it is important to call the DemoBaseApplLayer function for BSM and WSM transmission
-    HelpMessage* wsm = dynamic_cast<HelpMessage*>(msg);
+    // This method is for self messages (mostly timers)
+    // Timer for help message
+    if (LoadBalanceTimerMessage* loadBalance = dynamic_cast<LoadBalanceTimerMessage*>(msg)) {
+        balanceLoad(loadBalance->getSimulationTime());
+    }
 
-    // If vehicle is different from BUS then send the help message
-    if ((findHost()->getIndex() != 0) && (wsm->getHelpReceived() == false)) {
-        // Set help offered to true
-        wsm->setHelpOffered(true);
-        sendDown(wsm);
+    // Timer for data computation
+    if (ComputationTimerMessage* computationTimer = dynamic_cast<ComputationTimerMessage*>(msg)) {
+        sendAgainData(computationTimer->getIndexHost(), computationTimer->getLoadHost());
+    }
+
+    // Timer for ok message
+    if (OkMessage* okMsg = dynamic_cast<OkMessage*>(msg)) {
+        sendDown(okMsg->dup());
+    }
+
+    // Timer for data message
+    if (DataMessage* dataMsg = dynamic_cast<DataMessage*>(msg)) {
+        sendDown(dataMsg->dup());
+    }
+
+    // Timer for response message
+    if (ResponseMessage* responseMsg = dynamic_cast<ResponseMessage*>(msg)) {
+        sendDown(responseMsg->dup());
+    }
+}
+
+void VeinsApp::handleHelpMessage(HelpMessage* helpMsg)
+{
+    // Check that the help request come from the bus
+    if (helpMsg->getVehicleIndex() == busIndex) {
+        // Color the host that received the help message
+        findHost()->getDisplayString().setTagArg("i", 1, "yellow");
+
+        // Set for every single host a random value for current load
+        double randomVehicleLoad = par("randomVehicleLoadActual").doubleValue();
+        double maximumVehicleLoad = par("maximumVehicleLoadActual").doubleValue();
+        double commonVehicleLoad = par("commonVehicleLoad").doubleValue();
+
+        // Check the random vehicle load is inferior to maximum
+        // actual vehicle load for computation
+        if (randomVehicleLoad < maximumVehicleLoad) {
+            // Color the available host in blue
+            findHost()->getDisplayString().setTagArg("i", 1, "blue");
+
+            // Calculate real actual load
+            // Actual load = common load - random actual load
+            double actualLoad = commonVehicleLoad - randomVehicleLoad - 1e08;
+
+            // If the host is available send an ok message after
+            // some time with ID and the computation load available
+            if (actualLoad > 0 && (!loadAlreadyBalanced)) {
+                // Prepare the message
+                OkMessage* okMsg = new OkMessage();
+                populateWSM(okMsg);
+                okMsg->setHostID(findHost()->getIndex());
+                okMsg->setAvailableLoad(actualLoad);
+
+                // Schedule the ok message
+                scheduleAt(simTime() + 2 + uniform(2, 4), okMsg);
+            }
+        }
+    }
+}
+
+void VeinsApp::handleOkMessage(OkMessage* okMsg)
+{
+    if (findHost()->getIndex() == busIndex) {
+        // Color the bus that received help
+        findHost()->getDisplayString().setTagArg("i", 1, "green");
+
+        // Store the helper load
+        helpersLoad[okMsg->getHostID()] = okMsg->getAvailableLoad();
+    }
+}
+
+void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
+{
+    std::map<int, double>::iterator loadsIterator = helpersLoad.begin();
+    int vehiclesCounter = helpersLoad.size();
+
+    if (vehiclesCounter > 1) {
+        helpReceived = true;
+
+        while (loadsIterator != helpersLoad.end()) {
+            // Check if I'm not the bus
+            if (loadsIterator->first != busIndex) {
+                // Check if there's data to process
+                double data = par("computationLoad").doubleValue();
+                double vehicleLoad = loadsIterator->second;
+
+                // If there's data to load then send the messages
+                if (data > 0) {
+                    data = data - vehicleLoad;
+
+                    // Create Data Message
+                    DataMessage* dataMsg = new DataMessage();
+
+                    // Populate the message
+                    populateWSM(dataMsg);
+                    dataMsg->setLoadToProcess(loadsIterator->second);
+                    dataMsg->setHostIndex(loadsIterator->first);
+
+                    // Schedule the data message
+                    scheduleAt(simTime() + 2 + uniform(0.01, 0.2), dataMsg);
+
+                    // Update global parameter data
+                    par("computationLoad").setDoubleValue(data);
+
+                    // Create timer computation message for each host
+                    ComputationTimerMessage* computationTimerMsg = new ComputationTimerMessage();
+                    populateWSM(computationTimerMsg);
+                    computationTimerMsg->setSimulationTime(simTime());
+                    computationTimerMsg->setIndexHost(loadsIterator->first);
+                    computationTimerMsg->setLoadHost(loadsIterator->second);
+                    scheduleAt(simTime() + 10 + uniform(5, 10), computationTimerMsg);
+                }
+            }
+
+            // Increment the iterator
+            loadsIterator++;
+        }
+    } else {
+        sentHelpMessage = false;
+        newRandomTime = previousSimulationTime;
+    }
+}
+
+void VeinsApp::sendAgainData(int index, double load)
+{
+    auto found = helpersLoad.find(index);
+    if (found != helpersLoad.end()) {
+        // Prepare the new data message
+        DataMessage* dataMsg = new DataMessage();
+        populateWSM(dataMsg);
+        dataMsg->setHostIndex(index);
+        dataMsg->setLoadToProcess(load);
+        sendDown(dataMsg);
+
+        // Restart again the timer
+        ComputationTimerMessage* computationTimerMsg = new ComputationTimerMessage();
+        populateWSM(computationTimerMsg);
+        computationTimerMsg->setSimulationTime(simTime());
+        computationTimerMsg->setIndexHost(index);
+        computationTimerMsg->setLoadHost(load);
+        scheduleAt(simTime() + 10 + uniform(5, 10), computationTimerMsg);
+    }
+}
+
+void VeinsApp::handleDataMessage(DataMessage* dataMsg)
+{
+    loadAlreadyBalanced = true;
+    if (findHost()->getIndex() == dataMsg->getHostIndex()) {
+        // Color the host that needs to process data
+        findHost()->getDisplayString().setTagArg("i", 1, "red");
+
+        EV << "Received " << dataMsg->getLoadToProcess() << " to load from BUS" << std::endl;
+
+        ResponseMessage* responseMsg = new ResponseMessage();
+        populateWSM(responseMsg);
+        responseMsg->setHostIndex(dataMsg->getHostIndex());
+        scheduleAt(simTime() + 2 + uniform(0.01, 0.2), responseMsg);
+
+        EV << "Finished computation of: " << dataMsg->getLoadToProcess() << std::endl;
+    }
+}
+
+void VeinsApp::handleResponseMessage(ResponseMessage* responseMsg)
+{
+    if (findHost()->getIndex() == busIndex) {
+        helpersLoad.erase(responseMsg->getHostIndex());
+
+        EV << "Deleted host: " << responseMsg->getHostIndex() << std::endl <<"Host remaining: " << helpersLoad.size() - 1 << std::endl;
     }
 }
 
 void VeinsApp::handlePositionUpdate(cObject* obj)
 {
-    // the vehicle has moved. Code that reacts to new positions goes here.
-    // member variables such as currentPosition and currentSpeed are updated in the parent class
+    // The vehicle has moved. Code that reacts to new positions goes here.
+    // Member variables such as currentPosition and currentSpeed are updated in the parent class
 
     veins::DemoBaseApplLayer::handlePositionUpdate(obj);
 
-    // Calculate random time
-    auto randTime = rand() % 2000;
+    bool randomTimeReached = simTime() > par("randomTimeHelpMessage").doubleValue() + newRandomTime;
+    bool isBus = findHost()->getIndex() == busIndex;
+    bool notSentHelpMessage = !(sentHelpMessage);
+    bool notHelpReceived = !(helpReceived);
 
-    // If random time limit reached send help request
-    if ((findHost()->getIndex() == 0) && ((randTime - simTime()) < 0) && (helpReceived == false)) {
-        // Set color to yellow
-        findHost()->getDisplayString().setTagArg("i", 1, "yellow");
+    if (randomTimeReached && isBus && notHelpReceived && notSentHelpMessage) {
+        // Help message creation
+        HelpMessage* helpRequest = new HelpMessage();
+        populateWSM(helpRequest);
+
+        // Color the bus
+        findHost()->getDisplayString().setTagArg("i", 1, "red");
+
+        // Fill the data of the help request message
+        helpRequest->setVehicleIndex(findHost()->getIndex());
+
+        // Send the help message
+        sendDown(helpRequest);
+
+        // Schedule timer for the help request
+        LoadBalanceTimerMessage* loadBalanceMsg = new LoadBalanceTimerMessage();
+        populateWSM(loadBalanceMsg);
+        loadBalanceMsg->setSimulationTime(simTime());
+        scheduleAt(simTime() + 2 + uniform(3, 4), loadBalanceMsg);
 
         sentHelpMessage = true;
-
-        // Prepare help message
-        HelpMessage* helpMsg = new HelpMessage();
-        helpMsg->setMsgContent("Help needed!");
-        helpMsg->setSenderAddress(myId);
-        helpMsg->setHelpReceived(false);
-        helpMsg->setAck(false);
-
-        auto randomLoad = rand() % 30;
-        vehicleLoad = randomLoad;
-        helpMsg->setVehicleLoad(randomLoad);
-
-        // Use only CCH
-        helpMsg->setChannelNumber(static_cast<int>(veins::Channel::cch));
-
-        // Send message
-        sendDown(helpMsg);
-    } else if ((mobility->getSpeed() > 0) && (findHost()->getIndex() == 0) && (helpReceived) && (!connectionEstablished)) {
-        // If we're good to go with the data collected from other vehicles send
-        // a message to confirm with which vehicle we're collaborating
-
-        // Set color to green
-        findHost()->getDisplayString().setTagArg("i", 1, "green");
-
-        // Set successful connection
-        connectionEstablished = true;
-
-        // Prepare ACK message
-        HelpMessage* ACK = new HelpMessage();
-        ACK->setMsgContent("ACK");
-        ACK->setSenderAddress(myId);
-        ACK->setHelpReceived(true);
-
-        // Set the correct host that's helping us
-        ACK->setHelperHostIndex(helperHostIndex);
-        ACK->setAck(true);
-
-        // Use only CCH
-        ACK->setChannelNumber(static_cast<int>(veins::Channel::cch));
-
-        // Send message
-        sendDown(ACK);
-    } else {
-        lastDroveAt = simTime();
     }
+
+    lastDroveAt = simTime();
 }
