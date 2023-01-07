@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgtool 6.0 from app/HelpMessage.msg.
+// Generated file, do not edit! Created by opp_msgtool 6.0 from app/messages/HelpMessage.msg.
 //
 
 #ifndef __TIROCINIO_HELPMESSAGE_M_H
@@ -33,32 +33,18 @@ class HelpMessage;
 namespace tirocinio {
 
 /**
- * Class generated from <tt>app/HelpMessage.msg:22</tt> by opp_msgtool.
+ * Class generated from <tt>app/messages/HelpMessage.msg:22</tt> by opp_msgtool.
  * <pre>
  * packet HelpMessage extends veins::BaseFrame1609_4
  * {
- *     string msgContent;
- *     bool helpReceived;
- *     bool helpOffered;
- *     int helperHostIndex;
- *     int vehicleLoad;
- *     bool ack;
- *     veins::LAddress::L2Type senderAddress = -1;
- *     veins::LAddress::L2Type receiverAddress = -1;
+ *     int vehicleIndex;
  * }
  * </pre>
  */
 class HelpMessage : public ::veins::BaseFrame1609_4
 {
   protected:
-    ::omnetpp::opp_string msgContent;
-    bool helpReceived = false;
-    bool helpOffered = false;
-    int helperHostIndex = 0;
-    int vehicleLoad = 0;
-    bool ack = false;
-    ::veins::LAddress::L2Type senderAddress = -1;
-    ::veins::LAddress::L2Type receiverAddress = -1;
+    int vehicleIndex = 0;
 
   private:
     void copy(const HelpMessage& other);
@@ -75,31 +61,8 @@ class HelpMessage : public ::veins::BaseFrame1609_4
     virtual void parsimPack(omnetpp::cCommBuffer *b) const override;
     virtual void parsimUnpack(omnetpp::cCommBuffer *b) override;
 
-    virtual const char * getMsgContent() const;
-    virtual void setMsgContent(const char * msgContent);
-
-    virtual bool getHelpReceived() const;
-    virtual void setHelpReceived(bool helpReceived);
-
-    virtual bool getHelpOffered() const;
-    virtual void setHelpOffered(bool helpOffered);
-
-    virtual int getHelperHostIndex() const;
-    virtual void setHelperHostIndex(int helperHostIndex);
-
-    virtual int getVehicleLoad() const;
-    virtual void setVehicleLoad(int vehicleLoad);
-
-    virtual bool getAck() const;
-    virtual void setAck(bool ack);
-
-    virtual const ::veins::LAddress::L2Type& getSenderAddress() const;
-    virtual ::veins::LAddress::L2Type& getSenderAddressForUpdate() { return const_cast<::veins::LAddress::L2Type&>(const_cast<HelpMessage*>(this)->getSenderAddress());}
-    virtual void setSenderAddress(const ::veins::LAddress::L2Type& senderAddress);
-
-    virtual const ::veins::LAddress::L2Type& getReceiverAddress() const;
-    virtual ::veins::LAddress::L2Type& getReceiverAddressForUpdate() { return const_cast<::veins::LAddress::L2Type&>(const_cast<HelpMessage*>(this)->getReceiverAddress());}
-    virtual void setReceiverAddress(const ::veins::LAddress::L2Type& receiverAddress);
+    virtual int getVehicleIndex() const;
+    virtual void setVehicleIndex(int vehicleIndex);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const HelpMessage& obj) {obj.parsimPack(b);}

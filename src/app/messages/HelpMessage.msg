@@ -20,12 +20,5 @@ import veins.base.utils.SimpleAddress;
 namespace tirocinio;
 
 packet HelpMessage extends veins::BaseFrame1609_4 {
-    string msgContent;
-    bool helpReceived;
-    bool helpOffered;
-    int helperHostIndex;
-    int vehicleLoad;
-    bool ack;
-    veins::LAddress::L2Type senderAddress = -1;
-    veins::LAddress::L2Type receiverAddress = -1;
+    int vehicleIndex;
 }

@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgtool 6.0 from app/HelpMessage.msg.
+// Generated file, do not edit! Created by opp_msgtool 6.0 from app/messages/HelpMessage.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -177,120 +177,29 @@ HelpMessage& HelpMessage::operator=(const HelpMessage& other)
 
 void HelpMessage::copy(const HelpMessage& other)
 {
-    this->msgContent = other.msgContent;
-    this->helpReceived = other.helpReceived;
-    this->helpOffered = other.helpOffered;
-    this->helperHostIndex = other.helperHostIndex;
-    this->vehicleLoad = other.vehicleLoad;
-    this->ack = other.ack;
-    this->senderAddress = other.senderAddress;
-    this->receiverAddress = other.receiverAddress;
+    this->vehicleIndex = other.vehicleIndex;
 }
 
 void HelpMessage::parsimPack(omnetpp::cCommBuffer *b) const
 {
     ::veins::BaseFrame1609_4::parsimPack(b);
-    doParsimPacking(b,this->msgContent);
-    doParsimPacking(b,this->helpReceived);
-    doParsimPacking(b,this->helpOffered);
-    doParsimPacking(b,this->helperHostIndex);
-    doParsimPacking(b,this->vehicleLoad);
-    doParsimPacking(b,this->ack);
-    doParsimPacking(b,this->senderAddress);
-    doParsimPacking(b,this->receiverAddress);
+    doParsimPacking(b,this->vehicleIndex);
 }
 
 void HelpMessage::parsimUnpack(omnetpp::cCommBuffer *b)
 {
     ::veins::BaseFrame1609_4::parsimUnpack(b);
-    doParsimUnpacking(b,this->msgContent);
-    doParsimUnpacking(b,this->helpReceived);
-    doParsimUnpacking(b,this->helpOffered);
-    doParsimUnpacking(b,this->helperHostIndex);
-    doParsimUnpacking(b,this->vehicleLoad);
-    doParsimUnpacking(b,this->ack);
-    doParsimUnpacking(b,this->senderAddress);
-    doParsimUnpacking(b,this->receiverAddress);
+    doParsimUnpacking(b,this->vehicleIndex);
 }
 
-const char * HelpMessage::getMsgContent() const
+int HelpMessage::getVehicleIndex() const
 {
-    return this->msgContent.c_str();
+    return this->vehicleIndex;
 }
 
-void HelpMessage::setMsgContent(const char * msgContent)
+void HelpMessage::setVehicleIndex(int vehicleIndex)
 {
-    this->msgContent = msgContent;
-}
-
-bool HelpMessage::getHelpReceived() const
-{
-    return this->helpReceived;
-}
-
-void HelpMessage::setHelpReceived(bool helpReceived)
-{
-    this->helpReceived = helpReceived;
-}
-
-bool HelpMessage::getHelpOffered() const
-{
-    return this->helpOffered;
-}
-
-void HelpMessage::setHelpOffered(bool helpOffered)
-{
-    this->helpOffered = helpOffered;
-}
-
-int HelpMessage::getHelperHostIndex() const
-{
-    return this->helperHostIndex;
-}
-
-void HelpMessage::setHelperHostIndex(int helperHostIndex)
-{
-    this->helperHostIndex = helperHostIndex;
-}
-
-int HelpMessage::getVehicleLoad() const
-{
-    return this->vehicleLoad;
-}
-
-void HelpMessage::setVehicleLoad(int vehicleLoad)
-{
-    this->vehicleLoad = vehicleLoad;
-}
-
-bool HelpMessage::getAck() const
-{
-    return this->ack;
-}
-
-void HelpMessage::setAck(bool ack)
-{
-    this->ack = ack;
-}
-
-const ::veins::LAddress::L2Type& HelpMessage::getSenderAddress() const
-{
-    return this->senderAddress;
-}
-
-void HelpMessage::setSenderAddress(const ::veins::LAddress::L2Type& senderAddress)
-{
-    this->senderAddress = senderAddress;
-}
-
-const ::veins::LAddress::L2Type& HelpMessage::getReceiverAddress() const
-{
-    return this->receiverAddress;
-}
-
-void HelpMessage::setReceiverAddress(const ::veins::LAddress::L2Type& receiverAddress)
-{
-    this->receiverAddress = receiverAddress;
+    this->vehicleIndex = vehicleIndex;
 }
 
 class HelpMessageDescriptor : public omnetpp::cClassDescriptor
@@ -298,14 +207,7 @@ class HelpMessageDescriptor : public omnetpp::cClassDescriptor
   private:
     mutable const char **propertyNames;
     enum FieldConstants {
-        FIELD_msgContent,
-        FIELD_helpReceived,
-        FIELD_helpOffered,
-        FIELD_helperHostIndex,
-        FIELD_vehicleLoad,
-        FIELD_ack,
-        FIELD_senderAddress,
-        FIELD_receiverAddress,
+        FIELD_vehicleIndex,
     };
   public:
     HelpMessageDescriptor();
@@ -372,7 +274,7 @@ const char *HelpMessageDescriptor::getProperty(const char *propertyName) const
 int HelpMessageDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 8+base->getFieldCount() : 8;
+    return base ? 1+base->getFieldCount() : 1;
 }
 
 unsigned int HelpMessageDescriptor::getFieldTypeFlags(int field) const
@@ -384,16 +286,9 @@ unsigned int HelpMessageDescriptor::getFieldTypeFlags(int field) const
         field -= base->getFieldCount();
     }
     static unsigned int fieldTypeFlags[] = {
-        FD_ISEDITABLE,    // FIELD_msgContent
-        FD_ISEDITABLE,    // FIELD_helpReceived
-        FD_ISEDITABLE,    // FIELD_helpOffered
-        FD_ISEDITABLE,    // FIELD_helperHostIndex
-        FD_ISEDITABLE,    // FIELD_vehicleLoad
-        FD_ISEDITABLE,    // FIELD_ack
-        0,    // FIELD_senderAddress
-        0,    // FIELD_receiverAddress
+        FD_ISEDITABLE,    // FIELD_vehicleIndex
     };
-    return (field >= 0 && field < 8) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 1) ? fieldTypeFlags[field] : 0;
 }
 
 const char *HelpMessageDescriptor::getFieldName(int field) const
@@ -405,30 +300,16 @@ const char *HelpMessageDescriptor::getFieldName(int field) const
         field -= base->getFieldCount();
     }
     static const char *fieldNames[] = {
-        "msgContent",
-        "helpReceived",
-        "helpOffered",
-        "helperHostIndex",
-        "vehicleLoad",
-        "ack",
-        "senderAddress",
-        "receiverAddress",
+        "vehicleIndex",
     };
-    return (field >= 0 && field < 8) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 1) ? fieldNames[field] : nullptr;
 }
 
 int HelpMessageDescriptor::findField(const char *fieldName) const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     int baseIndex = base ? base->getFieldCount() : 0;
-    if (strcmp(fieldName, "msgContent") == 0) return baseIndex + 0;
-    if (strcmp(fieldName, "helpReceived") == 0) return baseIndex + 1;
-    if (strcmp(fieldName, "helpOffered") == 0) return baseIndex + 2;
-    if (strcmp(fieldName, "helperHostIndex") == 0) return baseIndex + 3;
-    if (strcmp(fieldName, "vehicleLoad") == 0) return baseIndex + 4;
-    if (strcmp(fieldName, "ack") == 0) return baseIndex + 5;
-    if (strcmp(fieldName, "senderAddress") == 0) return baseIndex + 6;
-    if (strcmp(fieldName, "receiverAddress") == 0) return baseIndex + 7;
+    if (strcmp(fieldName, "vehicleIndex") == 0) return baseIndex + 0;
     return base ? base->findField(fieldName) : -1;
 }
 
@@ -441,16 +322,9 @@ const char *HelpMessageDescriptor::getFieldTypeString(int field) const
         field -= base->getFieldCount();
     }
     static const char *fieldTypeStrings[] = {
-        "string",    // FIELD_msgContent
-        "bool",    // FIELD_helpReceived
-        "bool",    // FIELD_helpOffered
-        "int",    // FIELD_helperHostIndex
-        "int",    // FIELD_vehicleLoad
-        "bool",    // FIELD_ack
-        "veins::LAddress::L2Type",    // FIELD_senderAddress
-        "veins::LAddress::L2Type",    // FIELD_receiverAddress
+        "int",    // FIELD_vehicleIndex
     };
-    return (field >= 0 && field < 8) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 1) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **HelpMessageDescriptor::getFieldPropertyNames(int field) const
@@ -533,14 +407,7 @@ std::string HelpMessageDescriptor::getFieldValueAsString(omnetpp::any_ptr object
     }
     HelpMessage *pp = omnetpp::fromAnyPtr<HelpMessage>(object); (void)pp;
     switch (field) {
-        case FIELD_msgContent: return oppstring2string(pp->getMsgContent());
-        case FIELD_helpReceived: return bool2string(pp->getHelpReceived());
-        case FIELD_helpOffered: return bool2string(pp->getHelpOffered());
-        case FIELD_helperHostIndex: return long2string(pp->getHelperHostIndex());
-        case FIELD_vehicleLoad: return long2string(pp->getVehicleLoad());
-        case FIELD_ack: return bool2string(pp->getAck());
-        case FIELD_senderAddress: return "";
-        case FIELD_receiverAddress: return "";
+        case FIELD_vehicleIndex: return long2string(pp->getVehicleIndex());
         default: return "";
     }
 }
@@ -557,12 +424,7 @@ void HelpMessageDescriptor::setFieldValueAsString(omnetpp::any_ptr object, int f
     }
     HelpMessage *pp = omnetpp::fromAnyPtr<HelpMessage>(object); (void)pp;
     switch (field) {
-        case FIELD_msgContent: pp->setMsgContent((value)); break;
-        case FIELD_helpReceived: pp->setHelpReceived(string2bool(value)); break;
-        case FIELD_helpOffered: pp->setHelpOffered(string2bool(value)); break;
-        case FIELD_helperHostIndex: pp->setHelperHostIndex(string2long(value)); break;
-        case FIELD_vehicleLoad: pp->setVehicleLoad(string2long(value)); break;
-        case FIELD_ack: pp->setAck(string2bool(value)); break;
+        case FIELD_vehicleIndex: pp->setVehicleIndex(string2long(value)); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'HelpMessage'", field);
     }
 }
@@ -577,14 +439,7 @@ omnetpp::cValue HelpMessageDescriptor::getFieldValue(omnetpp::any_ptr object, in
     }
     HelpMessage *pp = omnetpp::fromAnyPtr<HelpMessage>(object); (void)pp;
     switch (field) {
-        case FIELD_msgContent: return pp->getMsgContent();
-        case FIELD_helpReceived: return pp->getHelpReceived();
-        case FIELD_helpOffered: return pp->getHelpOffered();
-        case FIELD_helperHostIndex: return pp->getHelperHostIndex();
-        case FIELD_vehicleLoad: return pp->getVehicleLoad();
-        case FIELD_ack: return pp->getAck();
-        case FIELD_senderAddress: return omnetpp::toAnyPtr(&pp->getSenderAddress()); break;
-        case FIELD_receiverAddress: return omnetpp::toAnyPtr(&pp->getReceiverAddress()); break;
+        case FIELD_vehicleIndex: return pp->getVehicleIndex();
         default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'HelpMessage' as cValue -- field index out of range?", field);
     }
 }
@@ -601,12 +456,7 @@ void HelpMessageDescriptor::setFieldValue(omnetpp::any_ptr object, int field, in
     }
     HelpMessage *pp = omnetpp::fromAnyPtr<HelpMessage>(object); (void)pp;
     switch (field) {
-        case FIELD_msgContent: pp->setMsgContent(value.stringValue()); break;
-        case FIELD_helpReceived: pp->setHelpReceived(value.boolValue()); break;
-        case FIELD_helpOffered: pp->setHelpOffered(value.boolValue()); break;
-        case FIELD_helperHostIndex: pp->setHelperHostIndex(omnetpp::checked_int_cast<int>(value.intValue())); break;
-        case FIELD_vehicleLoad: pp->setVehicleLoad(omnetpp::checked_int_cast<int>(value.intValue())); break;
-        case FIELD_ack: pp->setAck(value.boolValue()); break;
+        case FIELD_vehicleIndex: pp->setVehicleIndex(omnetpp::checked_int_cast<int>(value.intValue())); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'HelpMessage'", field);
     }
 }
@@ -634,8 +484,6 @@ omnetpp::any_ptr HelpMessageDescriptor::getFieldStructValuePointer(omnetpp::any_
     }
     HelpMessage *pp = omnetpp::fromAnyPtr<HelpMessage>(object); (void)pp;
     switch (field) {
-        case FIELD_senderAddress: return omnetpp::toAnyPtr(&pp->getSenderAddress()); break;
-        case FIELD_receiverAddress: return omnetpp::toAnyPtr(&pp->getReceiverAddress()); break;
         default: return omnetpp::any_ptr(nullptr);
     }
 }
