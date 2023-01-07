@@ -23,11 +23,16 @@
 package tirocinio.app;
 import org.car2x.veins.modules.application.ieee80211p.DemoBaseApplLayer;
 
-//
-// network description file for your Veins Application. Add parameters here
-//
 simple VeinsApp extends DemoBaseApplLayer
 {
+    parameters:
+        volatile double randomTimeHelpMessage @unit(s) = default(uniform(30s, 40s));
+        volatile double randomVehicleLoadActual @unit(byte) = default(uniform(150MB, 400MB));
+        double maximumVehicleLoadActual @unit(byte) = default(300MB);
+        double commonVehicleLoad @unit(byte) = default(1GB);
+        double busVehicleLoad @unit(byte) = default(4GB);
+        double computationLoad @mutable @unit(byte) = default(5GB);
+
     @class(tirocinio::VeinsApp);
     @display("i=block/app2");
 }
