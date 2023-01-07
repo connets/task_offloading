@@ -33,11 +33,24 @@ PROJECTRELATIVE_PATH = src
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
-OBJS = $O/app/RSU.o $O/app/VeinsApp.o $O/app/HelpMessage_m.o
+OBJS = \
+    $O/app/RSU.o \
+    $O/app/VeinsApp.o \
+    $O/app/messages/ComputationTimerMessage_m.o \
+    $O/app/messages/DataMessage_m.o \
+    $O/app/messages/HelpMessage_m.o \
+    $O/app/messages/LoadBalanceTimerMessage_m.o \
+    $O/app/messages/OkMessage_m.o \
+    $O/app/messages/ResponseMessage_m.o
 
 # Message files
 MSGFILES = \
-    app/HelpMessage.msg
+    app/messages/ComputationTimerMessage.msg \
+    app/messages/DataMessage.msg \
+    app/messages/HelpMessage.msg \
+    app/messages/LoadBalanceTimerMessage.msg \
+    app/messages/OkMessage.msg \
+    app/messages/ResponseMessage.msg
 
 # SM files
 SMFILES =

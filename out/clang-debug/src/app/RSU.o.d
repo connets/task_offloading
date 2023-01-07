@@ -1,7 +1,7 @@
-../out/clang-debug/src/app/VeinsApp.o: app/VeinsApp.cc app/VeinsApp.h \
-  ../../veins-5.2/src/veins/veins.h /opt/omnetpp-6.0.1/include/omnetpp.h \
+../out/clang-debug/src/app/RSU.o: app/RSU.cc app/RSU.h \
   ../../veins-5.2/src/veins/modules/application/ieee80211p/DemoBaseApplLayer.h \
   ../../veins-5.2/src/veins/base/modules/BaseApplLayer.h \
+  ../../veins-5.2/src/veins/veins.h /opt/omnetpp-6.0.1/include/omnetpp.h \
   ../../veins-5.2/src/veins/base/modules/BaseLayer.h \
   ../../veins-5.2/src/veins/base/modules/BatteryAccess.h \
   ../../veins-5.2/src/veins/base/modules/BaseModule.h \
@@ -50,20 +50,17 @@
   ../../veins-5.2/src/veins/modules/mobility/traci/TraCIRegionOfInterest.h \
   ../../veins-5.2/src/veins/modules/mobility/traci/TraCICommandInterface.h \
   ../../veins-5.2/src/veins/modules/world/traci/trafficLight/TraCITrafficLightProgram.h \
-  app/messages/HelpMessage_m.h app/messages/OkMessage_m.h \
-  app/messages/DataMessage_m.h app/messages/ResponseMessage_m.h \
-  app/messages/LoadBalanceTimerMessage_m.h \
-  app/messages/ComputationTimerMessage_m.h
+  app/messages/HelpMessage_m.h
 
-app/VeinsApp.h:
-
-../../veins-5.2/src/veins/veins.h:
-
-/opt/omnetpp-6.0.1/include/omnetpp.h:
+app/RSU.h:
 
 ../../veins-5.2/src/veins/modules/application/ieee80211p/DemoBaseApplLayer.h:
 
 ../../veins-5.2/src/veins/base/modules/BaseApplLayer.h:
+
+../../veins-5.2/src/veins/veins.h:
+
+/opt/omnetpp-6.0.1/include/omnetpp.h:
 
 ../../veins-5.2/src/veins/base/modules/BaseLayer.h:
 
@@ -162,13 +159,3 @@ app/VeinsApp.h:
 ../../veins-5.2/src/veins/modules/world/traci/trafficLight/TraCITrafficLightProgram.h:
 
 app/messages/HelpMessage_m.h:
-
-app/messages/OkMessage_m.h:
-
-app/messages/DataMessage_m.h:
-
-app/messages/ResponseMessage_m.h:
-
-app/messages/LoadBalanceTimerMessage_m.h:
-
-app/messages/ComputationTimerMessage_m.h:
