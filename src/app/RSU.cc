@@ -22,7 +22,7 @@
 
 #include "app/RSU.h"
 
-#include "app/HelpMessage_m.h"
+#include "app/messages/HelpMessage_m.h"
 
 using namespace tirocinio;
 
