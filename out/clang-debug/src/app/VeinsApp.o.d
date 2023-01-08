@@ -54,7 +54,7 @@
   app/messages/DataMessage_m.h app/messages/ResponseMessage_m.h \
   app/messages/LoadBalanceTimerMessage_m.h \
   app/messages/ComputationTimerMessage_m.h \
-  app/messages/LoadBalancingMessage_m.h
+  app/messages/UpdateAvailabilityMessage_m.h
 
 app/VeinsApp.h:
 
@@ -174,4 +174,4 @@ app/messages/LoadBalanceTimerMessage_m.h:
 
 app/messages/ComputationTimerMessage_m.h:
 
-app/messages/LoadBalancingMessage_m.h:
+app/messages/UpdateAvailabilityMessage_m.h:
