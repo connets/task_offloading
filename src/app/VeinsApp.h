@@ -57,6 +57,7 @@ protected:
     simtime_t newRandomTime;
     int busIndex;
     bool acceptingOtherVehicles;
+    bool ackReceived;
 
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;
@@ -69,6 +70,7 @@ protected:
     void handleDataMessage(DataMessage* dataMsg);
     void handleResponseMessage(ResponseMessage* responseMsg);
     void sendAgainData(int index, double load);
+    void sendAgainResponse(int index);
     void balanceLoad(simtime_t previousRandomTime);
     void handlePositionUpdate(cObject* obj) override;
 };

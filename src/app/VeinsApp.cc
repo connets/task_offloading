@@ -24,8 +24,10 @@
 
 #include "app/messages/HelpMessage_m.h"
 #include "app/messages/OkMessage_m.h"
+#include "app/messages/AckMessage_m.h"
 #include "app/messages/DataMessage_m.h"
 #include "app/messages/ResponseMessage_m.h"
+#include "app/messages/AckTimerMessage_m.h"
 #include "app/messages/LoadBalanceTimerMessage_m.h"
 #include "app/messages/ComputationTimerMessage_m.h"
 #include "app/messages/UpdateAvailabilityMessage_m.h"
@@ -46,6 +48,7 @@ void VeinsApp::initialize(int stage)
         busIndex = 0;
         newRandomTime = 0;
         acceptingOtherVehicles = true;
+        ackReceived = false;
     }
 }
 
@@ -96,6 +99,13 @@ void VeinsApp::onWSM(veins::BaseFrame1609_4* wsm)
         handleResponseMessage(responseMsg);
     }
 
+    // SECTION - When the bus receive the ACK message
+    if (AckMessage* ackMessage = dynamic_cast<AckMessage*>(wsm)) {
+        if (findHost()->getIndex() == ackMessage->getHostIndex()) {
+            ackReceived = true;
+        }
+    }
+
 }
 
 void VeinsApp::onWSA(veins::DemoServiceAdvertisment* wsa)
@@ -107,7 +117,7 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
 {
     // This method is for self messages (mostly timers)
     // Timer for help message
-    if (LoadBalanceTimerMessage* loadBalance = dynamic_cast<LoadBalanceTimerMessage*>(msg)) {
+    if (LoadBalanceTimerMessage* loadBalanceMsg = dynamic_cast<LoadBalanceTimerMessage*>(msg)) {
         acceptingOtherVehicles = false;
 
         // Notify other vehicles of BUS balance loading
@@ -116,12 +126,19 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
         updateMsg->setAvailability("not-available");
         sendDown(updateMsg);
 
-        balanceLoad(loadBalance->getSimulationTime());
+        balanceLoad(loadBalanceMsg->getSimulationTime());
+    }
+
+    // Timer for re-send ACK messages
+    if (AckTimerMessage* ackTimerMsg = dynamic_cast<AckTimerMessage*>(msg)) {
+        if (!ackReceived) {
+            sendAgainResponse(ackTimerMsg->getHostIndex());
+        }
     }
 
     // Timer for data computation
-    if (ComputationTimerMessage* computationTimer = dynamic_cast<ComputationTimerMessage*>(msg)) {
-        sendAgainData(computationTimer->getIndexHost(), computationTimer->getLoadHost());
+    if (ComputationTimerMessage* computationTimerMsg = dynamic_cast<ComputationTimerMessage*>(msg)) {
+        sendAgainData(computationTimerMsg->getIndexHost(), computationTimerMsg->getLoadHost());
     }
 
     // Timer for ok message
@@ -144,6 +161,11 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
     if (ResponseMessage* responseMsg = dynamic_cast<ResponseMessage*>(msg)) {
         findHost()->getDisplayString().setTagArg("i", 1, "white");
         sendDown(responseMsg->dup());
+    }
+
+    // Timer for ACK message
+    if (AckMessage* ackMsg = dynamic_cast<AckMessage*>(msg)) {
+        sendDown(ackMsg->dup());
     }
 }
 
@@ -289,6 +311,11 @@ void VeinsApp::handleDataMessage(DataMessage* dataMsg)
         responseMsg->setHostIndex(dataMsg->getHostIndex());
         scheduleAt(simTime() + 2 + uniform(0.01, 0.2), responseMsg);
 
+        AckTimerMessage* ackTimerMsg = new AckTimerMessage();
+        populateWSM(ackTimerMsg);
+        ackTimerMsg->setHostIndex(dataMsg->getHostIndex());
+        scheduleAt(simTime() + 2 + uniform(3, 4), ackTimerMsg);
+
         EV << "Finished computation of: " << dataMsg->getLoadToProcess() << std::endl;
     }
 }
@@ -297,6 +324,12 @@ void VeinsApp::handleResponseMessage(ResponseMessage* responseMsg)
 {
     if (findHost()->getIndex() == busIndex) {
         helpersLoad.erase(responseMsg->getHostIndex());
+
+        // Send ACK message to the host
+        AckMessage* ackMsg = new AckMessage();
+        populateWSM(ackMsg);
+        ackMsg->setHostIndex(responseMsg->getHostIndex());
+        scheduleAt(simTime() + 2 + uniform(1, 2), ackMsg);
 
         EV << "Deleted host: " << responseMsg->getHostIndex() << std::endl <<"Host remaining: " << helpersLoad.size() - 1 << std::endl;
 
@@ -314,6 +347,14 @@ void VeinsApp::handleResponseMessage(ResponseMessage* responseMsg)
             sendDown(updateMsg);
         }
     }
+}
+
+void VeinsApp::sendAgainResponse(int index)
+{
+    ResponseMessage* responseMsg = new ResponseMessage();
+    populateWSM(responseMsg);
+    responseMsg->setHostIndex(index);
+    scheduleAt(simTime() + 2 + uniform(0.01, 0.2), responseMsg);
 }
 
 void VeinsApp::handlePositionUpdate(cObject* obj)
