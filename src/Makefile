@@ -36,6 +36,8 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 OBJS = \
     $O/app/RSU.o \
     $O/app/VeinsApp.o \
+    $O/app/messages/AckMessage_m.o \
+    $O/app/messages/AckTimerMessage_m.o \
     $O/app/messages/ComputationTimerMessage_m.o \
     $O/app/messages/DataMessage_m.o \
     $O/app/messages/HelpMessage_m.o \
@@ -46,6 +48,8 @@ OBJS = \
 
 # Message files
 MSGFILES = \
+    app/messages/AckMessage.msg \
+    app/messages/AckTimerMessage.msg \
     app/messages/ComputationTimerMessage.msg \
     app/messages/DataMessage.msg \
     app/messages/HelpMessage.msg \
