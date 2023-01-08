@@ -40,9 +40,9 @@ OBJS = \
     $O/app/messages/DataMessage_m.o \
     $O/app/messages/HelpMessage_m.o \
     $O/app/messages/LoadBalanceTimerMessage_m.o \
-    $O/app/messages/LoadBalancingMessage_m.o \
     $O/app/messages/OkMessage_m.o \
-    $O/app/messages/ResponseMessage_m.o
+    $O/app/messages/ResponseMessage_m.o \
+    $O/app/messages/UpdateAvailabilityMessage_m.o
 
 # Message files
 MSGFILES = \
@@ -50,9 +50,9 @@ MSGFILES = \
     app/messages/DataMessage.msg \
     app/messages/HelpMessage.msg \
     app/messages/LoadBalanceTimerMessage.msg \
-    app/messages/LoadBalancingMessage.msg \
     app/messages/OkMessage.msg \
-    app/messages/ResponseMessage.msg
+    app/messages/ResponseMessage.msg \
+    app/messages/UpdateAvailabilityMessage.msg
 
 # SM files
 SMFILES =
