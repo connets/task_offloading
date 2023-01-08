@@ -45,10 +45,12 @@ void VeinsApp::initialize(int stage)
         sentHelpMessage = false;
         helpReceived = false;
         helpersLoad[0] = par("busVehicleLoad").doubleValue();
+        helpersFreq[0] = par("randomCpuVehicleFreq").doubleValue();
         busIndex = 0;
         newRandomTime = 0;
         acceptingOtherVehicles = true;
         ackReceived = false;
+        hostCpuFreq = 0;
     }
 }
 
@@ -176,10 +178,14 @@ void VeinsApp::handleHelpMessage(HelpMessage* helpMsg)
         // Color the host that received the help message
         findHost()->getDisplayString().setTagArg("i", 1, "yellow");
 
-        // Set for every single host a random value for current load
+        // Set for every single host a random value for current load and cpu freq
         double randomVehicleLoad = par("randomVehicleLoadActual").doubleValue();
         double maximumVehicleLoad = par("maximumVehicleLoadActual").doubleValue();
         double commonVehicleLoad = par("commonVehicleLoad").doubleValue();
+
+        // Get the CPU freq and assign to host variable
+        double cpuFreq = par("randomCpuVehicleFreq").doubleValue();
+        hostCpuFreq = cpuFreq;
 
         // Check the random vehicle load is inferior to maximum
         // actual vehicle load for computation
@@ -196,6 +202,7 @@ void VeinsApp::handleHelpMessage(HelpMessage* helpMsg)
                 populateWSM(okMsg);
                 okMsg->setHostID(findHost()->getIndex());
                 okMsg->setAvailableLoad(actualLoad);
+                okMsg->setCpuFreq(cpuFreq);
 
                 // Schedule the ok message
                 scheduleAt(simTime() + 2 + uniform(2, 4), okMsg);
@@ -212,8 +219,9 @@ void VeinsApp::handleOkMessage(OkMessage* okMsg)
         // Color the bus that received help
         findHost()->getDisplayString().setTagArg("i", 1, "green");
 
-        // Store the helper load
+        // Store the helper load and CPU freq
         helpersLoad[okMsg->getHostID()] = okMsg->getAvailableLoad();
+        helpersFreq[okMsg->getHostID()] = okMsg->getCpuFreq();
     }
 }
 
@@ -264,7 +272,15 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
                     computationTimerMsg->setSimulationTime(simTime());
                     computationTimerMsg->setIndexHost(loadsIterator->first);
                     computationTimerMsg->setLoadHost(loadsIterator->second);
-                    scheduleAt(simTime() + 10 + uniform(5, 10), computationTimerMsg);
+
+                    // Calculate time for timer
+                    double CPI = 3;
+                    double I = loadsIterator->second;
+                    double CR = helpersFreq[loadsIterator->first];
+
+                    double timeToCompute = CPI * I * (1 / CR);
+
+                    scheduleAt(simTime() + timeToCompute + uniform(5, 10), computationTimerMsg);
                 }
             }
 
@@ -306,10 +322,17 @@ void VeinsApp::handleDataMessage(DataMessage* dataMsg)
 
         EV << "Received " << dataMsg->getLoadToProcess() << " to load from BUS" << std::endl;
 
+        // Calculate time for computation
+        double CPI = 3;
+        double I = dataMsg->getLoadToProcess();
+        double CR = hostCpuFreq;
+
+        double timeToCompute = CPI * I * (1 / CR);
+
         ResponseMessage* responseMsg = new ResponseMessage();
         populateWSM(responseMsg);
         responseMsg->setHostIndex(dataMsg->getHostIndex());
-        scheduleAt(simTime() + 2 + uniform(0.01, 0.2), responseMsg);
+        scheduleAt(simTime() + timeToCompute + uniform(0.01, 0.2), responseMsg);
 
         AckTimerMessage* ackTimerMsg = new AckTimerMessage();
         populateWSM(ackTimerMsg);

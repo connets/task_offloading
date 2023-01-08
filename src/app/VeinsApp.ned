@@ -28,6 +28,7 @@ simple VeinsApp extends DemoBaseApplLayer
     parameters:
         volatile double randomTimeHelpMessage @unit(s) = default(uniform(30s, 40s));
         volatile double randomVehicleLoadActual @unit(byte) = default(uniform(150MB, 400MB));
+        volatile double randomCpuVehicleFreq @unit(Hz) = default(uniform(1.20GHz, 2.70GHz));
         double maximumVehicleLoadActual @unit(byte) = default(300MB);
         double commonVehicleLoad @unit(byte) = default(1GB);
         double busVehicleLoad @unit(byte) = default(4GB);

@@ -54,10 +54,12 @@ protected:
     bool sentHelpMessage;
     bool helpReceived;
     std::map<int, double> helpersLoad;
+    std::map<int, double> helpersFreq;
     simtime_t newRandomTime;
     int busIndex;
     bool acceptingOtherVehicles;
     bool ackReceived;
+    double hostCpuFreq;
 
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;
