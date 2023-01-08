@@ -22,4 +22,5 @@ namespace tirocinio;
 packet OkMessage extends veins::BaseFrame1609_4 {
 	int hostID;
 	double availableLoad;
+	double cpuFreq;
 }

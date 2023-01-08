@@ -179,6 +179,7 @@ void OkMessage::copy(const OkMessage& other)
 {
     this->hostID = other.hostID;
     this->availableLoad = other.availableLoad;
+    this->cpuFreq = other.cpuFreq;
 }
 
 void OkMessage::parsimPack(omnetpp::cCommBuffer *b) const
@@ -186,6 +187,7 @@ void OkMessage::parsimPack(omnetpp::cCommBuffer *b) const
     ::veins::BaseFrame1609_4::parsimPack(b);
     doParsimPacking(b,this->hostID);
     doParsimPacking(b,this->availableLoad);
+    doParsimPacking(b,this->cpuFreq);
 }
 
 void OkMessage::parsimUnpack(omnetpp::cCommBuffer *b)
@@ -193,6 +195,7 @@ void OkMessage::parsimUnpack(omnetpp::cCommBuffer *b)
     ::veins::BaseFrame1609_4::parsimUnpack(b);
     doParsimUnpacking(b,this->hostID);
     doParsimUnpacking(b,this->availableLoad);
+    doParsimUnpacking(b,this->cpuFreq);
 }
 
 int OkMessage::getHostID() const
@@ -215,6 +218,16 @@ void OkMessage::setAvailableLoad(double availableLoad)
     this->availableLoad = availableLoad;
 }
 
+double OkMessage::getCpuFreq() const
+{
+    return this->cpuFreq;
+}
+
+void OkMessage::setCpuFreq(double cpuFreq)
+{
+    this->cpuFreq = cpuFreq;
+}
+
 class OkMessageDescriptor : public omnetpp::cClassDescriptor
 {
   private:
@@ -222,6 +235,7 @@ class OkMessageDescriptor : public omnetpp::cClassDescriptor
     enum FieldConstants {
         FIELD_hostID,
         FIELD_availableLoad,
+        FIELD_cpuFreq,
     };
   public:
     OkMessageDescriptor();
@@ -288,7 +302,7 @@ const char *OkMessageDescriptor::getProperty(const char *propertyName) const
 int OkMessageDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 2+base->getFieldCount() : 2;
+    return base ? 3+base->getFieldCount() : 3;
 }
 
 unsigned int OkMessageDescriptor::getFieldTypeFlags(int field) const
@@ -302,8 +316,9 @@ unsigned int OkMessageDescriptor::getFieldTypeFlags(int field) const
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,    // FIELD_hostID
         FD_ISEDITABLE,    // FIELD_availableLoad
+        FD_ISEDITABLE,    // FIELD_cpuFreq
     };
-    return (field >= 0 && field < 2) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 3) ? fieldTypeFlags[field] : 0;
 }
 
 const char *OkMessageDescriptor::getFieldName(int field) const
@@ -317,8 +332,9 @@ const char *OkMessageDescriptor::getFieldName(int field) const
     static const char *fieldNames[] = {
         "hostID",
         "availableLoad",
+        "cpuFreq",
     };
-    return (field >= 0 && field < 2) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 3) ? fieldNames[field] : nullptr;
 }
 
 int OkMessageDescriptor::findField(const char *fieldName) const
@@ -327,6 +343,7 @@ int OkMessageDescriptor::findField(const char *fieldName) const
     int baseIndex = base ? base->getFieldCount() : 0;
     if (strcmp(fieldName, "hostID") == 0) return baseIndex + 0;
     if (strcmp(fieldName, "availableLoad") == 0) return baseIndex + 1;
+    if (strcmp(fieldName, "cpuFreq") == 0) return baseIndex + 2;
     return base ? base->findField(fieldName) : -1;
 }
 
@@ -341,8 +358,9 @@ const char *OkMessageDescriptor::getFieldTypeString(int field) const
     static const char *fieldTypeStrings[] = {
         "int",    // FIELD_hostID
         "double",    // FIELD_availableLoad
+        "double",    // FIELD_cpuFreq
     };
-    return (field >= 0 && field < 2) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 3) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **OkMessageDescriptor::getFieldPropertyNames(int field) const
@@ -427,6 +445,7 @@ std::string OkMessageDescriptor::getFieldValueAsString(omnetpp::any_ptr object, 
     switch (field) {
         case FIELD_hostID: return long2string(pp->getHostID());
         case FIELD_availableLoad: return double2string(pp->getAvailableLoad());
+        case FIELD_cpuFreq: return double2string(pp->getCpuFreq());
         default: return "";
     }
 }
@@ -445,6 +464,7 @@ void OkMessageDescriptor::setFieldValueAsString(omnetpp::any_ptr object, int fie
     switch (field) {
         case FIELD_hostID: pp->setHostID(string2long(value)); break;
         case FIELD_availableLoad: pp->setAvailableLoad(string2double(value)); break;
+        case FIELD_cpuFreq: pp->setCpuFreq(string2double(value)); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'OkMessage'", field);
     }
 }
@@ -461,6 +481,7 @@ omnetpp::cValue OkMessageDescriptor::getFieldValue(omnetpp::any_ptr object, int 
     switch (field) {
         case FIELD_hostID: return pp->getHostID();
         case FIELD_availableLoad: return pp->getAvailableLoad();
+        case FIELD_cpuFreq: return pp->getCpuFreq();
         default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'OkMessage' as cValue -- field index out of range?", field);
     }
 }
@@ -479,6 +500,7 @@ void OkMessageDescriptor::setFieldValue(omnetpp::any_ptr object, int field, int 
     switch (field) {
         case FIELD_hostID: pp->setHostID(omnetpp::checked_int_cast<int>(value.intValue())); break;
         case FIELD_availableLoad: pp->setAvailableLoad(value.doubleValue()); break;
+        case FIELD_cpuFreq: pp->setCpuFreq(value.doubleValue()); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'OkMessage'", field);
     }
 }

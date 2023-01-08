@@ -39,6 +39,7 @@ namespace tirocinio {
  * {
  *     int hostID;
  *     double availableLoad;
+ *     double cpuFreq;
  * }
  * </pre>
  */
@@ -47,6 +48,7 @@ class OkMessage : public ::veins::BaseFrame1609_4
   protected:
     int hostID = 0;
     double availableLoad = 0;
+    double cpuFreq = 0;
 
   private:
     void copy(const OkMessage& other);
@@ -68,6 +70,9 @@ class OkMessage : public ::veins::BaseFrame1609_4
 
     virtual double getAvailableLoad() const;
     virtual void setAvailableLoad(double availableLoad);
+
+    virtual double getCpuFreq() const;
+    virtual void setCpuFreq(double cpuFreq);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const OkMessage& obj) {obj.parsimPack(b);}
