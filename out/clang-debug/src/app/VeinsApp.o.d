@@ -52,6 +52,7 @@
   ../../veins-5.2/src/veins/modules/world/traci/trafficLight/TraCITrafficLightProgram.h \
   app/messages/HelpMessage_m.h app/messages/OkMessage_m.h \
   app/messages/DataMessage_m.h app/messages/ResponseMessage_m.h \
+  app/messages/AckMessage_m.h app/messages/AckTimerMessage_m.h \
   app/messages/LoadBalanceTimerMessage_m.h \
   app/messages/ComputationTimerMessage_m.h \
   app/messages/UpdateAvailabilityMessage_m.h
@@ -169,6 +170,10 @@ app/messages/OkMessage_m.h:
 app/messages/DataMessage_m.h:
 
 app/messages/ResponseMessage_m.h:
+
+app/messages/AckMessage_m.h:
+
+app/messages/AckTimerMessage_m.h:
 
 app/messages/LoadBalanceTimerMessage_m.h:
 
