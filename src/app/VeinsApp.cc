@@ -28,7 +28,7 @@
 #include "app/messages/ResponseMessage_m.h"
 #include "app/messages/LoadBalanceTimerMessage_m.h"
 #include "app/messages/ComputationTimerMessage_m.h"
-#include "app/messages/LoadBalancingMessage_m.h"
+#include "app/messages/UpdateAvailabilityMessage_m.h"
 
 using namespace tirocinio;
 
@@ -72,10 +72,10 @@ void VeinsApp::onWSM(veins::BaseFrame1609_4* wsm)
     }
 
     // SECTION - When the host receive load balancing message
-    if (LoadBalancingMessage* loadBalanceMsg = dynamic_cast<LoadBalancingMessage*>(wsm)) {
-        if (strcmp(loadBalanceMsg->getTime(), "start") == 0) {
+    if (UpdateAvailabilityMessage* updateMsg = dynamic_cast<UpdateAvailabilityMessage*>(wsm)) {
+        if (strcmp(updateMsg->getAvailability(), "not-available") == 0) {
             acceptingOtherVehicles = false;
-        } else if (strcmp(loadBalanceMsg->getTime(), "end") == 0) {
+        } else if (strcmp(updateMsg->getAvailability(), "available") == 0) {
             acceptingOtherVehicles = true;
             findHost()->getDisplayString().setTagArg("i", 1, "white");
         }
@@ -111,10 +111,10 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
         acceptingOtherVehicles = false;
 
         // Notify other vehicles of BUS balance loading
-        LoadBalancingMessage* balanceMsg = new LoadBalancingMessage();
-        populateWSM(balanceMsg);
-        balanceMsg->setTime("start");
-        sendDown(balanceMsg);
+        UpdateAvailabilityMessage* updateMsg = new UpdateAvailabilityMessage();
+        populateWSM(updateMsg);
+        updateMsg->setAvailability("not-available");
+        sendDown(updateMsg);
 
         balanceLoad(loadBalance->getSimulationTime());
     }
@@ -308,10 +308,10 @@ void VeinsApp::handleResponseMessage(ResponseMessage* responseMsg)
             acceptingOtherVehicles = true;
 
             // Notify all vehicles of finished computation
-            LoadBalancingMessage* balanceMsg = new LoadBalancingMessage();
-            populateWSM(balanceMsg);
-            balanceMsg->setTime("end");
-            sendDown(balanceMsg);
+            UpdateAvailabilityMessage* updateMsg = new UpdateAvailabilityMessage();
+            populateWSM(updateMsg);
+            updateMsg->setAvailability("available");
+            sendDown(updateMsg);
         }
     }
 }

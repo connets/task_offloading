@@ -19,6 +19,6 @@ import veins.base.utils.SimpleAddress;
 
 namespace tirocinio;
 
-packet LoadBalancingMessage extends veins::BaseFrame1609_4 {
-    string time;
+packet UpdateAvailabilityMessage extends veins::BaseFrame1609_4 {
+    string availability;
 }
