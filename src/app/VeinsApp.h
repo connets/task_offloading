@@ -56,7 +56,7 @@ protected:
     std::map<int, double> helpersLoad;
     simtime_t newRandomTime;
     int busIndex;
-    bool loadAlreadyBalanced;
+    bool acceptingOtherVehicles;
 
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;

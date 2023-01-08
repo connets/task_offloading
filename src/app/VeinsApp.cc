@@ -28,6 +28,7 @@
 #include "app/messages/ResponseMessage_m.h"
 #include "app/messages/LoadBalanceTimerMessage_m.h"
 #include "app/messages/ComputationTimerMessage_m.h"
+#include "app/messages/LoadBalancingMessage_m.h"
 
 using namespace tirocinio;
 
@@ -44,7 +45,7 @@ void VeinsApp::initialize(int stage)
         helpersLoad[0] = par("busVehicleLoad").doubleValue();
         busIndex = 0;
         newRandomTime = 0;
-        loadAlreadyBalanced = false;
+        acceptingOtherVehicles = true;
     }
 }
 
@@ -68,6 +69,16 @@ void VeinsApp::onWSM(veins::BaseFrame1609_4* wsm)
     if (HelpMessage* helpMsg = dynamic_cast<HelpMessage*>(wsm)) {
         busIndex = helpMsg->getVehicleIndex();
         handleHelpMessage(helpMsg);
+    }
+
+    // SECTION - When the host receive load balancing message
+    if (LoadBalancingMessage* loadBalanceMsg = dynamic_cast<LoadBalancingMessage*>(wsm)) {
+        if (strcmp(loadBalanceMsg->getTime(), "start") == 0) {
+            acceptingOtherVehicles = false;
+        } else if (strcmp(loadBalanceMsg->getTime(), "end") == 0) {
+            acceptingOtherVehicles = true;
+            findHost()->getDisplayString().setTagArg("i", 1, "white");
+        }
     }
 
     // SECTION - When the bus receives the ok messages
@@ -97,6 +108,14 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
     // This method is for self messages (mostly timers)
     // Timer for help message
     if (LoadBalanceTimerMessage* loadBalance = dynamic_cast<LoadBalanceTimerMessage*>(msg)) {
+        acceptingOtherVehicles = false;
+
+        // Notify other vehicles of BUS balance loading
+        LoadBalancingMessage* balanceMsg = new LoadBalancingMessage();
+        populateWSM(balanceMsg);
+        balanceMsg->setTime("start");
+        sendDown(balanceMsg);
+
         balanceLoad(loadBalance->getSimulationTime());
     }
 
@@ -107,7 +126,13 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
 
     // Timer for ok message
     if (OkMessage* okMsg = dynamic_cast<OkMessage*>(msg)) {
-        sendDown(okMsg->dup());
+        if (acceptingOtherVehicles) {
+            // Color the available host in blue
+            findHost()->getDisplayString().setTagArg("i", 1, "blue");
+
+            // Send the ok message
+            sendDown(okMsg->dup());
+        }
     }
 
     // Timer for data message
@@ -117,6 +142,7 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
 
     // Timer for response message
     if (ResponseMessage* responseMsg = dynamic_cast<ResponseMessage*>(msg)) {
+        findHost()->getDisplayString().setTagArg("i", 1, "white");
         sendDown(responseMsg->dup());
     }
 }
@@ -136,16 +162,13 @@ void VeinsApp::handleHelpMessage(HelpMessage* helpMsg)
         // Check the random vehicle load is inferior to maximum
         // actual vehicle load for computation
         if (randomVehicleLoad < maximumVehicleLoad) {
-            // Color the available host in blue
-            findHost()->getDisplayString().setTagArg("i", 1, "blue");
-
             // Calculate real actual load
             // Actual load = common load - random actual load
             double actualLoad = commonVehicleLoad - randomVehicleLoad - 1e08;
 
             // If the host is available send an ok message after
             // some time with ID and the computation load available
-            if (actualLoad > 0 && (!loadAlreadyBalanced)) {
+            if (actualLoad > 0) {
                 // Prepare the message
                 OkMessage* okMsg = new OkMessage();
                 populateWSM(okMsg);
@@ -155,6 +178,8 @@ void VeinsApp::handleHelpMessage(HelpMessage* helpMsg)
                 // Schedule the ok message
                 scheduleAt(simTime() + 2 + uniform(2, 4), okMsg);
             }
+        } else if (findHost()->getIndex() != busIndex) {
+            findHost()->getDisplayString().setTagArg("i", 1, "white");
         }
     }
 }
@@ -187,15 +212,23 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
 
                 // If there's data to load then send the messages
                 if (data > 0) {
-                    data = data - vehicleLoad;
-
                     // Create Data Message
                     DataMessage* dataMsg = new DataMessage();
 
                     // Populate the message
                     populateWSM(dataMsg);
-                    dataMsg->setLoadToProcess(loadsIterator->second);
                     dataMsg->setHostIndex(loadsIterator->first);
+
+                    // If data - vehicleLoad >= 0 then set new data, otherwise send the remaining data
+                    if ((data - vehicleLoad) >= 0) {
+                        data = data - vehicleLoad;
+                        dataMsg->setLoadToProcess(loadsIterator->second);
+                    } else {
+                        data = 0;
+                        dataMsg->setLoadToProcess(data);
+                    }
+
+                    EV << "Load remaining: " << data << std::endl;
 
                     // Schedule the data message
                     scheduleAt(simTime() + 2 + uniform(0.01, 0.2), dataMsg);
@@ -245,7 +278,6 @@ void VeinsApp::sendAgainData(int index, double load)
 
 void VeinsApp::handleDataMessage(DataMessage* dataMsg)
 {
-    loadAlreadyBalanced = true;
     if (findHost()->getIndex() == dataMsg->getHostIndex()) {
         // Color the host that needs to process data
         findHost()->getDisplayString().setTagArg("i", 1, "red");
@@ -267,6 +299,20 @@ void VeinsApp::handleResponseMessage(ResponseMessage* responseMsg)
         helpersLoad.erase(responseMsg->getHostIndex());
 
         EV << "Deleted host: " << responseMsg->getHostIndex() << std::endl <<"Host remaining: " << helpersLoad.size() - 1 << std::endl;
+
+        if (helpersLoad.size() == 1) {
+            findHost()->getDisplayString().setTagArg("i", 1, "white");
+            helpReceived = false;
+            sentHelpMessage = false;
+            newRandomTime = simTime();
+            acceptingOtherVehicles = true;
+
+            // Notify all vehicles of finished computation
+            LoadBalancingMessage* balanceMsg = new LoadBalancingMessage();
+            populateWSM(balanceMsg);
+            balanceMsg->setTime("end");
+            sendDown(balanceMsg);
+        }
     }
 }
 
@@ -281,8 +327,9 @@ void VeinsApp::handlePositionUpdate(cObject* obj)
     bool isBus = findHost()->getIndex() == busIndex;
     bool notSentHelpMessage = !(sentHelpMessage);
     bool notHelpReceived = !(helpReceived);
+    bool moreDataToLoad = par("computationLoad").doubleValue() > 0;
 
-    if (randomTimeReached && isBus && notHelpReceived && notSentHelpMessage) {
+    if (randomTimeReached && isBus && notHelpReceived && notSentHelpMessage && moreDataToLoad) {
         // Help message creation
         HelpMessage* helpRequest = new HelpMessage();
         populateWSM(helpRequest);
@@ -300,9 +347,11 @@ void VeinsApp::handlePositionUpdate(cObject* obj)
         LoadBalanceTimerMessage* loadBalanceMsg = new LoadBalanceTimerMessage();
         populateWSM(loadBalanceMsg);
         loadBalanceMsg->setSimulationTime(simTime());
-        scheduleAt(simTime() + 2 + uniform(3, 4), loadBalanceMsg);
+        scheduleAt(simTime() + 2 + uniform(5, 7), loadBalanceMsg);
 
         sentHelpMessage = true;
+    } else if (!moreDataToLoad) {
+        findHost()->getDisplayString().setTagArg("i", 1, "white");
     }
 
     lastDroveAt = simTime();
