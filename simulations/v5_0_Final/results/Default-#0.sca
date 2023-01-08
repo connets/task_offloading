@@ -1,8 +1,8 @@
 version 3
-run Default-0-20230108-12:39:13-40430
+run Default-0-20230108-13:25:14-56474
 attr configname Default
-attr datetime 20230108-12:39:13
-attr datetimef 20230108-123913
+attr datetime 20230108-13:25:14
+attr datetimef 20230108-132514
 attr experiment Default
 attr inifile omnetpp.ini
 attr iterationvars ""
@@ -10,7 +10,7 @@ attr iterationvarsd ""
 attr iterationvarsf ""
 attr measurement ""
 attr network v5_0
-attr processid 40430
+attr processid 56474
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -154,7 +154,7 @@ par v5_0.node[1].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par v5_0.node[1].nic.phy80211p collectCollisionStatistics false
 par v5_0.node[1].nic.phy80211p allowTxDuringRx false
-scalar v5_0.node[1].nic.phy80211p busyTime 3.4626865671642e-06
+scalar v5_0.node[1].nic.phy80211p busyTime 1.3850746268657e-05
 par v5_0.node[1].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par v5_0.node[1].nic.mac1609_4 notAffectedByHostState false
 par v5_0.node[1].nic.mac1609_4 headerLength 0bit
@@ -183,15 +183,15 @@ scalar v5_0.node[1].nic.mac1609_4 ReceivedBroadcasts 0
 scalar v5_0.node[1].nic.mac1609_4 SentPackets 0
 scalar v5_0.node[1].nic.mac1609_4 SentAcknowledgements 0
 scalar v5_0.node[1].nic.mac1609_4 RetriesExceeded 0
-scalar v5_0.node[1].nic.mac1609_4 SNIRLostPackets 2
+scalar v5_0.node[1].nic.mac1609_4 SNIRLostPackets 8
 scalar v5_0.node[1].nic.mac1609_4 RXTXLostPackets 0
-scalar v5_0.node[1].nic.mac1609_4 TotalLostPackets 2
+scalar v5_0.node[1].nic.mac1609_4 TotalLostPackets 8
 scalar v5_0.node[1].nic.mac1609_4 DroppedPacketsInMac 0
 scalar v5_0.node[1].nic.mac1609_4 TooLittleTime 0
 scalar v5_0.node[1].nic.mac1609_4 TimesIntoBackoff 0
 scalar v5_0.node[1].nic.mac1609_4 SlotsBackoff 0
 scalar v5_0.node[1].nic.mac1609_4 NumInternalContention 0
-scalar v5_0.node[1].nic.mac1609_4 totalBusyTime 0.000464
+scalar v5_0.node[1].nic.mac1609_4 totalBusyTime 0.001856
 scalar v5_0.node[1].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
@@ -204,7 +204,7 @@ attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar v5_0.node[1].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar v5_0.node[1].nic.mac1609_4 channelBusy:timeavg 3.4626865671642e-06
+scalar v5_0.node[1].nic.mac1609_4 channelBusy:timeavg 1.3850746268657e-05
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par v5_0.node[1].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
@@ -316,7 +316,7 @@ par v5_0.node[4].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par v5_0.node[4].nic.phy80211p collectCollisionStatistics false
 par v5_0.node[4].nic.phy80211p allowTxDuringRx false
-scalar v5_0.node[4].nic.phy80211p busyTime 0
+scalar v5_0.node[4].nic.phy80211p busyTime 1.0197802197802e-05
 par v5_0.node[4].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par v5_0.node[4].nic.mac1609_4 notAffectedByHostState false
 par v5_0.node[4].nic.mac1609_4 headerLength 0bit
@@ -345,15 +345,15 @@ scalar v5_0.node[4].nic.mac1609_4 ReceivedBroadcasts 0
 scalar v5_0.node[4].nic.mac1609_4 SentPackets 0
 scalar v5_0.node[4].nic.mac1609_4 SentAcknowledgements 0
 scalar v5_0.node[4].nic.mac1609_4 RetriesExceeded 0
-scalar v5_0.node[4].nic.mac1609_4 SNIRLostPackets 0
+scalar v5_0.node[4].nic.mac1609_4 SNIRLostPackets 6
 scalar v5_0.node[4].nic.mac1609_4 RXTXLostPackets 0
-scalar v5_0.node[4].nic.mac1609_4 TotalLostPackets 0
+scalar v5_0.node[4].nic.mac1609_4 TotalLostPackets 6
 scalar v5_0.node[4].nic.mac1609_4 DroppedPacketsInMac 0
 scalar v5_0.node[4].nic.mac1609_4 TooLittleTime 0
 scalar v5_0.node[4].nic.mac1609_4 TimesIntoBackoff 0
 scalar v5_0.node[4].nic.mac1609_4 SlotsBackoff 0
 scalar v5_0.node[4].nic.mac1609_4 NumInternalContention 0
-scalar v5_0.node[4].nic.mac1609_4 totalBusyTime 0
+scalar v5_0.node[4].nic.mac1609_4 totalBusyTime 0.001392
 scalar v5_0.node[4].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
@@ -366,7 +366,7 @@ attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar v5_0.node[4].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar v5_0.node[4].nic.mac1609_4 channelBusy:timeavg 0
+scalar v5_0.node[4].nic.mac1609_4 channelBusy:timeavg 1.0197802197802e-05
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par v5_0.node[4].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
@@ -478,7 +478,7 @@ par v5_0.node[8].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par v5_0.node[8].nic.phy80211p collectCollisionStatistics false
 par v5_0.node[8].nic.phy80211p allowTxDuringRx false
-scalar v5_0.node[8].nic.phy80211p busyTime 0
+scalar v5_0.node[8].nic.phy80211p busyTime 5.0252707581227e-06
 par v5_0.node[8].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par v5_0.node[8].nic.mac1609_4 notAffectedByHostState false
 par v5_0.node[8].nic.mac1609_4 headerLength 0bit
@@ -507,15 +507,15 @@ scalar v5_0.node[8].nic.mac1609_4 ReceivedBroadcasts 0
 scalar v5_0.node[8].nic.mac1609_4 SentPackets 0
 scalar v5_0.node[8].nic.mac1609_4 SentAcknowledgements 0
 scalar v5_0.node[8].nic.mac1609_4 RetriesExceeded 0
-scalar v5_0.node[8].nic.mac1609_4 SNIRLostPackets 0
+scalar v5_0.node[8].nic.mac1609_4 SNIRLostPackets 3
 scalar v5_0.node[8].nic.mac1609_4 RXTXLostPackets 0
-scalar v5_0.node[8].nic.mac1609_4 TotalLostPackets 0
+scalar v5_0.node[8].nic.mac1609_4 TotalLostPackets 3
 scalar v5_0.node[8].nic.mac1609_4 DroppedPacketsInMac 0
 scalar v5_0.node[8].nic.mac1609_4 TooLittleTime 0
 scalar v5_0.node[8].nic.mac1609_4 TimesIntoBackoff 0
 scalar v5_0.node[8].nic.mac1609_4 SlotsBackoff 0
 scalar v5_0.node[8].nic.mac1609_4 NumInternalContention 0
-scalar v5_0.node[8].nic.mac1609_4 totalBusyTime 0
+scalar v5_0.node[8].nic.mac1609_4 totalBusyTime 0.000696
 scalar v5_0.node[8].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
@@ -528,7 +528,7 @@ attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar v5_0.node[8].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar v5_0.node[8].nic.mac1609_4 channelBusy:timeavg 0
+scalar v5_0.node[8].nic.mac1609_4 channelBusy:timeavg 5.0252707581227e-06
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par v5_0.node[8].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
@@ -640,7 +640,7 @@ par v5_0.node[12].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par v5_0.node[12].nic.phy80211p collectCollisionStatistics false
 par v5_0.node[12].nic.phy80211p allowTxDuringRx false
-scalar v5_0.node[12].nic.phy80211p busyTime 0
+scalar v5_0.node[12].nic.phy80211p busyTime 4.4331210191083e-06
 par v5_0.node[12].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par v5_0.node[12].nic.mac1609_4 notAffectedByHostState false
 par v5_0.node[12].nic.mac1609_4 headerLength 0bit
@@ -669,15 +669,15 @@ scalar v5_0.node[12].nic.mac1609_4 ReceivedBroadcasts 0
 scalar v5_0.node[12].nic.mac1609_4 SentPackets 0
 scalar v5_0.node[12].nic.mac1609_4 SentAcknowledgements 0
 scalar v5_0.node[12].nic.mac1609_4 RetriesExceeded 0
-scalar v5_0.node[12].nic.mac1609_4 SNIRLostPackets 0
+scalar v5_0.node[12].nic.mac1609_4 SNIRLostPackets 3
 scalar v5_0.node[12].nic.mac1609_4 RXTXLostPackets 0
-scalar v5_0.node[12].nic.mac1609_4 TotalLostPackets 0
+scalar v5_0.node[12].nic.mac1609_4 TotalLostPackets 3
 scalar v5_0.node[12].nic.mac1609_4 DroppedPacketsInMac 0
 scalar v5_0.node[12].nic.mac1609_4 TooLittleTime 0
 scalar v5_0.node[12].nic.mac1609_4 TimesIntoBackoff 0
 scalar v5_0.node[12].nic.mac1609_4 SlotsBackoff 0
 scalar v5_0.node[12].nic.mac1609_4 NumInternalContention 0
-scalar v5_0.node[12].nic.mac1609_4 totalBusyTime 0
+scalar v5_0.node[12].nic.mac1609_4 totalBusyTime 0.000696
 scalar v5_0.node[12].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
@@ -690,7 +690,7 @@ attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar v5_0.node[12].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar v5_0.node[12].nic.mac1609_4 channelBusy:timeavg 0
+scalar v5_0.node[12].nic.mac1609_4 channelBusy:timeavg 4.4331210191083e-06
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par v5_0.node[12].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
@@ -802,7 +802,7 @@ par v5_0.node[2].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par v5_0.node[2].nic.phy80211p collectCollisionStatistics false
 par v5_0.node[2].nic.phy80211p allowTxDuringRx false
-scalar v5_0.node[2].nic.phy80211p busyTime 4.8207792207792e-06
+scalar v5_0.node[2].nic.phy80211p busyTime 7.2311688311688e-06
 par v5_0.node[2].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par v5_0.node[2].nic.mac1609_4 notAffectedByHostState false
 par v5_0.node[2].nic.mac1609_4 headerLength 0bit
@@ -831,15 +831,15 @@ scalar v5_0.node[2].nic.mac1609_4 ReceivedBroadcasts 0
 scalar v5_0.node[2].nic.mac1609_4 SentPackets 0
 scalar v5_0.node[2].nic.mac1609_4 SentAcknowledgements 0
 scalar v5_0.node[2].nic.mac1609_4 RetriesExceeded 0
-scalar v5_0.node[2].nic.mac1609_4 SNIRLostPackets 4
+scalar v5_0.node[2].nic.mac1609_4 SNIRLostPackets 6
 scalar v5_0.node[2].nic.mac1609_4 RXTXLostPackets 0
-scalar v5_0.node[2].nic.mac1609_4 TotalLostPackets 4
+scalar v5_0.node[2].nic.mac1609_4 TotalLostPackets 6
 scalar v5_0.node[2].nic.mac1609_4 DroppedPacketsInMac 0
 scalar v5_0.node[2].nic.mac1609_4 TooLittleTime 0
 scalar v5_0.node[2].nic.mac1609_4 TimesIntoBackoff 0
 scalar v5_0.node[2].nic.mac1609_4 SlotsBackoff 0
 scalar v5_0.node[2].nic.mac1609_4 NumInternalContention 0
-scalar v5_0.node[2].nic.mac1609_4 totalBusyTime 0.000928
+scalar v5_0.node[2].nic.mac1609_4 totalBusyTime 0.001392
 scalar v5_0.node[2].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
@@ -852,7 +852,7 @@ attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar v5_0.node[2].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar v5_0.node[2].nic.mac1609_4 channelBusy:timeavg 4.8207792207792e-06
+scalar v5_0.node[2].nic.mac1609_4 channelBusy:timeavg 7.2311688311688e-06
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par v5_0.node[2].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
@@ -1126,7 +1126,7 @@ par v5_0.node[18].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par v5_0.node[18].nic.phy80211p collectCollisionStatistics false
 par v5_0.node[18].nic.phy80211p allowTxDuringRx false
-scalar v5_0.node[18].nic.phy80211p busyTime 0
+scalar v5_0.node[18].nic.phy80211p busyTime 2.4615384615385e-06
 par v5_0.node[18].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par v5_0.node[18].nic.mac1609_4 notAffectedByHostState false
 par v5_0.node[18].nic.mac1609_4 headerLength 0bit
@@ -1155,15 +1155,15 @@ scalar v5_0.node[18].nic.mac1609_4 ReceivedBroadcasts 0
 scalar v5_0.node[18].nic.mac1609_4 SentPackets 0
 scalar v5_0.node[18].nic.mac1609_4 SentAcknowledgements 0
 scalar v5_0.node[18].nic.mac1609_4 RetriesExceeded 0
-scalar v5_0.node[18].nic.mac1609_4 SNIRLostPackets 0
+scalar v5_0.node[18].nic.mac1609_4 SNIRLostPackets 2
 scalar v5_0.node[18].nic.mac1609_4 RXTXLostPackets 0
-scalar v5_0.node[18].nic.mac1609_4 TotalLostPackets 0
+scalar v5_0.node[18].nic.mac1609_4 TotalLostPackets 2
 scalar v5_0.node[18].nic.mac1609_4 DroppedPacketsInMac 0
 scalar v5_0.node[18].nic.mac1609_4 TooLittleTime 0
 scalar v5_0.node[18].nic.mac1609_4 TimesIntoBackoff 0
 scalar v5_0.node[18].nic.mac1609_4 SlotsBackoff 0
 scalar v5_0.node[18].nic.mac1609_4 NumInternalContention 0
-scalar v5_0.node[18].nic.mac1609_4 totalBusyTime 0
+scalar v5_0.node[18].nic.mac1609_4 totalBusyTime 0.000464
 scalar v5_0.node[18].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
@@ -1176,7 +1176,7 @@ attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar v5_0.node[18].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar v5_0.node[18].nic.mac1609_4 channelBusy:timeavg 0
+scalar v5_0.node[18].nic.mac1609_4 channelBusy:timeavg 2.4615384615385e-06
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par v5_0.node[18].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
@@ -1288,7 +1288,7 @@ par v5_0.node[20].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par v5_0.node[20].nic.phy80211p collectCollisionStatistics false
 par v5_0.node[20].nic.phy80211p allowTxDuringRx false
-scalar v5_0.node[20].nic.phy80211p busyTime 0
+scalar v5_0.node[20].nic.phy80211p busyTime 2.4746666666667e-06
 par v5_0.node[20].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par v5_0.node[20].nic.mac1609_4 notAffectedByHostState false
 par v5_0.node[20].nic.mac1609_4 headerLength 0bit
@@ -1317,15 +1317,15 @@ scalar v5_0.node[20].nic.mac1609_4 ReceivedBroadcasts 0
 scalar v5_0.node[20].nic.mac1609_4 SentPackets 0
 scalar v5_0.node[20].nic.mac1609_4 SentAcknowledgements 0
 scalar v5_0.node[20].nic.mac1609_4 RetriesExceeded 0
-scalar v5_0.node[20].nic.mac1609_4 SNIRLostPackets 0
+scalar v5_0.node[20].nic.mac1609_4 SNIRLostPackets 2
 scalar v5_0.node[20].nic.mac1609_4 RXTXLostPackets 0
-scalar v5_0.node[20].nic.mac1609_4 TotalLostPackets 0
+scalar v5_0.node[20].nic.mac1609_4 TotalLostPackets 2
 scalar v5_0.node[20].nic.mac1609_4 DroppedPacketsInMac 0
 scalar v5_0.node[20].nic.mac1609_4 TooLittleTime 0
 scalar v5_0.node[20].nic.mac1609_4 TimesIntoBackoff 0
 scalar v5_0.node[20].nic.mac1609_4 SlotsBackoff 0
 scalar v5_0.node[20].nic.mac1609_4 NumInternalContention 0
-scalar v5_0.node[20].nic.mac1609_4 totalBusyTime 0
+scalar v5_0.node[20].nic.mac1609_4 totalBusyTime 0.000464
 scalar v5_0.node[20].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
@@ -1338,7 +1338,7 @@ attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar v5_0.node[20].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar v5_0.node[20].nic.mac1609_4 channelBusy:timeavg 0
+scalar v5_0.node[20].nic.mac1609_4 channelBusy:timeavg 2.4746666666667e-06
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par v5_0.node[20].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
@@ -1534,4 +1534,166 @@ par v5_0.node[21] typename "\"org.car2x.veins.nodes.Car\""
 par v5_0.node[21] applType "\"VeinsApp\""
 par v5_0.node[21] nicType "\"Nic80211p\""
 par v5_0.node[21] veinsmobilityType "\"org.car2x.veins.modules.mobility.traci.TraCIMobility\""
+par v5_0.node[5].appl typename "\"tirocinio.app.VeinsApp\""
+par v5_0.node[5].appl headerLength 80bit
+attr unit bit
+par v5_0.node[5].appl sendBeacons false
+par v5_0.node[5].appl beaconLengthBits 256bit
+attr unit bit
+par v5_0.node[5].appl beaconUserPriority 7
+par v5_0.node[5].appl beaconInterval 1s
+attr unit s
+par v5_0.node[5].appl dataLengthBits 1024bit
+attr unit bit
+par v5_0.node[5].appl dataOnSch false
+par v5_0.node[5].appl dataUserPriority 7
+par v5_0.node[5].appl avoidBeaconSynchronization true
+par v5_0.node[5].appl sendWSA false
+par v5_0.node[5].appl wsaLengthBits 250bit
+attr unit bit
+par v5_0.node[5].appl wsaInterval 1s
+attr unit s
+par v5_0.node[5].appl randomTimeHelpMessage "uniform(30s, 40s)"
+attr unit s
+par v5_0.node[5].appl randomVehicleLoadActual "uniform(150MB, 400MB)"
+attr unit byte
+par v5_0.node[5].appl maximumVehicleLoadActual 3e+08byte
+attr unit byte
+par v5_0.node[5].appl commonVehicleLoad 1e+09byte
+attr unit byte
+par v5_0.node[5].appl busVehicleLoad 4e+09byte
+attr unit byte
+par v5_0.node[5].appl computationLoad 5e+09byte
+attr mutable ""
+attr unit byte
+scalar v5_0.node[5].appl generatedWSMs 0
+scalar v5_0.node[5].appl receivedWSMs 0
+scalar v5_0.node[5].appl generatedBSMs 0
+scalar v5_0.node[5].appl receivedBSMs 0
+scalar v5_0.node[5].appl generatedWSAs 0
+scalar v5_0.node[5].appl receivedWSAs 0
+par v5_0.node[5].nic.phy80211p typename "\"org.car2x.veins.modules.phy.PhyLayer80211p\""
+par v5_0.node[5].nic.phy80211p recordStats false
+par v5_0.node[5].nic.phy80211p usePropagationDelay true
+par v5_0.node[5].nic.phy80211p noiseFloor -98dBm
+attr unit dBm
+par v5_0.node[5].nic.phy80211p useNoiseFloor true
+par v5_0.node[5].nic.phy80211p antenna "<Antenna type=\"SampledAntenna1D\" id=\"monopole\">...</Antenna> at /opt/omnetpp-6.0.1/workspace/tirocinio/simulations/v5_0_Final//antenna.xml:35"
+par v5_0.node[5].nic.phy80211p antennaOffsetX 0m
+attr unit m
+par v5_0.node[5].nic.phy80211p antennaOffsetY 0m
+attr unit m
+par v5_0.node[5].nic.phy80211p antennaOffsetZ 1.895m
+attr unit m
+par v5_0.node[5].nic.phy80211p antennaOffsetYaw 0rad
+attr unit rad
+par v5_0.node[5].nic.phy80211p analogueModels "<root>...</root> at /opt/omnetpp-6.0.1/workspace/tirocinio/simulations/v5_0_Final//config.xml:34"
+par v5_0.node[5].nic.phy80211p decider "<root>...</root> at /opt/omnetpp-6.0.1/workspace/tirocinio/simulations/v5_0_Final//config.xml:34"
+par v5_0.node[5].nic.phy80211p minPowerLevel -110dBm
+attr unit dBm
+par v5_0.node[5].nic.phy80211p timeRXToTX 0s
+attr unit s
+par v5_0.node[5].nic.phy80211p timeRXToSleep 0s
+attr unit s
+par v5_0.node[5].nic.phy80211p timeTXToRX 0s
+attr unit s
+par v5_0.node[5].nic.phy80211p timeTXToSleep 0s
+attr unit s
+par v5_0.node[5].nic.phy80211p timeSleepToRX 0s
+attr unit s
+par v5_0.node[5].nic.phy80211p timeSleepToTX 0s
+attr unit s
+par v5_0.node[5].nic.phy80211p initialRadioState 0
+par v5_0.node[5].nic.phy80211p radioMinAtt 1
+par v5_0.node[5].nic.phy80211p radioMaxAtt 0
+par v5_0.node[5].nic.phy80211p nbRadioChannels 1
+par v5_0.node[5].nic.phy80211p initialRadioChannel 0
+par v5_0.node[5].nic.phy80211p ccaThreshold -65dBm
+attr unit dBm
+par v5_0.node[5].nic.phy80211p collectCollisionStatistics false
+par v5_0.node[5].nic.phy80211p allowTxDuringRx false
+scalar v5_0.node[5].nic.phy80211p busyTime 9.117903930131e-06
+par v5_0.node[5].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
+par v5_0.node[5].nic.mac1609_4 notAffectedByHostState false
+par v5_0.node[5].nic.mac1609_4 headerLength 0bit
+attr unit bit
+par v5_0.node[5].nic.mac1609_4 address "\"auto\""
+par v5_0.node[5].nic.mac1609_4 useServiceChannel false
+par v5_0.node[5].nic.mac1609_4 serviceChannel 1
+par v5_0.node[5].nic.mac1609_4 bitrate 6000000bps
+attr unit bps
+par v5_0.node[5].nic.mac1609_4 syncOffset 0.0003s
+attr unit s
+par v5_0.node[5].nic.mac1609_4 txPower 20mW
+attr unit mW
+par v5_0.node[5].nic.mac1609_4 queueSize 0
+par v5_0.node[5].nic.mac1609_4 dot11RTSThreshold 12000bit
+attr unit bit
+par v5_0.node[5].nic.mac1609_4 dot11ShortRetryLimit 7
+par v5_0.node[5].nic.mac1609_4 dot11LongRetryLimit 4
+par v5_0.node[5].nic.mac1609_4 ackLength 112bit
+attr unit bit
+par v5_0.node[5].nic.mac1609_4 useAcks false
+par v5_0.node[5].nic.mac1609_4 frameErrorRate 0
+par v5_0.node[5].nic.mac1609_4 ackErrorRate 0
+scalar v5_0.node[5].nic.mac1609_4 ReceivedUnicastPackets 0
+scalar v5_0.node[5].nic.mac1609_4 ReceivedBroadcasts 0
+scalar v5_0.node[5].nic.mac1609_4 SentPackets 0
+scalar v5_0.node[5].nic.mac1609_4 SentAcknowledgements 0
+scalar v5_0.node[5].nic.mac1609_4 RetriesExceeded 0
+scalar v5_0.node[5].nic.mac1609_4 SNIRLostPackets 9
+scalar v5_0.node[5].nic.mac1609_4 RXTXLostPackets 0
+scalar v5_0.node[5].nic.mac1609_4 TotalLostPackets 9
+scalar v5_0.node[5].nic.mac1609_4 DroppedPacketsInMac 0
+scalar v5_0.node[5].nic.mac1609_4 TooLittleTime 0
+scalar v5_0.node[5].nic.mac1609_4 TimesIntoBackoff 0
+scalar v5_0.node[5].nic.mac1609_4 SlotsBackoff 0
+scalar v5_0.node[5].nic.mac1609_4 NumInternalContention 0
+scalar v5_0.node[5].nic.mac1609_4 totalBusyTime 0.002088
+scalar v5_0.node[5].nic.mac1609_4 retriesExceeded:count 0
+attr recordingmode count
+attr source org_car2x_veins_modules_mac_sigRetriesExceeded
+scalar v5_0.node[5].nic.mac1609_4 sentAcks:count 0
+attr recordingmode count
+attr source org_car2x_veins_modules_mac_sigSentAck
+scalar v5_0.node[5].nic.mac1609_4 sentPackets:count 0
+attr recordingmode count
+attr source org_car2x_veins_modules_mac_sigSentPacket
+scalar v5_0.node[5].nic.mac1609_4 collisions:count 0
+attr recordingmode count
+attr source org_car2x_veins_modules_mac_sigCollision
+scalar v5_0.node[5].nic.mac1609_4 channelBusy:timeavg 9.117903930131e-06
+attr recordingmode timeavg
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+par v5_0.node[5].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
+par v5_0.node[5].nic connectionManagerName "\"connectionManager\""
+par v5_0.node[5].veinsmobility typename "\"org.car2x.veins.modules.mobility.traci.TraCIMobility\""
+par v5_0.node[5].veinsmobility notAffectedByHostState true
+par v5_0.node[5].veinsmobility x 0
+par v5_0.node[5].veinsmobility y 0
+par v5_0.node[5].veinsmobility z 0
+par v5_0.node[5].veinsmobility xOrientation 1
+par v5_0.node[5].veinsmobility yOrientation 0
+par v5_0.node[5].veinsmobility zOrientation 0
+par v5_0.node[5].veinsmobility hostPositionOffset 0m
+attr unit m
+par v5_0.node[5].veinsmobility setHostSpeed false
+par v5_0.node[5].veinsmobility accidentCount 0
+par v5_0.node[5].veinsmobility accidentStart 51.619s
+attr unit s
+par v5_0.node[5].veinsmobility accidentDuration "uniform(30s, 60s)"
+attr unit s
+par v5_0.node[5].veinsmobility accidentInterval "uniform(30s, 60s)"
+attr unit s
+scalar v5_0.node[5].veinsmobility startTime 3
+scalar v5_0.node[5].veinsmobility totalTime 228.5
+scalar v5_0.node[5].veinsmobility stopTime 232
+scalar v5_0.node[5].veinsmobility minSpeed 1.9477288762198
+scalar v5_0.node[5].veinsmobility maxSpeed 13.131635858841
+scalar v5_0.node[5].veinsmobility totalDistance 2879.0922136656
+scalar v5_0.node[5].veinsmobility totalCO2Emission 517.44634762017
+par v5_0.node[5] typename "\"org.car2x.veins.nodes.Car\""
+par v5_0.node[5] applType "\"VeinsApp\""
+par v5_0.node[5] nicType "\"Nic80211p\""
+par v5_0.node[5] veinsmobilityType "\"org.car2x.veins.modules.mobility.traci.TraCIMobility\""
 
