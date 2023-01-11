@@ -48,7 +48,7 @@ void VeinsApp::initialize(int stage)
         helpersFreq[0] = par("randomCpuVehicleFreq").doubleValue();
         busIndex = 0;
         newRandomTime = 0;
-        acceptingOtherVehicles = true;
+        loadBalancing = LoadBalancingContext(new Disabled);
         ackReceived = false;
         hostCpuFreq = 0;
     }
@@ -74,16 +74,6 @@ void VeinsApp::onWSM(veins::BaseFrame1609_4* wsm)
     if (HelpMessage* helpMsg = dynamic_cast<HelpMessage*>(wsm)) {
         busIndex = helpMsg->getVehicleIndex();
         handleHelpMessage(helpMsg);
-    }
-
-    // SECTION - When the host receive load balancing message
-    if (UpdateAvailabilityMessage* updateMsg = dynamic_cast<UpdateAvailabilityMessage*>(wsm)) {
-        if (strcmp(updateMsg->getAvailability(), "not-available") == 0) {
-            acceptingOtherVehicles = false;
-        } else if (strcmp(updateMsg->getAvailability(), "available") == 0) {
-            acceptingOtherVehicles = true;
-            findHost()->getDisplayString().setTagArg("i", 1, "white");
-        }
     }
 
     // SECTION - When the bus receives the ok messages
@@ -120,14 +110,10 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
     // This method is for self messages (mostly timers)
     // Timer for help message
     if (LoadBalanceTimerMessage* loadBalanceMsg = dynamic_cast<LoadBalanceTimerMessage*>(msg)) {
-        acceptingOtherVehicles = false;
+        // Set the load balance mode to active
+        loadBalancing.setState(new Active);
 
-        // Notify other vehicles of BUS balance loading
-        UpdateAvailabilityMessage* updateMsg = new UpdateAvailabilityMessage();
-        populateWSM(updateMsg);
-        updateMsg->setAvailability("not-available");
-        sendDown(updateMsg);
-
+        // Effective balance of the load
         balanceLoad(loadBalanceMsg->getSimulationTime());
     }
 
@@ -145,7 +131,7 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
 
     // Timer for ok message
     if (OkMessage* okMsg = dynamic_cast<OkMessage*>(msg)) {
-        if (acceptingOtherVehicles) {
+        if (loadBalancing.getCurrentState() == true) {
             // Color the available host in blue
             findHost()->getDisplayString().setTagArg("i", 1, "blue");
 
@@ -361,13 +347,9 @@ void VeinsApp::handleResponseMessage(ResponseMessage* responseMsg)
             helpReceived = false;
             sentHelpMessage = false;
             newRandomTime = simTime();
-            acceptingOtherVehicles = true;
 
-            // Notify all vehicles of finished computation
-            UpdateAvailabilityMessage* updateMsg = new UpdateAvailabilityMessage();
-            populateWSM(updateMsg);
-            updateMsg->setAvailability("available");
-            sendDown(updateMsg);
+            // Disable the load balancing mode
+            loadBalancing.setState(new Disabled);
         }
     }
 }
