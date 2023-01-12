@@ -24,11 +24,12 @@
 
 #include "veins/veins.h"
 
-#include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
 #include "app/messages/HelpMessage_m.h"
 #include "app/messages/OkMessage_m.h"
 #include "app/messages/DataMessage_m.h"
 #include "app/messages/ResponseMessage_m.h"
+#include "app/loadBalancing/LoadBalancingState.h"
+#include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
 
 using namespace omnetpp;
 
@@ -57,7 +58,7 @@ protected:
     std::map<int, double> helpersFreq;
     simtime_t newRandomTime;
     int busIndex;
-    bool acceptingOtherVehicles;
+    LoadBalancingContext loadBalancing;
     bool ackReceived;
     double hostCpuFreq;
 
@@ -76,5 +77,4 @@ protected:
     void balanceLoad(simtime_t previousRandomTime);
     void handlePositionUpdate(cObject* obj) override;
 };
-
 }

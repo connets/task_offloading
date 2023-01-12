@@ -23,7 +23,7 @@
 package tirocinio.app;
 import org.car2x.veins.modules.application.ieee80211p.DemoBaseApplLayer;
 
-simple VeinsApp extends DemoBaseApplLayer
+simple VeinsApp extends DemoBaseApplLayer 
 {
     parameters:
         volatile double randomTimeHelpMessage @unit(s) = default(uniform(30s, 40s));
