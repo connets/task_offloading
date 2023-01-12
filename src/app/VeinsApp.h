@@ -28,7 +28,7 @@
 #include "app/messages/OkMessage_m.h"
 #include "app/messages/DataMessage_m.h"
 #include "app/messages/ResponseMessage_m.h"
-#include "app/loadBalancing/LoadBalancing.h"
+#include "app/loadBalancing/LoadBalancingState.h"
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
 
 using namespace omnetpp;
