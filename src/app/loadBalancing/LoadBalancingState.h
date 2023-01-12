@@ -13,14 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef APP_LOADBALANCING_LOADBALANCING_H_
-#define APP_LOADBALANCING_LOADBALANCING_H_
+#ifndef APP_LOADBALANCING_LOADBALANCINGSTATE_H_
+#define APP_LOADBALANCING_LOADBALANCINGSTATE_H_
 
 namespace tirocinio {
     class LoadBalancingState
     {
         public:
             virtual bool getCurrentState() = 0;
+            virtual ~LoadBalancingState();
     };
 
     class Active : public LoadBalancingState
@@ -47,4 +48,4 @@ namespace tirocinio {
     };
 }
 
-#endif /* APP_LOADBALANCING_LOADBALANCING_H_ */
+#endif /* APP_LOADBALANCING_LOADBALANCINGSTATE_H_ */

@@ -13,9 +13,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "LoadBalancing.h"
+#include "LoadBalancingState.h"
 
 using namespace tirocinio;
+
+LoadBalancingState::~LoadBalancingState()
+{
+    //
+}
+
+LoadBalancingContext::LoadBalancingContext()
+{
+    currentState = new Disabled;
+}
 
 LoadBalancingContext::LoadBalancingContext(LoadBalancingState* newState)
 {
