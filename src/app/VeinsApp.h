@@ -58,7 +58,7 @@ protected:
     std::map<int, double> helpersFreq;
     simtime_t newRandomTime;
     int busIndex;
-    LoadBalancingContext loadBalancing;
+    LoadBalancingContext loadBalancingState;
     bool ackReceived;
     double hostCpuFreq;
 

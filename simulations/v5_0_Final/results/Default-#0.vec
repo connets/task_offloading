@@ -1,8 +1,8 @@
 version 3
-run Default-0-20230112-15:00:08-3157
+run Default-0-20230120-18:03:00-24180
 attr configname Default
-attr datetime 20230112-15:00:08
-attr datetimef 20230112-150008
+attr datetime 20230120-18:03:00
+attr datetimef 20230120-180300
 attr experiment Default
 attr inifile omnetpp.ini
 attr iterationvars ""
@@ -10,7 +10,7 @@ attr iterationvarsd ""
 attr iterationvarsf ""
 attr measurement ""
 attr network v5_0
-attr processid 3157
+attr processid 24180
 attr repetition 0
 attr replication #0
 attr resultdir results
