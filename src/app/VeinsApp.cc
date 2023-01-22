@@ -166,11 +166,9 @@ void VeinsApp::handlePositionUpdate(cObject* obj)
 
     bool randomTimeReached = simTime() > par("randomTimeHelpMessage").doubleValue() + newRandomTime;
     bool isBus = findHost()->getIndex() == busIndex;
-    bool notSentHelpMessage = !(sentHelpMessage);
-    bool notHelpReceived = !(helpReceived);
     bool moreDataToLoad = par("computationLoad").doubleValue() > 0;
 
-    if (randomTimeReached && isBus && notHelpReceived && notSentHelpMessage && moreDataToLoad) {
+    if (randomTimeReached && isBus && !(helpReceived) && !(sentHelpMessage) && moreDataToLoad) {
         // Help message creation
         HelpMessage* helpRequest = new HelpMessage();
         populateWSM(helpRequest);
