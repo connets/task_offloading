@@ -33,6 +33,7 @@ simple VeinsApp extends DemoBaseApplLayer
         double commonVehicleLoad @unit(byte) = default(1GB);
         double busVehicleLoad @unit(byte) = default(4GB);
         double computationLoad @mutable @unit(byte) = default(5GB);
+        bool useAcks = default(false);
 
     @class(tirocinio::VeinsApp);
     @display("i=block/app2");
