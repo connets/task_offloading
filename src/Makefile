@@ -44,6 +44,7 @@ OBJS = \
     $O/app/messagesHandling/ResponseMessageHandler.o \
     $O/app/secureProtocol/SendAgainDataMessage.o \
     $O/app/secureProtocol/SendAgainResponseMessage.o \
+    $O/app/vehiclesHandling/VehicleHandler.o \
     $O/app/messages/AckMessage_m.o \
     $O/app/messages/AckTimerMessage_m.o \
     $O/app/messages/ComputationTimerMessage_m.o \
