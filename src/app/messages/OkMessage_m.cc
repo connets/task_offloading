@@ -180,6 +180,7 @@ void OkMessage::copy(const OkMessage& other)
     this->hostID = other.hostID;
     this->availableLoad = other.availableLoad;
     this->cpuFreq = other.cpuFreq;
+    this->senderAddress = other.senderAddress;
 }
 
 void OkMessage::parsimPack(omnetpp::cCommBuffer *b) const
@@ -188,6 +189,7 @@ void OkMessage::parsimPack(omnetpp::cCommBuffer *b) const
     doParsimPacking(b,this->hostID);
     doParsimPacking(b,this->availableLoad);
     doParsimPacking(b,this->cpuFreq);
+    doParsimPacking(b,this->senderAddress);
 }
 
 void OkMessage::parsimUnpack(omnetpp::cCommBuffer *b)
@@ -196,6 +198,7 @@ void OkMessage::parsimUnpack(omnetpp::cCommBuffer *b)
     doParsimUnpacking(b,this->hostID);
     doParsimUnpacking(b,this->availableLoad);
     doParsimUnpacking(b,this->cpuFreq);
+    doParsimUnpacking(b,this->senderAddress);
 }
 
 int OkMessage::getHostID() const
@@ -228,6 +231,16 @@ void OkMessage::setCpuFreq(double cpuFreq)
     this->cpuFreq = cpuFreq;
 }
 
+const ::veins::LAddress::L2Type& OkMessage::getSenderAddress() const
+{
+    return this->senderAddress;
+}
+
+void OkMessage::setSenderAddress(const ::veins::LAddress::L2Type& senderAddress)
+{
+    this->senderAddress = senderAddress;
+}
+
 class OkMessageDescriptor : public omnetpp::cClassDescriptor
 {
   private:
@@ -236,6 +249,7 @@ class OkMessageDescriptor : public omnetpp::cClassDescriptor
         FIELD_hostID,
         FIELD_availableLoad,
         FIELD_cpuFreq,
+        FIELD_senderAddress,
     };
   public:
     OkMessageDescriptor();
@@ -302,7 +316,7 @@ const char *OkMessageDescriptor::getProperty(const char *propertyName) const
 int OkMessageDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 3+base->getFieldCount() : 3;
+    return base ? 4+base->getFieldCount() : 4;
 }
 
 unsigned int OkMessageDescriptor::getFieldTypeFlags(int field) const
@@ -317,8 +331,9 @@ unsigned int OkMessageDescriptor::getFieldTypeFlags(int field) const
         FD_ISEDITABLE,    // FIELD_hostID
         FD_ISEDITABLE,    // FIELD_availableLoad
         FD_ISEDITABLE,    // FIELD_cpuFreq
+        0,    // FIELD_senderAddress
     };
-    return (field >= 0 && field < 3) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 4) ? fieldTypeFlags[field] : 0;
 }
 
 const char *OkMessageDescriptor::getFieldName(int field) const
@@ -333,8 +348,9 @@ const char *OkMessageDescriptor::getFieldName(int field) const
         "hostID",
         "availableLoad",
         "cpuFreq",
+        "senderAddress",
     };
-    return (field >= 0 && field < 3) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 4) ? fieldNames[field] : nullptr;
 }
 
 int OkMessageDescriptor::findField(const char *fieldName) const
@@ -344,6 +360,7 @@ int OkMessageDescriptor::findField(const char *fieldName) const
     if (strcmp(fieldName, "hostID") == 0) return baseIndex + 0;
     if (strcmp(fieldName, "availableLoad") == 0) return baseIndex + 1;
     if (strcmp(fieldName, "cpuFreq") == 0) return baseIndex + 2;
+    if (strcmp(fieldName, "senderAddress") == 0) return baseIndex + 3;
     return base ? base->findField(fieldName) : -1;
 }
 
@@ -359,8 +376,9 @@ const char *OkMessageDescriptor::getFieldTypeString(int field) const
         "int",    // FIELD_hostID
         "double",    // FIELD_availableLoad
         "double",    // FIELD_cpuFreq
+        "veins::LAddress::L2Type",    // FIELD_senderAddress
     };
-    return (field >= 0 && field < 3) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 4) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **OkMessageDescriptor::getFieldPropertyNames(int field) const
@@ -446,6 +464,7 @@ std::string OkMessageDescriptor::getFieldValueAsString(omnetpp::any_ptr object, 
         case FIELD_hostID: return long2string(pp->getHostID());
         case FIELD_availableLoad: return double2string(pp->getAvailableLoad());
         case FIELD_cpuFreq: return double2string(pp->getCpuFreq());
+        case FIELD_senderAddress: return "";
         default: return "";
     }
 }
@@ -482,6 +501,7 @@ omnetpp::cValue OkMessageDescriptor::getFieldValue(omnetpp::any_ptr object, int 
         case FIELD_hostID: return pp->getHostID();
         case FIELD_availableLoad: return pp->getAvailableLoad();
         case FIELD_cpuFreq: return pp->getCpuFreq();
+        case FIELD_senderAddress: return omnetpp::toAnyPtr(&pp->getSenderAddress()); break;
         default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'OkMessage' as cValue -- field index out of range?", field);
     }
 }
@@ -528,6 +548,7 @@ omnetpp::any_ptr OkMessageDescriptor::getFieldStructValuePointer(omnetpp::any_pt
     }
     OkMessage *pp = omnetpp::fromAnyPtr<OkMessage>(object); (void)pp;
     switch (field) {
+        case FIELD_senderAddress: return omnetpp::toAnyPtr(&pp->getSenderAddress()); break;
         default: return omnetpp::any_ptr(nullptr);
     }
 }

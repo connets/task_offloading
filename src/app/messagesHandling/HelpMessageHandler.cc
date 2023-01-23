@@ -46,6 +46,7 @@ void VeinsApp::handleHelpMessage(HelpMessage* helpMsg)
                 // Prepare the message
                 OkMessage* okMsg = new OkMessage();
                 populateWSM(okMsg);
+                okMsg->setSenderAddress(myId);
                 okMsg->setHostID(findHost()->getIndex());
                 okMsg->setAvailableLoad(actualLoad);
                 okMsg->setCpuFreq(cpuFreq);

@@ -18,7 +18,8 @@
 
 using namespace tirocinio;
 
-void VeinsApp::balanceLoad(simtime_t previousSimulationTime) {
+void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
+{
     std::map<int, double>::iterator loadsIterator = helpersLoad.begin();
     int vehiclesCounter = helpersLoad.size();
 
@@ -38,7 +39,7 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime) {
                     DataMessage* dataMsg = new DataMessage();
 
                     // Populate the message
-                    populateWSM(dataMsg);
+                    populateWSM(dataMsg, helpersAddresses[loadsIterator->first]);
                     dataMsg->setHostIndex(loadsIterator->first);
 
                     // If data - vehicleLoad >= 0 then set new data, otherwise send the remaining data

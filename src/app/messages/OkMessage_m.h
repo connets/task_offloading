@@ -40,6 +40,7 @@ namespace tirocinio {
  *     int hostID;
  *     double availableLoad;
  *     double cpuFreq;
+ *     veins::LAddress::L2Type senderAddress = -1;
  * }
  * </pre>
  */
@@ -49,6 +50,7 @@ class OkMessage : public ::veins::BaseFrame1609_4
     int hostID = 0;
     double availableLoad = 0;
     double cpuFreq = 0;
+    ::veins::LAddress::L2Type senderAddress = -1;
 
   private:
     void copy(const OkMessage& other);
@@ -73,6 +75,10 @@ class OkMessage : public ::veins::BaseFrame1609_4
 
     virtual double getCpuFreq() const;
     virtual void setCpuFreq(double cpuFreq);
+
+    virtual const ::veins::LAddress::L2Type& getSenderAddress() const;
+    virtual ::veins::LAddress::L2Type& getSenderAddressForUpdate() { return const_cast<::veins::LAddress::L2Type&>(const_cast<OkMessage*>(this)->getSenderAddress());}
+    virtual void setSenderAddress(const ::veins::LAddress::L2Type& senderAddress);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const OkMessage& obj) {obj.parsimPack(b);}

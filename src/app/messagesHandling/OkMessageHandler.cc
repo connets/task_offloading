@@ -26,5 +26,6 @@ void VeinsApp::handleOkMessage(OkMessage* okMsg)
         // Store the helper load and CPU freq
         helpersLoad[okMsg->getHostID()] = okMsg->getAvailableLoad();
         helpersFreq[okMsg->getHostID()] = okMsg->getCpuFreq();
+        helpersAddresses[okMsg->getHostID()] = okMsg->getSenderAddress();
     }
 }

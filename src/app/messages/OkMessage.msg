@@ -23,4 +23,5 @@ packet OkMessage extends veins::BaseFrame1609_4 {
 	int hostID;
 	double availableLoad;
 	double cpuFreq;
+	veins::LAddress::L2Type senderAddress = -1;
 }
