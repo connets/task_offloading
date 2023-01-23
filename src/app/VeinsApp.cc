@@ -164,34 +164,7 @@ void VeinsApp::handlePositionUpdate(cObject* obj)
 
     veins::DemoBaseApplLayer::handlePositionUpdate(obj);
 
-    bool randomTimeReached = simTime() > par("randomTimeHelpMessage").doubleValue() + newRandomTime;
-    bool isBus = findHost()->getIndex() == busIndex;
-    bool moreDataToLoad = par("computationLoad").doubleValue() > 0;
-
-    if (randomTimeReached && isBus && !(helpReceived) && !(sentHelpMessage) && moreDataToLoad) {
-        // Help message creation
-        HelpMessage* helpRequest = new HelpMessage();
-        populateWSM(helpRequest);
-
-        // Color the bus
-        findHost()->getDisplayString().setTagArg("i", 1, "red");
-
-        // Fill the data of the help request message
-        helpRequest->setVehicleIndex(findHost()->getIndex());
-
-        // Send the help message
-        sendDown(helpRequest);
-
-        // Schedule timer for the help request
-        LoadBalanceTimerMessage* loadBalanceMsg = new LoadBalanceTimerMessage();
-        populateWSM(loadBalanceMsg);
-        loadBalanceMsg->setSimulationTime(simTime());
-        scheduleAt(simTime() + 2 + uniform(5, 7), loadBalanceMsg);
-
-        sentHelpMessage = true;
-    } else if (!moreDataToLoad) {
-        findHost()->getDisplayString().setTagArg("i", 1, "white");
-    }
+    vehicleHandler();
 
     lastDroveAt = simTime();
 }
