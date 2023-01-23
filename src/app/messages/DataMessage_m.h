@@ -39,6 +39,7 @@ namespace tirocinio {
  * {
  *     double loadToProcess;
  *     int hostIndex;
+ *     veins::LAddress::L2Type senderAddress = -1;
  * }
  * </pre>
  */
@@ -47,6 +48,7 @@ class DataMessage : public ::veins::BaseFrame1609_4
   protected:
     double loadToProcess = 0;
     int hostIndex = 0;
+    ::veins::LAddress::L2Type senderAddress = -1;
 
   private:
     void copy(const DataMessage& other);
@@ -68,6 +70,10 @@ class DataMessage : public ::veins::BaseFrame1609_4
 
     virtual int getHostIndex() const;
     virtual void setHostIndex(int hostIndex);
+
+    virtual const ::veins::LAddress::L2Type& getSenderAddress() const;
+    virtual ::veins::LAddress::L2Type& getSenderAddressForUpdate() { return const_cast<::veins::LAddress::L2Type&>(const_cast<DataMessage*>(this)->getSenderAddress());}
+    virtual void setSenderAddress(const ::veins::LAddress::L2Type& senderAddress);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const DataMessage& obj) {obj.parsimPack(b);}

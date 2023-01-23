@@ -34,14 +34,26 @@ void VeinsApp::handleDataMessage(DataMessage* dataMsg)
         double timeToCompute = CPI * I * (1 / CR);
 
         ResponseMessage* responseMsg = new ResponseMessage();
-        populateWSM(responseMsg);
+
+        // If useAcks is active then send the message with L2Address
+        // otherwise send it without address to use the manual secure protocol
+        if (par("useAcks").boolValue()) {
+            populateWSM(responseMsg, dataMsg->getSenderAddress());
+        } else {
+            populateWSM(responseMsg);
+        }
+
         responseMsg->setHostIndex(dataMsg->getHostIndex());
         scheduleAt(simTime() + timeToCompute + uniform(0.01, 0.2), responseMsg);
 
-        AckTimerMessage* ackTimerMsg = new AckTimerMessage();
-        populateWSM(ackTimerMsg);
-        ackTimerMsg->setHostIndex(dataMsg->getHostIndex());
-        scheduleAt(simTime() + 2 + uniform(3, 4), ackTimerMsg);
+        // Generate ACK timer if parameter useAcks is false
+        // to achieve secure protocol manually
+        if (!(par("useAcks").boolValue())) {
+            AckTimerMessage* ackTimerMsg = new AckTimerMessage();
+            populateWSM(ackTimerMsg);
+            ackTimerMsg->setHostIndex(dataMsg->getHostIndex());
+            scheduleAt(simTime() + 2 + uniform(3, 4), ackTimerMsg);
+        }
 
         EV << "Finished computation of: " << dataMsg->getLoadToProcess() << std::endl;
     }

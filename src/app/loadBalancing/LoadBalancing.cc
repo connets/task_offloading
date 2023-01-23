@@ -39,7 +39,16 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
                     DataMessage* dataMsg = new DataMessage();
 
                     // Populate the message
-                    populateWSM(dataMsg, helpersAddresses[loadsIterator->first]);
+
+                    // If auto acks is active then populate wsm with the sender address
+                    // otherwise populate it without address
+                    if (par("useAcks").boolValue()) {
+                        populateWSM(dataMsg, helpersAddresses[loadsIterator->first]);
+                    } else {
+                        populateWSM(dataMsg);
+                    }
+
+                    dataMsg->setSenderAddress(myId);
                     dataMsg->setHostIndex(loadsIterator->first);
 
                     // If data - vehicleLoad >= 0 then set new data, otherwise send the remaining data
@@ -59,21 +68,23 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
                     // Update global parameter data
                     par("computationLoad").setDoubleValue(data);
 
-                    // Create timer computation message for each host
-                    ComputationTimerMessage* computationTimerMsg = new ComputationTimerMessage();
-                    populateWSM(computationTimerMsg);
-                    computationTimerMsg->setSimulationTime(simTime());
-                    computationTimerMsg->setIndexHost(loadsIterator->first);
-                    computationTimerMsg->setLoadHost(loadsIterator->second);
+                    // Create timer computation message for each host if auto ACKs are disabled
+                    if (!(par("useAcks").boolValue())) {
+                        ComputationTimerMessage* computationTimerMsg = new ComputationTimerMessage();
+                        populateWSM(computationTimerMsg);
+                        computationTimerMsg->setSimulationTime(simTime());
+                        computationTimerMsg->setIndexHost(loadsIterator->first);
+                        computationTimerMsg->setLoadHost(loadsIterator->second);
 
-                    // Calculate time for timer
-                    double CPI = 3;
-                    double I = loadsIterator->second;
-                    double CR = helpersFreq[loadsIterator->first];
+                        // Calculate time for timer
+                        double CPI = 3;
+                        double I = loadsIterator->second;
+                        double CR = helpersFreq[loadsIterator->first];
 
-                    double timeToCompute = CPI * I * (1 / CR);
+                        double timeToCompute = CPI * I * (1 / CR);
 
-                    scheduleAt(simTime() + timeToCompute + uniform(5, 10), computationTimerMsg);
+                        scheduleAt(simTime() + timeToCompute + uniform(5, 10), computationTimerMsg);
+                    }
                 }
             }
 

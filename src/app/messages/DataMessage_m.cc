@@ -179,6 +179,7 @@ void DataMessage::copy(const DataMessage& other)
 {
     this->loadToProcess = other.loadToProcess;
     this->hostIndex = other.hostIndex;
+    this->senderAddress = other.senderAddress;
 }
 
 void DataMessage::parsimPack(omnetpp::cCommBuffer *b) const
@@ -186,6 +187,7 @@ void DataMessage::parsimPack(omnetpp::cCommBuffer *b) const
     ::veins::BaseFrame1609_4::parsimPack(b);
     doParsimPacking(b,this->loadToProcess);
     doParsimPacking(b,this->hostIndex);
+    doParsimPacking(b,this->senderAddress);
 }
 
 void DataMessage::parsimUnpack(omnetpp::cCommBuffer *b)
@@ -193,6 +195,7 @@ void DataMessage::parsimUnpack(omnetpp::cCommBuffer *b)
     ::veins::BaseFrame1609_4::parsimUnpack(b);
     doParsimUnpacking(b,this->loadToProcess);
     doParsimUnpacking(b,this->hostIndex);
+    doParsimUnpacking(b,this->senderAddress);
 }
 
 double DataMessage::getLoadToProcess() const
@@ -215,6 +218,16 @@ void DataMessage::setHostIndex(int hostIndex)
     this->hostIndex = hostIndex;
 }
 
+const ::veins::LAddress::L2Type& DataMessage::getSenderAddress() const
+{
+    return this->senderAddress;
+}
+
+void DataMessage::setSenderAddress(const ::veins::LAddress::L2Type& senderAddress)
+{
+    this->senderAddress = senderAddress;
+}
+
 class DataMessageDescriptor : public omnetpp::cClassDescriptor
 {
   private:
@@ -222,6 +235,7 @@ class DataMessageDescriptor : public omnetpp::cClassDescriptor
     enum FieldConstants {
         FIELD_loadToProcess,
         FIELD_hostIndex,
+        FIELD_senderAddress,
     };
   public:
     DataMessageDescriptor();
@@ -288,7 +302,7 @@ const char *DataMessageDescriptor::getProperty(const char *propertyName) const
 int DataMessageDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 2+base->getFieldCount() : 2;
+    return base ? 3+base->getFieldCount() : 3;
 }
 
 unsigned int DataMessageDescriptor::getFieldTypeFlags(int field) const
@@ -302,8 +316,9 @@ unsigned int DataMessageDescriptor::getFieldTypeFlags(int field) const
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,    // FIELD_loadToProcess
         FD_ISEDITABLE,    // FIELD_hostIndex
+        0,    // FIELD_senderAddress
     };
-    return (field >= 0 && field < 2) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 3) ? fieldTypeFlags[field] : 0;
 }
 
 const char *DataMessageDescriptor::getFieldName(int field) const
@@ -317,8 +332,9 @@ const char *DataMessageDescriptor::getFieldName(int field) const
     static const char *fieldNames[] = {
         "loadToProcess",
         "hostIndex",
+        "senderAddress",
     };
-    return (field >= 0 && field < 2) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 3) ? fieldNames[field] : nullptr;
 }
 
 int DataMessageDescriptor::findField(const char *fieldName) const
@@ -327,6 +343,7 @@ int DataMessageDescriptor::findField(const char *fieldName) const
     int baseIndex = base ? base->getFieldCount() : 0;
     if (strcmp(fieldName, "loadToProcess") == 0) return baseIndex + 0;
     if (strcmp(fieldName, "hostIndex") == 0) return baseIndex + 1;
+    if (strcmp(fieldName, "senderAddress") == 0) return baseIndex + 2;
     return base ? base->findField(fieldName) : -1;
 }
 
@@ -341,8 +358,9 @@ const char *DataMessageDescriptor::getFieldTypeString(int field) const
     static const char *fieldTypeStrings[] = {
         "double",    // FIELD_loadToProcess
         "int",    // FIELD_hostIndex
+        "veins::LAddress::L2Type",    // FIELD_senderAddress
     };
-    return (field >= 0 && field < 2) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 3) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **DataMessageDescriptor::getFieldPropertyNames(int field) const
@@ -427,6 +445,7 @@ std::string DataMessageDescriptor::getFieldValueAsString(omnetpp::any_ptr object
     switch (field) {
         case FIELD_loadToProcess: return double2string(pp->getLoadToProcess());
         case FIELD_hostIndex: return long2string(pp->getHostIndex());
+        case FIELD_senderAddress: return "";
         default: return "";
     }
 }
@@ -461,6 +480,7 @@ omnetpp::cValue DataMessageDescriptor::getFieldValue(omnetpp::any_ptr object, in
     switch (field) {
         case FIELD_loadToProcess: return pp->getLoadToProcess();
         case FIELD_hostIndex: return pp->getHostIndex();
+        case FIELD_senderAddress: return omnetpp::toAnyPtr(&pp->getSenderAddress()); break;
         default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'DataMessage' as cValue -- field index out of range?", field);
     }
 }
@@ -506,6 +526,7 @@ omnetpp::any_ptr DataMessageDescriptor::getFieldStructValuePointer(omnetpp::any_
     }
     DataMessage *pp = omnetpp::fromAnyPtr<DataMessage>(object); (void)pp;
     switch (field) {
+        case FIELD_senderAddress: return omnetpp::toAnyPtr(&pp->getSenderAddress()); break;
         default: return omnetpp::any_ptr(nullptr);
     }
 }

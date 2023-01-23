@@ -20,15 +20,16 @@ using namespace tirocinio;
 
 void VeinsApp::handleResponseMessage(ResponseMessage* responseMsg)
 {
-    if (findHost()->getIndex() == busIndex) {
-        helpersLoad.erase(responseMsg->getHostIndex());
-
+    if (findHost()->getIndex() == busIndex && (!(par("useAcks").boolValue()))) {
         // Send ACK message to the host
         AckMessage* ackMsg = new AckMessage();
         populateWSM(ackMsg);
         ackMsg->setHostIndex(responseMsg->getHostIndex());
         scheduleAt(simTime() + 2 + uniform(1, 2), ackMsg);
+    }
 
+    if (findHost()->getIndex() == busIndex) {
+        helpersLoad.erase(responseMsg->getHostIndex());
         EV << "Deleted host: " << responseMsg->getHostIndex() << std::endl <<"Host remaining: " << helpersLoad.size() - 1 << std::endl;
 
         if (helpersLoad.size() == 1) {
