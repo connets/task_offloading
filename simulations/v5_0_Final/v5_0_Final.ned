@@ -17,11 +17,16 @@ package tirocinio.simulations.v5_0_Final;
 
 import org.car2x.veins.nodes.RSU;
 import org.car2x.veins.nodes.Scenario;
+import tirocinio.app.VeinsApp;
 
 network v5_0 extends Scenario
 {
     submodules:
         rsu[1]: RSU {
             @display("p=150,140;i=veins/sign/yellowdiamond;is=vs");
+        }
+
+        veinsApp: VeinsApp {
+            @display("p=150,140");
         }
 }
