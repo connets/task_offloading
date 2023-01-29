@@ -20,14 +20,21 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-package tirocinio.app;
+package task_offloading.app;
 import org.car2x.veins.modules.application.ieee80211p.DemoBaseApplLayer;
 
-//
-// network description file for your Veins Application. Add parameters here
-//
-simple VeinsApp extends DemoBaseApplLayer
+simple VeinsApp extends DemoBaseApplLayer 
 {
-    @class(tirocinio::VeinsApp);
+    parameters:
+        volatile double randomTimeHelpMessage @unit(s) = default(uniform(30s, 40s));
+        volatile double randomVehicleLoadActual @unit(byte) = default(uniform(150MB, 400MB));
+        volatile double randomCpuVehicleFreq @unit(Hz) = default(uniform(1.20GHz, 2.70GHz));
+        double maximumVehicleLoadActual @unit(byte) = default(300MB);
+        double commonVehicleLoad @unit(byte) = default(1GB);
+        double busVehicleLoad @unit(byte) = default(4GB);
+        double computationLoad @mutable @unit(byte) = default(5GB);
+        bool useAcks = default(false);
+
+    @class(task_offloading::VeinsApp);
     @display("i=block/app2");
 }

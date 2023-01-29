@@ -13,11 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package tirocinio.app;
+package task_offloading.app;
 import org.car2x.veins.modules.application.ieee80211p.DemoBaseApplLayer;
 
 simple RSU extends DemoBaseApplLayer
 {
-    @class(tirocinio::RSU);
+    @class(task_offloading::RSU);
     @display("i=block/app2");
 }

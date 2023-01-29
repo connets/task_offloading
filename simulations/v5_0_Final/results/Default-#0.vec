@@ -1,0 +1,213 @@
+version 3
+run Default-0-20230129-10:24:24-19100
+attr configname Default
+attr datetime 20230129-10:24:24
+attr datetimef 20230129-102424
+attr experiment Default
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvarsd ""
+attr iterationvarsf ""
+attr measurement ""
+attr network v5_0
+attr processid 19100
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+config image-path ../../../inet4.4/images:../../../veins-5.2/images
+config cmdenv-express-mode true
+config cmdenv-autoflush true
+config cmdenv-status-frequency 1s
+config **.cmdenv-log-level info
+config image-path ../../images
+config network v5_0
+config debug-on-errors true
+config print-undisposed true
+config **.scalar-recording true
+config **.vector-recording true
+config *.playgroundSizeX 3500m
+config *.playgroundSizeY 3500m
+config *.playgroundSizeZ 50m
+config *.annotations.draw true
+config *.obstacles.obstacles "xmldoc(\"config.xml\", \"//AnalogueModel[@type='SimpleObstacleShadowing']/obstacles\")"
+config *.manager.updateInterval 0.5s
+config *.manager.host "\"localhost\""
+config *.manager.port 9999
+config *.manager.autoShutdown true
+config *.manager.launchConfig "xmldoc(\"v5_0_Final.launchd.xml\")"
+config *.rsu[0].mobility.x 2000
+config *.rsu[0].mobility.y 2000
+config *.rsu[0].mobility.z 3
+config *.rsu[*].applType "\"RSU\""
+config *.rsu[*].appl.headerLength "80 bit"
+config *.rsu[*].appl.sendBeacons false
+config *.rsu[*].appl.dataOnSch false
+config *.rsu[*].appl.beaconInterval 1s
+config *.rsu[*].appl.beaconUserPriority 7
+config *.rsu[*].appl.dataUserPriority 5
+config *.rsu[*].nic.phy80211p.antennaOffsetZ "0 m"
+config *.connectionManager.sendDirect true
+config *.connectionManager.maxInterfDist 2600m
+config *.connectionManager.drawMaxIntfDist false
+config *.**.nic.mac1609_4.useServiceChannel false
+config *.**.nic.mac1609_4.txPower 20mW
+config *.**.nic.mac1609_4.bitrate 6Mbps
+config *.**.nic.phy80211p.minPowerLevel -110dBm
+config *.**.nic.phy80211p.useNoiseFloor true
+config *.**.nic.phy80211p.noiseFloor -98dBm
+config *.**.nic.phy80211p.decider "xmldoc(\"config.xml\")"
+config *.**.nic.phy80211p.analogueModels "xmldoc(\"config.xml\")"
+config *.**.nic.phy80211p.usePropagationDelay true
+config *.**.nic.phy80211p.antenna "xmldoc(\"antenna.xml\", \"/root/Antenna[@id='monopole']\")"
+config *.node[*].nic.phy80211p.antennaOffsetY "0 m"
+config *.node[*].nic.phy80211p.antennaOffsetZ "1.895 m"
+config *.**.nic.mac1609_4.useAcks true
+config *.**.useAcks false
+config *.node[*].applType "\"VeinsApp\""
+config *.node[*].appl.headerLength "80 bit"
+config *.node[*].appl.sendBeacons false
+config *.node[*].appl.dataOnSch false
+config *.node[*].appl.beaconInterval 1s
+config *.node[*].veinsmobility.x 0
+config *.node[*].veinsmobility.y 0
+config *.node[*].veinsmobility.z 0
+config *.node[*].veinsmobility.setHostSpeed false
+config *.node[*0].veinsmobility.accidentCount 0
+config *.node[*0].veinsmobility.accidentStart 73s
+config *.node[*0].veinsmobility.accidentDuration 50s
+
+vector 0 v5_0.node[0].veinsmobility posx ETV
+vector 1 v5_0.node[0].veinsmobility posy ETV
+vector 2 v5_0.node[1].veinsmobility posx ETV
+vector 3 v5_0.node[1].veinsmobility posy ETV
+vector 4 v5_0.node[2].veinsmobility posx ETV
+vector 5 v5_0.node[2].veinsmobility posy ETV
+vector 6 v5_0.node[3].veinsmobility posx ETV
+vector 7 v5_0.node[3].veinsmobility posy ETV
+vector 8 v5_0.node[0].veinsmobility speed ETV
+vector 9 v5_0.node[1].veinsmobility speed ETV
+vector 10 v5_0.node[2].veinsmobility speed ETV
+vector 11 v5_0.node[3].veinsmobility speed ETV
+vector 12 v5_0.node[0].veinsmobility acceleration ETV
+vector 13 v5_0.node[0].veinsmobility co2emission ETV
+vector 14 v5_0.node[1].veinsmobility acceleration ETV
+vector 15 v5_0.node[1].veinsmobility co2emission ETV
+vector 16 v5_0.node[2].veinsmobility acceleration ETV
+vector 17 v5_0.node[2].veinsmobility co2emission ETV
+vector 18 v5_0.node[3].veinsmobility acceleration ETV
+vector 19 v5_0.node[3].veinsmobility co2emission ETV
+vector 20 v5_0.node[4].veinsmobility posx ETV
+vector 21 v5_0.node[4].veinsmobility posy ETV
+vector 22 v5_0.node[5].veinsmobility posx ETV
+vector 23 v5_0.node[5].veinsmobility posy ETV
+vector 24 v5_0.node[6].veinsmobility posx ETV
+vector 25 v5_0.node[6].veinsmobility posy ETV
+0	2	0.5	2631.7350595066
+0	4	1	2631.6926603558
+0	5	1.5	2631.6229630968
+0	6	2	2631.5282912727
+0	7	2.5	2631.4086490547
+0	8	3	2631.2604225505
+1	2	0.5	3022.4123751242
+1	4	1	3022.0353440456
+1	5	1.5	3021.415566708
+1	6	2	3020.5737050353
+1	7	2.5	3019.5097961174
+1	8	3	3018.1917037079
+2	2	0.5	1287.3631844854
+2	4	1	1287.3971152697
+2	5	1.5	1287.4522898303
+2	6	2	1287.5264110332
+2	7	2.5	1287.62113957
+2	8	3	1287.7358140606
+3	2	0.5	1828.227079195
+3	4	1	1827.4147938192
+3	5	1.5	1826.0939434571
+3	6	2	1824.3195203077
+3	7	2.5	1822.0517682778
+3	8	3	1819.3065204602
+4	2	0.5	243.31602054439
+4	4	1	243.30913937406
+4	5	1.5	243.29782204749
+4	6	2	243.28247408115
+4	7	2.5	243.26342766208
+4	8	3	243.24040584138
+5	2	0.5	2497.1688996973
+5	4	1	2496.3316489356
+5	5	1.5	2494.9546389403
+5	6	2	2493.0872100228
+5	7	2.5	2490.7697802708
+5	8	3	2487.9686525557
+6	2	0.5	1630.0247913966
+6	4	1	1630.0082108838
+6	5	1.5	1629.9812774651
+6	6	2	1629.8417228467
+6	7	2.5	1629.598968075
+6	8	3	1629.3054750046
+7	2	0.5	360.29248770513
+7	4	1	361.13602129091
+7	5	1.5	362.5062589664
+7	6	2	364.3352372963
+7	7	2.5	366.71067855973
+7	8	3	369.58261201344
+8	4	1	0.96315724250003
+8	5	1.5	1.4163082134939
+8	6	2	1.8730117260368
+8	7	2.5	2.3571391038766
+8	8	3	2.8579845126981
+9	4	1	2.0116060111359
+9	5	1.5	3.0081261322249
+9	6	2	3.9596735773885
+9	7	2.5	4.9147222280081
+9	8	3	5.889326381562
+10	4	1	2.1311671961367
+10	5	1.5	3.1435446060073
+10	6	2	4.0758362758249
+10	7	2.5	4.9786327199658
+10	8	3	5.9862471878199
+11	4	1	2.1601955810489
+11	5	1.5	3.1144628968242
+11	6	2	4.1105820955232
+11	7	2.5	5.2289444127435
+11	8	3	6.0858094900696
+12	5	1.5	0.90630194198784
+12	6	2	0.91340702508576
+12	7	2.5	0.96825475567952
+12	8	3	1.001690817643
+13	5	1.5	1.4879334530051
+13	6	2	1.6132692118776
+13	7	2.5	1.774955217919
+13	8	3	1.9399645462544
+14	5	1.5	1.9930402421779
+14	6	2	1.9030948903272
+14	7	2.5	1.9100973012391
+14	8	3	1.9492083071079
+15	5	1.5	2.7024978186224
+15	6	2	3.1228378106583
+15	7	2.5	3.6204637772488
+15	8	3	4.1795362644611
+16	5	1.5	2.0247548197413
+16	6	2	1.8645833396353
+16	7	2.5	1.8055928882817
+16	8	3	2.0152289357083
+17	5	1.5	2.7984568684538
+17	6	2	3.1444097541456
+17	7	2.5	3.5280106963949
+17	8	3	4.3259352163484
+18	5	1.5	1.9085346315506
+18	6	2	1.992238397398
+18	7	2.5	2.2367246344406
+18	8	3	1.7137301546521
+19	5	1.5	2.6955509797744
+19	6	2	3.2883222870959
+19	7	2.5	4.1941174165164
+19	8	3	3.9378955968766
+20	8	3	1287.3559671473
+21	8	3	1828.399858525
+22	8	3	243.31684103317
+23	8	3	2497.2687308043
+24	8	3	1630.0268724975
+25	8	3	360.18661169056
+
