@@ -9,7 +9,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN wget -O omnet.tgz https://github.com/omnetpp/omnetpp/releases/download/omnetpp-6.0.1/omnetpp-6.0.1-core.tgz \
-    && tar -xvfz omnet.tgz \
+    && tar xvfz omnet.tgz \
     && rm omnet.tgz 
 
 WORKDIR /omnetpp-6.0.1
