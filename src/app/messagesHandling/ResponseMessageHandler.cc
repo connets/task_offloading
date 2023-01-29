@@ -16,7 +16,7 @@
 #include "app/VeinsApp.h"
 #include "app/messages/AckMessage_m.h"
 
-using namespace tirocinio;
+using namespace task_offloading;
 
 void VeinsApp::handleResponseMessage(ResponseMessage* responseMsg)
 {

@@ -16,7 +16,7 @@
 #include "app/VeinsApp.h"
 #include "app/messages/AckTimerMessage_m.h"
 
-using namespace tirocinio;
+using namespace task_offloading;
 
 void VeinsApp::handleDataMessage(DataMessage* dataMsg)
 {

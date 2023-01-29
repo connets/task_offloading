@@ -150,7 +150,7 @@ void doParsimUnpacking(omnetpp::cCommBuffer *, T& t)
 
 }  // namespace omnetpp
 
-namespace tirocinio {
+namespace task_offloading {
 
 Register_Class(LoadBalanceTimerMessage)
 
@@ -239,7 +239,7 @@ class LoadBalanceTimerMessageDescriptor : public omnetpp::cClassDescriptor
 
 Register_ClassDescriptor(LoadBalanceTimerMessageDescriptor)
 
-LoadBalanceTimerMessageDescriptor::LoadBalanceTimerMessageDescriptor() : omnetpp::cClassDescriptor(omnetpp::opp_typename(typeid(tirocinio::LoadBalanceTimerMessage)), "veins::BaseFrame1609_4")
+LoadBalanceTimerMessageDescriptor::LoadBalanceTimerMessageDescriptor() : omnetpp::cClassDescriptor(omnetpp::opp_typename(typeid(task_offloading::LoadBalanceTimerMessage)), "veins::BaseFrame1609_4")
 {
     propertyNames = nullptr;
 }
@@ -504,7 +504,7 @@ void LoadBalanceTimerMessageDescriptor::setFieldStructValuePointer(omnetpp::any_
     }
 }
 
-}  // namespace tirocinio
+}  // namespace task_offloading
 
 namespace omnetpp {
 

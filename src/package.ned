@@ -1,3 +1,3 @@
-package tirocinio;
+package task_offloading;
 
 @license(LGPL);

@@ -17,7 +17,7 @@ import veins.base.utils.Coord;
 import veins.modules.messages.BaseFrame1609_4;
 import veins.base.utils.SimpleAddress;
 
-namespace tirocinio;
+namespace task_offloading;
 
 packet LoadBalanceTimerMessage extends veins::BaseFrame1609_4 {
     simtime_t simulationTime;

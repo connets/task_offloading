@@ -20,7 +20,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-package tirocinio.app;
+package task_offloading.app;
 import org.car2x.veins.modules.application.ieee80211p.DemoBaseApplLayer;
 
 simple VeinsApp extends DemoBaseApplLayer 
@@ -35,6 +35,6 @@ simple VeinsApp extends DemoBaseApplLayer
         double computationLoad @mutable @unit(byte) = default(5GB);
         bool useAcks = default(false);
 
-    @class(tirocinio::VeinsApp);
+    @class(task_offloading::VeinsApp);
     @display("i=block/app2");
 }

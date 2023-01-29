@@ -2,8 +2,8 @@
 // Generated file, do not edit! Created by opp_msgtool 6.0 from app/messages/UpdateAvailabilityMessage.msg.
 //
 
-#ifndef __TIROCINIO_UPDATEAVAILABILITYMESSAGE_M_H
-#define __TIROCINIO_UPDATEAVAILABILITYMESSAGE_M_H
+#ifndef __TASK_OFFLOADING_UPDATEAVAILABILITYMESSAGE_M_H
+#define __TASK_OFFLOADING_UPDATEAVAILABILITYMESSAGE_M_H
 
 #if defined(__clang__)
 #  pragma clang diagnostic ignored "-Wreserved-id-macro"
@@ -17,11 +17,11 @@
 #endif
 
 
-namespace tirocinio {
+namespace task_offloading {
 
 class UpdateAvailabilityMessage;
 
-}  // namespace tirocinio
+}  // namespace task_offloading
 
 #include "veins/base/utils/Coord_m.h" // import veins.base.utils.Coord
 
@@ -30,7 +30,7 @@ class UpdateAvailabilityMessage;
 #include "veins/base/utils/SimpleAddress_m.h" // import veins.base.utils.SimpleAddress
 
 
-namespace tirocinio {
+namespace task_offloading {
 
 /**
  * Class generated from <tt>app/messages/UpdateAvailabilityMessage.msg:22</tt> by opp_msgtool.
@@ -69,14 +69,14 @@ inline void doParsimPacking(omnetpp::cCommBuffer *b, const UpdateAvailabilityMes
 inline void doParsimUnpacking(omnetpp::cCommBuffer *b, UpdateAvailabilityMessage& obj) {obj.parsimUnpack(b);}
 
 
-}  // namespace tirocinio
+}  // namespace task_offloading
 
 
 namespace omnetpp {
 
-template<> inline tirocinio::UpdateAvailabilityMessage *fromAnyPtr(any_ptr ptr) { return check_and_cast<tirocinio::UpdateAvailabilityMessage*>(ptr.get<cObject>()); }
+template<> inline task_offloading::UpdateAvailabilityMessage *fromAnyPtr(any_ptr ptr) { return check_and_cast<task_offloading::UpdateAvailabilityMessage*>(ptr.get<cObject>()); }
 
 }  // namespace omnetpp
 
-#endif // ifndef __TIROCINIO_UPDATEAVAILABILITYMESSAGE_M_H
+#endif // ifndef __TASK_OFFLOADING_UPDATEAVAILABILITYMESSAGE_M_H
 
