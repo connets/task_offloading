@@ -9,8 +9,11 @@ cleanall: checkmakefiles
 	cd src && $(MAKE) MODE=debug clean
 	rm -f src/Makefile
 
+# makefiles:
+# 	  cd src && opp_makemake -f --deep
+
 makefiles:
-	cd src && opp_makemake -f --deep
+	cd src && opp_makemake -f --deep -O out -KINET_PROJ=../../inet -KVEINS_VEINS_5_2_PROJ=../../veins-veins-5.2 -DINET_IMPORT -DVEINS_IMPORT -I. -I$$\(INET_PROJ\)/src -I$$\(VEINS_VEINS_5_2_PROJ\)/src -Isrc -L$$\(INET_PROJ\)/src -L$$\(VEINS_VEINS_5_2_PROJ\)/src -lINET$$\(D\) -lveins$$\(D\)
 
 checkmakefiles:
 	@if [ ! -f src/Makefile ]; then \
