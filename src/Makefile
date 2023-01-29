@@ -1,5 +1,5 @@
 #
-# OMNeT++/OMNEST Makefile for tirocinio
+# OMNeT++/OMNEST Makefile for task_offloading
 #
 # This file was generated with the command:
 #  opp_makemake -f --deep -KINET4_4_PROJ=../../inet4.4 -KVEINS_5_2_PROJ=../../veins-5.2 -DINET_IMPORT -DVEINS_IMPORT -I$$\(INET4_4_PROJ\)/src -I$$\(VEINS_5_2_PROJ\)/src -I. -L$$\(INET4_4_PROJ\)/src -L$$\(VEINS_5_2_PROJ\)/src -lINET$$\(D\) -lveins$$\(D\)
@@ -7,7 +7,7 @@
 
 # Name of target to be created (-o option)
 TARGET_DIR = .
-TARGET_NAME = tirocinio$(D)
+TARGET_NAME = task_offloading$(D)
 TARGET = $(TARGET_NAME)$(EXE_SUFFIX)
 TARGET_IMPLIB = $(TARGET_NAME)$(IMPLIB_SUFFIX)
 TARGET_IMPDEF = $(TARGET_NAME)$(IMPDEF_SUFFIX)
@@ -33,11 +33,39 @@ PROJECTRELATIVE_PATH = src
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
-OBJS = $O/app/RSU.o $O/app/VeinsApp.o $O/app/HelpMessage_m.o
+OBJS = \
+    $O/app/RSU.o \
+    $O/app/VeinsApp.o \
+    $O/app/loadBalancing/LoadBalancing.o \
+    $O/app/loadBalancing/LoadBalancingState.o \
+    $O/app/messagesHandling/DataMessageHandler.o \
+    $O/app/messagesHandling/HelpMessageHandler.o \
+    $O/app/messagesHandling/OkMessageHandler.o \
+    $O/app/messagesHandling/ResponseMessageHandler.o \
+    $O/app/secureProtocol/SendAgainDataMessage.o \
+    $O/app/secureProtocol/SendAgainResponseMessage.o \
+    $O/app/vehiclesHandling/VehicleHandler.o \
+    $O/app/messages/AckMessage_m.o \
+    $O/app/messages/AckTimerMessage_m.o \
+    $O/app/messages/ComputationTimerMessage_m.o \
+    $O/app/messages/DataMessage_m.o \
+    $O/app/messages/HelpMessage_m.o \
+    $O/app/messages/LoadBalanceTimerMessage_m.o \
+    $O/app/messages/OkMessage_m.o \
+    $O/app/messages/ResponseMessage_m.o \
+    $O/app/messages/UpdateAvailabilityMessage_m.o
 
 # Message files
 MSGFILES = \
-    app/HelpMessage.msg
+    app/messages/AckMessage.msg \
+    app/messages/AckTimerMessage.msg \
+    app/messages/ComputationTimerMessage.msg \
+    app/messages/DataMessage.msg \
+    app/messages/HelpMessage.msg \
+    app/messages/LoadBalanceTimerMessage.msg \
+    app/messages/OkMessage.msg \
+    app/messages/ResponseMessage.msg \
+    app/messages/UpdateAvailabilityMessage.msg
 
 # SM files
 SMFILES =

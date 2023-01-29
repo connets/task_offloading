@@ -24,7 +24,7 @@
 
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
 
-namespace tirocinio {
+namespace task_offloading {
 
 /**
  * Small RSU Demo using 11p

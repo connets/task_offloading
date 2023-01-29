@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package tirocinio.simulations.v3_0_Traffic;
+package task_offloading.simulations.v3_0_Traffic;
 
 import org.car2x.veins.nodes.RSU;
 import org.car2x.veins.nodes.Scenario;

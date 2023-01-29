@@ -24,11 +24,16 @@
 
 #include "veins/veins.h"
 
+#include "app/messages/HelpMessage_m.h"
+#include "app/messages/OkMessage_m.h"
+#include "app/messages/DataMessage_m.h"
+#include "app/messages/ResponseMessage_m.h"
+#include "app/loadBalancing/LoadBalancingState.h"
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
 
 using namespace omnetpp;
 
-namespace tirocinio {
+namespace task_offloading {
 
 /**
  * @brief
@@ -48,12 +53,15 @@ public:
 protected:
     simtime_t lastDroveAt;
     bool sentHelpMessage;
-    int currentSubscribedServiceId;
     bool helpReceived;
-    bool helpOffered;
-    int vehicleLoad;
-    int helperHostIndex;
-    bool connectionEstablished;
+    std::map<int, double> helpersLoad;
+    std::map<int, double> helpersFreq;
+    std::map<int, veins::LAddress::L2Type> helpersAddresses;
+    simtime_t newRandomTime;
+    int busIndex;
+    LoadBalancingContext loadBalancingState;
+    bool ackReceived;
+    double hostCpuFreq;
 
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;
@@ -61,7 +69,14 @@ protected:
     void onWSA(veins::DemoServiceAdvertisment* wsa) override;
 
     void handleSelfMsg(cMessage* msg) override;
+    void handleHelpMessage(HelpMessage* helpMsg);
+    void handleOkMessage(OkMessage* okMsg);
+    void handleDataMessage(DataMessage* dataMsg);
+    void handleResponseMessage(ResponseMessage* responseMsg);
+    void sendAgainData(int index, double load);
+    void sendAgainResponse(int index);
+    void balanceLoad(simtime_t previousRandomTime);
+    void vehicleHandler();
     void handlePositionUpdate(cObject* obj) override;
 };
-
 }
