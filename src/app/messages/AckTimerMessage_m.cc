@@ -150,7 +150,7 @@ void doParsimUnpacking(omnetpp::cCommBuffer *, T& t)
 
 }  // namespace omnetpp
 
-namespace tirocinio {
+namespace task_offloading {
 
 Register_Class(AckTimerMessage)
 
@@ -239,7 +239,7 @@ class AckTimerMessageDescriptor : public omnetpp::cClassDescriptor
 
 Register_ClassDescriptor(AckTimerMessageDescriptor)
 
-AckTimerMessageDescriptor::AckTimerMessageDescriptor() : omnetpp::cClassDescriptor(omnetpp::opp_typename(typeid(tirocinio::AckTimerMessage)), "veins::BaseFrame1609_4")
+AckTimerMessageDescriptor::AckTimerMessageDescriptor() : omnetpp::cClassDescriptor(omnetpp::opp_typename(typeid(task_offloading::AckTimerMessage)), "veins::BaseFrame1609_4")
 {
     propertyNames = nullptr;
 }
@@ -504,7 +504,7 @@ void AckTimerMessageDescriptor::setFieldStructValuePointer(omnetpp::any_ptr obje
     }
 }
 
-}  // namespace tirocinio
+}  // namespace task_offloading
 
 namespace omnetpp {
 

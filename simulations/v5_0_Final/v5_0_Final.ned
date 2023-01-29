@@ -13,11 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package tirocinio.simulations.v5_0_Final;
+package task_offloading.simulations.v5_0_Final;
 
 import org.car2x.veins.nodes.RSU;
 import org.car2x.veins.nodes.Scenario;
-import tirocinio.app.VeinsApp;
+import task_offloading.app.VeinsApp;
 
 network v5_0 extends Scenario
 {

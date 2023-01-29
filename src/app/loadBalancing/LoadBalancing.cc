@@ -16,7 +16,7 @@
 #include "app/VeinsApp.h"
 #include "app/messages/ComputationTimerMessage_m.h"
 
-using namespace tirocinio;
+using namespace task_offloading;
 
 void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
 {

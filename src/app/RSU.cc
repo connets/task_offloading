@@ -24,9 +24,9 @@
 
 #include "app/messages/HelpMessage_m.h"
 
-using namespace tirocinio;
+using namespace task_offloading;
 
-Define_Module(tirocinio::RSU);
+Define_Module(task_offloading::RSU);
 
 void RSU::onWSA(veins::DemoServiceAdvertisment* wsa)
 {

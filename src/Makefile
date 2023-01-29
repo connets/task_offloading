@@ -1,5 +1,5 @@
 #
-# OMNeT++/OMNEST Makefile for tirocinio
+# OMNeT++/OMNEST Makefile for task_offloading
 #
 # This file was generated with the command:
 #  opp_makemake -f --deep -KINET4_4_PROJ=../../inet4.4 -KVEINS_5_2_PROJ=../../veins-5.2 -DINET_IMPORT -DVEINS_IMPORT -I$$\(INET4_4_PROJ\)/src -I$$\(VEINS_5_2_PROJ\)/src -I. -L$$\(INET4_4_PROJ\)/src -L$$\(VEINS_5_2_PROJ\)/src -lINET$$\(D\) -lveins$$\(D\)
@@ -7,7 +7,7 @@
 
 # Name of target to be created (-o option)
 TARGET_DIR = .
-TARGET_NAME = tirocinio$(D)
+TARGET_NAME = task_offloading$(D)
 TARGET = $(TARGET_NAME)$(EXE_SUFFIX)
 TARGET_IMPLIB = $(TARGET_NAME)$(IMPLIB_SUFFIX)
 TARGET_IMPDEF = $(TARGET_NAME)$(IMPDEF_SUFFIX)

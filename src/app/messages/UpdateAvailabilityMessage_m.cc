@@ -150,7 +150,7 @@ void doParsimUnpacking(omnetpp::cCommBuffer *, T& t)
 
 }  // namespace omnetpp
 
-namespace tirocinio {
+namespace task_offloading {
 
 Register_Class(UpdateAvailabilityMessage)
 
@@ -239,7 +239,7 @@ class UpdateAvailabilityMessageDescriptor : public omnetpp::cClassDescriptor
 
 Register_ClassDescriptor(UpdateAvailabilityMessageDescriptor)
 
-UpdateAvailabilityMessageDescriptor::UpdateAvailabilityMessageDescriptor() : omnetpp::cClassDescriptor(omnetpp::opp_typename(typeid(tirocinio::UpdateAvailabilityMessage)), "veins::BaseFrame1609_4")
+UpdateAvailabilityMessageDescriptor::UpdateAvailabilityMessageDescriptor() : omnetpp::cClassDescriptor(omnetpp::opp_typename(typeid(task_offloading::UpdateAvailabilityMessage)), "veins::BaseFrame1609_4")
 {
     propertyNames = nullptr;
 }
@@ -504,7 +504,7 @@ void UpdateAvailabilityMessageDescriptor::setFieldStructValuePointer(omnetpp::an
     }
 }
 
-}  // namespace tirocinio
+}  // namespace task_offloading
 
 namespace omnetpp {
 

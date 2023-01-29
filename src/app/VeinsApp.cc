@@ -32,9 +32,9 @@
 #include "app/messages/ComputationTimerMessage_m.h"
 #include "app/messages/UpdateAvailabilityMessage_m.h"
 
-using namespace tirocinio;
+using namespace task_offloading;
 
-Define_Module(tirocinio::VeinsApp);
+Define_Module(task_offloading::VeinsApp);
 
 void VeinsApp::initialize(int stage)
 {

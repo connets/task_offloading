@@ -2,8 +2,8 @@
 // Generated file, do not edit! Created by opp_msgtool 6.0 from app/messages/HelpMessage.msg.
 //
 
-#ifndef __TIROCINIO_HELPMESSAGE_M_H
-#define __TIROCINIO_HELPMESSAGE_M_H
+#ifndef __TASK_OFFLOADING_HELPMESSAGE_M_H
+#define __TASK_OFFLOADING_HELPMESSAGE_M_H
 
 #if defined(__clang__)
 #  pragma clang diagnostic ignored "-Wreserved-id-macro"
@@ -17,11 +17,11 @@
 #endif
 
 
-namespace tirocinio {
+namespace task_offloading {
 
 class HelpMessage;
 
-}  // namespace tirocinio
+}  // namespace task_offloading
 
 #include "veins/base/utils/Coord_m.h" // import veins.base.utils.Coord
 
@@ -30,7 +30,7 @@ class HelpMessage;
 #include "veins/base/utils/SimpleAddress_m.h" // import veins.base.utils.SimpleAddress
 
 
-namespace tirocinio {
+namespace task_offloading {
 
 /**
  * Class generated from <tt>app/messages/HelpMessage.msg:22</tt> by opp_msgtool.
@@ -69,14 +69,14 @@ inline void doParsimPacking(omnetpp::cCommBuffer *b, const HelpMessage& obj) {ob
 inline void doParsimUnpacking(omnetpp::cCommBuffer *b, HelpMessage& obj) {obj.parsimUnpack(b);}
 
 
-}  // namespace tirocinio
+}  // namespace task_offloading
 
 
 namespace omnetpp {
 
-template<> inline tirocinio::HelpMessage *fromAnyPtr(any_ptr ptr) { return check_and_cast<tirocinio::HelpMessage*>(ptr.get<cObject>()); }
+template<> inline task_offloading::HelpMessage *fromAnyPtr(any_ptr ptr) { return check_and_cast<task_offloading::HelpMessage*>(ptr.get<cObject>()); }
 
 }  // namespace omnetpp
 
-#endif // ifndef __TIROCINIO_HELPMESSAGE_M_H
+#endif // ifndef __TASK_OFFLOADING_HELPMESSAGE_M_H
 

@@ -150,7 +150,7 @@ void doParsimUnpacking(omnetpp::cCommBuffer *, T& t)
 
 }  // namespace omnetpp
 
-namespace tirocinio {
+namespace task_offloading {
 
 Register_Class(DataMessage)
 
@@ -267,7 +267,7 @@ class DataMessageDescriptor : public omnetpp::cClassDescriptor
 
 Register_ClassDescriptor(DataMessageDescriptor)
 
-DataMessageDescriptor::DataMessageDescriptor() : omnetpp::cClassDescriptor(omnetpp::opp_typename(typeid(tirocinio::DataMessage)), "veins::BaseFrame1609_4")
+DataMessageDescriptor::DataMessageDescriptor() : omnetpp::cClassDescriptor(omnetpp::opp_typename(typeid(task_offloading::DataMessage)), "veins::BaseFrame1609_4")
 {
     propertyNames = nullptr;
 }
@@ -547,7 +547,7 @@ void DataMessageDescriptor::setFieldStructValuePointer(omnetpp::any_ptr object, 
     }
 }
 
-}  // namespace tirocinio
+}  // namespace task_offloading
 
 namespace omnetpp {
 

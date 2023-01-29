@@ -15,7 +15,7 @@
 
 #include "LoadBalancingState.h"
 
-using namespace tirocinio;
+using namespace task_offloading;
 
 LoadBalancingState::~LoadBalancingState()
 {

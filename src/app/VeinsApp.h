@@ -33,7 +33,7 @@
 
 using namespace omnetpp;
 
-namespace tirocinio {
+namespace task_offloading {
 
 /**
  * @brief

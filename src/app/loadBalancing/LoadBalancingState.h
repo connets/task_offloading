@@ -16,7 +16,7 @@
 #ifndef APP_LOADBALANCING_LOADBALANCINGSTATE_H_
 #define APP_LOADBALANCING_LOADBALANCINGSTATE_H_
 
-namespace tirocinio {
+namespace task_offloading {
     class LoadBalancingState
     {
         public:
