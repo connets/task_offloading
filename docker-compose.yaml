@@ -1,0 +1,11 @@
+version: '1.0'
+
+services:
+    task_offloading:
+        build: .
+        volumes:
+            - type: bind
+              source: ./simulations/v5_0_Final
+              target: /app/task_offloading/simulations/v5_0_Final
+              read_only: true
+            - ./simulations/v5_0_Final/results:/app/results
