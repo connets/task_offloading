@@ -35,5 +35,7 @@ I risultati verranno salvati nella cartella locale `simulations/v5_0_Final/resul
 - I branch `develop` e `develop-docker` contengono gli ultimi aggiornamenti e le ultime modifiche al progetto.
 - Il branch `refactoring` non contiene nuove funzionalità, ma è utilizzato per la manutenzione e rifattorizzazione del codice.
 
-@author Luca Parenti <br>
-@supervisor Christian Quadri
+---
+
+@author [Luca Parenti](https://github.com/SuPaRuC) <br>
+@supervisor [Christian Quadri](https://github.com/christianquadri)
