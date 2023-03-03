@@ -28,6 +28,6 @@ COPY . /app/task_offloading
 
 RUN bash -c "source /omnetpp-6.0.1/setenv && (cd task_offloading && make makefiles && make MODE=release -j$(nproc))"
 
-COPY --chmod=0755 launcher.sh /app
+COPY launcher.sh /app
 
-CMD ./launcher.sh
+CMD bash launcher.sh
