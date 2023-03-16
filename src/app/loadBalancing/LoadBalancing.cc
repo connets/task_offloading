@@ -20,6 +20,12 @@ using namespace task_offloading;
 
 void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
 {
+    // Send statistics for the start of the task
+    emit(startTask, simTime());
+
+    // Send signal for balance load
+    emit(startBalance, simTime());
+
     std::map<int, double>::iterator loadsIterator = helpersLoad.begin();
     int vehiclesCounter = helpersLoad.size();
 
@@ -90,6 +96,9 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
 
             // Increment the iterator
             loadsIterator++;
+
+            // Send signal for stop balance load
+            emit(stopBalance, simTime());
         }
     } else {
         sentHelpMessage = false;

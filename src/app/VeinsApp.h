@@ -63,6 +63,15 @@ protected:
     bool ackReceived;
     double hostCpuFreq;
 
+    // Simulations signals
+    // SECTION - Task
+    simsignal_t startTask;
+    simsignal_t stopTask;
+
+    // SECTION - BalanceLoad
+    simsignal_t startBalance;
+    simsignal_t stopBalance;
+
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;
     void onWSM(veins::BaseFrame1609_4* wsm) override;

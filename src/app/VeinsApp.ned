@@ -34,6 +34,18 @@ simple VeinsApp extends DemoBaseApplLayer
         double busVehicleLoad @unit(byte) = default(4GB);
         double computationLoad @mutable @unit(byte) = default(5GB);
         bool useAcks = default(false);
+        
+        // General statistic for task time
+        @signal[startTask](type = simtime_t);
+        @signal[stopTask](type = simtime_t);
+        @statistic[startTimeTask](source = startTask; record = count,mean,max?,vector?);
+        @statistic[stopTimeTask](source = stopTask; record = count,mean,max?,vector?);
+        
+        // Statistics for balance loading
+        @signal[startBalance](type = simtime_t);
+        @signal[stopBalance](type = simtime_t);
+        @statistic[startBalanceLoad](source = startBalance; record = count,mean,max?,vector?);
+        @statistic[stopBalanceLoad](source = startBalance; record = count,mean,max?,vector?);
 
     @class(task_offloading::VeinsApp);
     @display("i=block/app2");

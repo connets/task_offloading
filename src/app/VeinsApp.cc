@@ -51,6 +51,10 @@ void VeinsApp::initialize(int stage)
         loadBalancingState = LoadBalancingContext(new Disabled);
         ackReceived = false;
         hostCpuFreq = 0;
+
+        // Registering all signals
+        startTask = registerSignal("startTask");
+        stopTask = registerSignal("stopTask");
     }
 }
 
