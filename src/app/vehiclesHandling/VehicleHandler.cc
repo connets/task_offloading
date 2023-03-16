@@ -47,5 +47,8 @@ void VeinsApp::vehicleHandler()
         sentHelpMessage = true;
     } else if (!moreDataToLoad) {
         findHost()->getDisplayString().setTagArg("i", 1, "white");
+
+        // Send statistics for the end of the task
+        emit(stopTask, simTime());
     }
 }
