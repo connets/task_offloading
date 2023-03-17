@@ -50,19 +50,7 @@ public:
     void initialize(int stage) override;
     void finish() override;
 
-protected:
-    simtime_t lastDroveAt;
-    bool sentHelpMessage;
-    bool helpReceived;
-    std::map<int, double> helpersLoad;
-    std::map<int, double> helpersFreq;
-    std::map<int, veins::LAddress::L2Type> helpersAddresses;
-    simtime_t newRandomTime;
-    int busIndex;
-    LoadBalancingContext loadBalancingState;
-    bool ackReceived;
-    double hostCpuFreq;
-
+private:
     // Simulations signals
     // SECTION - Task
     simsignal_t startTask;
@@ -83,6 +71,19 @@ protected:
     // SECTION - Response messages statistics
     simsignal_t startResponseMessages;
     simsignal_t stopResponseMessages;
+
+protected:
+    simtime_t lastDroveAt;
+    bool sentHelpMessage;
+    bool helpReceived;
+    std::map<int, double> helpersLoad;
+    std::map<int, double> helpersFreq;
+    std::map<int, veins::LAddress::L2Type> helpersAddresses;
+    simtime_t newRandomTime;
+    int busIndex;
+    LoadBalancingContext loadBalancingState;
+    bool ackReceived;
+    double hostCpuFreq;
 
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;

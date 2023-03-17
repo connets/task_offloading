@@ -53,8 +53,16 @@ void VeinsApp::initialize(int stage)
         hostCpuFreq = 0;
 
         // Registering all signals
-        startTask = registerSignal("startTask");
-        stopTask = registerSignal("stopTask");
+        startTask = registerSignal("task_started");
+        stopTask = registerSignal("task_stopped");
+        startBalance = registerSignal("start_balance_loading");
+        stopBalance = registerSignal("stop_balance_loading");
+        startHelp = registerSignal("start_bus_help_rq");
+        stopHelp = registerSignal("stop_bus_help_rq");
+        startDataMessages = registerSignal("start_sending_data");
+        stopDataMessages = registerSignal("stop_sending_data");
+        startResponseMessages = registerSignal("start_getting_response");
+        stopResponseMessages = registerSignal("stop_getting_response");
     }
 }
 
