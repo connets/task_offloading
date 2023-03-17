@@ -36,34 +36,34 @@ simple VeinsApp extends DemoBaseApplLayer
         bool useAcks = default(false);
         
         // General statistic for task time
-        @signal[startTask](type = simtime_t);
-        @signal[stopTask](type = simtime_t);
-        @statistic[startTimeTask](source = startTask; record = count,mean,max?,vector?);
-        @statistic[stopTimeTask](source = stopTask; record = count,mean,max?,vector?);
+        @signal[task_started](type = simtime_t);
+        @signal[task_stopped](type = simtime_t);
+        @statistic[startTimeTask](source = task_started; record = vector,stats; interpolationmode = none);
+        @statistic[stopTimeTask](source = task_stopped; record = vector,stats; interpolationmode = none);
         
         // Statistics for balance loading
-        @signal[startBalance](type = simtime_t);
-        @signal[stopBalance](type = simtime_t);
-        @statistic[startBalanceLoad](source = startBalance; record = count,mean,max?,vector?);
-        @statistic[stopBalanceLoad](source = startBalance; record = count,mean,max?,vector?);
+        @signal[start_balance_loading](type = simtime_t);
+        @signal[stop_balance_loading](type = simtime_t);
+        @statistic[startBalanceLoad](source = start_balance_loading; record = vector,stats; interpolationmode = none);
+        @statistic[stopBalanceLoad](source = stop_balance_loading; record = vector,stats; interpolationmode = none);
         
         // Statistics for collecting help requests
-        @signal[startHelp](type = simtime_t);
-        @signal[stopHelp](type = simtime_t);
-        @statistic[startHelpRequests](source = startHelp; record = count,mean,max?,vector?);
-        @statistic[stopHelpRequests](source = stopHelp; record = count,mean,max?,vector?);
+        @signal[start_bus_help_rq](type = simtime_t);
+        @signal[stop_bus_help_rq](type = simtime_t);
+        @statistic[startHelpRequests](source = start_bus_help_rq; record = vector,stats; interpolationmode = none);
+        @statistic[stopHelpRequests](source = stop_bus_help_rq; record = vector,stats; interpolationmode = none);
         
         // Statistics for sending data messages
-        @signal[startData](type = int);
-        @signal[stopData](type = int);
-        @statistic[startDataMessages](source = startData; record = count,mean,max?,vector?);
-        @statistic[stopDataMessages](source = stopData; record = count,mean,max?,vector?);
+        @signal[start_sending_data](type = int);
+        @signal[stop_sending_data](type = int);
+        @statistic[startDataMessages](source = start_sending_data; record = vector,stats; interpolationmode = none);
+        @statistic[stopDataMessages](source = stop_sending_data; record = vector,stats; interpolationmode = none);
         
         // Statistics for sending response messages
-        @signal[startResponse](type = int);
-        @signal[stopResponse](type = int);
-        @statistic[startResponseMessages](source = startResponse; record = count,mean,max?,vector?);
-        @statistic[stopResponseMessages](source = stopResponse; record = count,mean,max?,vector?);
+        @signal[start_getting_response](type = int);
+        @signal[stop_getting_response](type = int);
+        @statistic[startResponseMessages](source = start_getting_response; record = vector,stats; interpolationmode = none);
+        @statistic[stopResponseMessages](source = stop_getting_response; record = vector,stats; interpolationmode = none);
 
     @class(task_offloading::VeinsApp);
     @display("i=block/app2");
