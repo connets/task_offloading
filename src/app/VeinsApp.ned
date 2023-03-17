@@ -58,6 +58,12 @@ simple VeinsApp extends DemoBaseApplLayer
         @signal[stopData](type = int);
         @statistic[startDataMessages](source = startData; record = count,mean,max?,vector?);
         @statistic[stopDataMessages](source = stopData; record = count,mean,max?,vector?);
+        
+        // Statistics for sending response messages
+        @signal[startResponse](type = int);
+        @signal[stopResponse](type = int);
+        @statistic[startResponseMessages](source = startResponse; record = count,mean,max?,vector?);
+        @statistic[stopResponseMessages](source = stopResponse; record = count,mean,max?,vector?);
 
     @class(task_offloading::VeinsApp);
     @display("i=block/app2");
