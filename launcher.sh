@@ -7,9 +7,6 @@ veins-veins-5.2/bin/veins_launchd -v &
 
 RES_DIR=/app/results
 
-# Compile simulations
-make makefiles && make MODE=release -j$(nproc)
-
 # Launch simulations
 opp_runall -j8 -b1 task_offloading/out/gcc-release/src/task_offloading -m -u Cmdenv --cmdenv-stop-batch-on-error=false \
 	-n task_offloading/simulations:task_offloading/src:inet/src:veins-veins-5.2/src/veins \
