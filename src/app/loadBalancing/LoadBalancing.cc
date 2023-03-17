@@ -20,9 +20,6 @@ using namespace task_offloading;
 
 void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
 {
-    // Send statistics for the start of the task
-    emit(startTask, simTime());
-
     // Send signal for balance load
     emit(startBalance, simTime());
 

@@ -41,6 +41,9 @@ void VeinsApp::vehicleHandler()
         // Emit the signal that help requested has been sent
         emit(startHelp, simTime());
 
+        // Send statistics for the start of the task
+        emit(startTask, simTime());
+
         // Schedule timer for the help request
         LoadBalanceTimerMessage* loadBalanceMsg = new LoadBalanceTimerMessage();
         populateWSM(loadBalanceMsg);
@@ -50,8 +53,5 @@ void VeinsApp::vehicleHandler()
         sentHelpMessage = true;
     } else if (!moreDataToLoad) {
         findHost()->getDisplayString().setTagArg("i", 1, "white");
-
-        // Send statistics for the end of the task
-        emit(stopTask, simTime());
     }
 }
