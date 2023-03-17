@@ -72,6 +72,10 @@ private:
     simsignal_t startResponseMessages;
     simsignal_t stopResponseMessages;
 
+    // SECTION - OK messages statistics
+    simsignal_t okMessageSent;
+    simsignal_t okMessageLoad;
+
 protected:
     simtime_t lastDroveAt;
     bool sentHelpMessage;

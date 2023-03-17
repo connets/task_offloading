@@ -51,6 +51,9 @@ void VeinsApp::handleHelpMessage(HelpMessage* helpMsg)
                 okMsg->setAvailableLoad(actualLoad);
                 okMsg->setCpuFreq(cpuFreq);
 
+                // Emit the signal of the ok message load
+                emit(okMessageLoad, actualLoad);
+
                 // Schedule the ok message
                 scheduleAt(simTime() + 2 + uniform(2, 4), okMsg);
             }

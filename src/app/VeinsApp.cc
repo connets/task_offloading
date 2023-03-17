@@ -63,6 +63,8 @@ void VeinsApp::initialize(int stage)
         stopDataMessages = registerSignal("stop_sending_data");
         startResponseMessages = registerSignal("start_getting_response");
         stopResponseMessages = registerSignal("stop_getting_response");
+        okMessageSent = registerSignal("ok_message_sent");
+        okMessageLoad = registerSignal("ok_message_load");
     }
 }
 
@@ -149,6 +151,9 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
 
             // Send the ok message
             sendDown(okMsg->dup());
+
+            // Emit the signal of ok message sent
+            emit(okMessageSent, simTime());
         }
     }
 

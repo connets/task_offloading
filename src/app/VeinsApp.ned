@@ -64,6 +64,12 @@ simple VeinsApp extends DemoBaseApplLayer
         @signal[stop_getting_response](type = int);
         @statistic[startResponseMessages](source = start_getting_response; record = vector,stats; interpolationmode = none);
         @statistic[stopResponseMessages](source = stop_getting_response; record = vector,stats; interpolationmode = none);
+        
+        // Statistics for sending and load of OK messages
+        @signal[ok_message_sent](type = simtime_t);
+        @signal[ok_message_load](type = double);
+        @statistic[okMessageSent](source = ok_message_sent; record = vector,stats; interpolationmode = none);
+        @statistic[okMessageLoad](source = ok_message_load; record = vector,stats; interpolationmode = none);
 
     @class(task_offloading::VeinsApp);
     @display("i=block/app2");
