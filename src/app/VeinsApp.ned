@@ -46,6 +46,24 @@ simple VeinsApp extends DemoBaseApplLayer
         @signal[stopBalance](type = simtime_t);
         @statistic[startBalanceLoad](source = startBalance; record = count,mean,max?,vector?);
         @statistic[stopBalanceLoad](source = startBalance; record = count,mean,max?,vector?);
+        
+        // Statistics for collecting help requests
+        @signal[startHelp](type = simtime_t);
+        @signal[stopHelp](type = simtime_t);
+        @statistic[startHelpRequests](source = startHelp; record = count,mean,max?,vector?);
+        @statistic[stopHelpRequests](source = stopHelp; record = count,mean,max?,vector?);
+        
+        // Statistics for sending data messages
+        @signal[startData](type = int);
+        @signal[stopData](type = int);
+        @statistic[startDataMessages](source = startData; record = count,mean,max?,vector?);
+        @statistic[stopDataMessages](source = stopData; record = count,mean,max?,vector?);
+        
+        // Statistics for sending response messages
+        @signal[startResponse](type = int);
+        @signal[stopResponse](type = int);
+        @statistic[startResponseMessages](source = startResponse; record = count,mean,max?,vector?);
+        @statistic[stopResponseMessages](source = stopResponse; record = count,mean,max?,vector?);
 
     @class(task_offloading::VeinsApp);
     @display("i=block/app2");

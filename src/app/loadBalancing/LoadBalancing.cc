@@ -26,6 +26,9 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
     // Send signal for balance load
     emit(startBalance, simTime());
 
+    // Send signal for stopping accepting help requests
+    emit(stopHelp, simTime());
+
     std::map<int, double>::iterator loadsIterator = helpersLoad.begin();
     int vehiclesCounter = helpersLoad.size();
 

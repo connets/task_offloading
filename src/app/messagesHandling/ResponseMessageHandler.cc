@@ -32,6 +32,9 @@ void VeinsApp::handleResponseMessage(ResponseMessage* responseMsg)
         helpersLoad.erase(responseMsg->getHostIndex());
         EV << "Deleted host: " << responseMsg->getHostIndex() << std::endl <<"Host remaining: " << helpersLoad.size() - 1 << std::endl;
 
+        // Send signal for having received response message statistic
+        emit(stopResponseMessages, responseMsg->getHostIndex());
+
         if (helpersLoad.size() == 1) {
             findHost()->getDisplayString().setTagArg("i", 1, "white");
             helpReceived = false;

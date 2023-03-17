@@ -72,6 +72,18 @@ protected:
     simsignal_t startBalance;
     simsignal_t stopBalance;
 
+    // SECTION - Help requests collection
+    simsignal_t startHelp;
+    simsignal_t stopHelp;
+
+    // SECTION - Data messages statistics
+    simsignal_t startDataMessages;
+    simsignal_t stopDataMessages;
+
+    // SECTION - Response messages statistics
+    simsignal_t startResponseMessages;
+    simsignal_t stopResponseMessages;
+
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;
     void onWSM(veins::BaseFrame1609_4* wsm) override;
