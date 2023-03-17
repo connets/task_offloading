@@ -38,6 +38,9 @@ void VeinsApp::vehicleHandler()
         // Send the help message
         sendDown(helpRequest);
 
+        // Emit the signal that help requested has been sent
+        emit(startHelp, simTime());
+
         // Schedule timer for the help request
         LoadBalanceTimerMessage* loadBalanceMsg = new LoadBalanceTimerMessage();
         populateWSM(loadBalanceMsg);
