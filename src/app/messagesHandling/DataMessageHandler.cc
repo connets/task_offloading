@@ -26,6 +26,9 @@ void VeinsApp::handleDataMessage(DataMessage* dataMsg)
 
         EV << "Received " << dataMsg->getLoadToProcess() << " to load from BUS" << std::endl;
 
+        // Send signal for data message statistics since I've received all data
+        emit(stopDataMessages, dataMsg->getHostIndex());
+
         // Calculate time for computation
         double CPI = 3;
         double I = dataMsg->getLoadToProcess();

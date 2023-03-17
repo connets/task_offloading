@@ -76,6 +76,10 @@ protected:
     simsignal_t startHelp;
     simsignal_t stopHelp;
 
+    // SECTION - Data messages statistics
+    simsignal_t startDataMessages;
+    simsignal_t stopDataMessages;
+
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;
     void onWSM(veins::BaseFrame1609_4* wsm) override;

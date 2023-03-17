@@ -147,6 +147,9 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
     // Timer for data message
     if (DataMessage* dataMsg = dynamic_cast<DataMessage*>(msg)) {
         sendDown(dataMsg->dup());
+
+        // Send signal for data message statistic with the host ID
+        emit(startDataMessages, dataMsg->getHostIndex());
     }
 
     // Timer for response message
