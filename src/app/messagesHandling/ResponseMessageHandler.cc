@@ -32,6 +32,12 @@ void VeinsApp::handleResponseMessage(ResponseMessage* responseMsg)
         helpersLoad.erase(responseMsg->getHostIndex());
         EV << "Deleted host: " << responseMsg->getHostIndex() << std::endl <<"Host remaining: " << helpersLoad.size() - 1 << std::endl;
 
+        // Check if there is more data to load at the end of the last response
+        // message, to send signal of task terminated
+        if(!(par("computationLoad").doubleValue() > 0)) {
+            emit(stopTask, simTime());
+        }
+
         // Send signal for having received response message statistic
         emit(stopResponseMessages, responseMsg->getHostIndex());
 
@@ -43,12 +49,6 @@ void VeinsApp::handleResponseMessage(ResponseMessage* responseMsg)
 
             // Disable the load balancing mode
             loadBalancingState.setState(new Disabled);
-
-            // Check if there is more data to load at the end of the last response
-            // message, to send signal of task terminated
-            if(!(par("computationLoad").doubleValue() > 0)) {
-                emit(stopTask, simTime());
-            }
         }
     }
 }
