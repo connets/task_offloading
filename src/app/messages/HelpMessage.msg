@@ -21,4 +21,5 @@ namespace task_offloading;
 
 packet HelpMessage extends veins::BaseFrame1609_4 {
     int vehicleIndex;
+    double minimumLoadRequested;
 }
