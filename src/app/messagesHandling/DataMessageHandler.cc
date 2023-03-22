@@ -47,6 +47,11 @@ void VeinsApp::handleDataMessage(DataMessage* dataMsg)
         }
 
         responseMsg->setHostIndex(dataMsg->getHostIndex());
+
+        // Calculate probability to be still available after computation
+        bool stillAvailable = par("stillAvailableProbability").doubleValue() > par("stillAvailableThreshold").doubleValue();
+
+        responseMsg->setStillAvailable(stillAvailable);
         scheduleAt(simTime() + timeToCompute + uniform(0.01, 0.2), responseMsg);
 
         // Generate ACK timer if parameter useAcks is false

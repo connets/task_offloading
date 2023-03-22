@@ -38,6 +38,7 @@ namespace task_offloading {
  * packet HelpMessage extends veins::BaseFrame1609_4
  * {
  *     int vehicleIndex;
+ *     double minimumLoadRequested;
  * }
  * </pre>
  */
@@ -45,6 +46,7 @@ class HelpMessage : public ::veins::BaseFrame1609_4
 {
   protected:
     int vehicleIndex = 0;
+    double minimumLoadRequested = 0;
 
   private:
     void copy(const HelpMessage& other);
@@ -63,6 +65,9 @@ class HelpMessage : public ::veins::BaseFrame1609_4
 
     virtual int getVehicleIndex() const;
     virtual void setVehicleIndex(int vehicleIndex);
+
+    virtual double getMinimumLoadRequested() const;
+    virtual void setMinimumLoadRequested(double minimumLoadRequested);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const HelpMessage& obj) {obj.parsimPack(b);}

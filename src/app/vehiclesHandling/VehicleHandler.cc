@@ -34,6 +34,7 @@ void VeinsApp::vehicleHandler()
 
         // Fill the data of the help request message
         helpRequest->setVehicleIndex(findHost()->getIndex());
+        helpRequest->setMinimumLoadRequested(par("minimumVehicleLoadActual").doubleValue());
 
         // Send the help message
         sendDown(helpRequest);
@@ -48,7 +49,7 @@ void VeinsApp::vehicleHandler()
         LoadBalanceTimerMessage* loadBalanceMsg = new LoadBalanceTimerMessage();
         populateWSM(loadBalanceMsg);
         loadBalanceMsg->setSimulationTime(simTime());
-        scheduleAt(simTime() + 2 + uniform(5, 7), loadBalanceMsg);
+        scheduleAt(simTime() + par("busWaitingTime").doubleValue(), loadBalanceMsg);
 
         sentHelpMessage = true;
     } else if (!moreDataToLoad) {
