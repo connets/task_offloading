@@ -1,23 +1,22 @@
 version 3
-run Default-0-20230322-12:22:50-5160
-attr configname Default
-attr datetime 20230322-12:22:50
-attr datetimef 20230322-122250
-attr experiment Default
+run General-0-20230322-12:10:28-4879
+attr configname General
+attr datetime 20230322-12:10:28
+attr datetimef 20230322-121028
+attr experiment General
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvarsd ""
 attr iterationvarsf ""
 attr measurement ""
 attr network v5_0
-attr processid 5160
+attr processid 4879
 attr repetition 0
 attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
 config image-path ../../../inet4.4/images:../../../veins-5.2/images
-config *.veinsApp.minimumVehicleLoadActual 900MB
 config cmdenv-express-mode true
 config cmdenv-autoflush true
 config cmdenv-status-frequency 1s
@@ -80,15 +79,15 @@ config *.node[*].veinsmobility.setHostSpeed false
 config *.node[*0].veinsmobility.accidentCount 0
 config *.node[*0].veinsmobility.accidentStart 73s
 config *.node[*0].veinsmobility.accidentDuration 50s
-config *.node[*].appl.stillAvailableProbability "uniform(0, 1)"
-config *.node[*].appl.stillAvailableThreshold 0.5
-config *.node[*].appl.randomVehicleLoadActual "uniform(0, 1)"
-config *.node[*].appl.randomCpuVehicleFreq "uniform(1.20GHz, 2.70GHz)"
-config *.node[*].appl.minimumVehicleLoadActual 700MB
-config *.node[*].appl.commonVehicleLoad 1GB
-config *.node[*].appl.busWaitingTime "uniform(100ms, 200ms)"
-config *.node[*].appl.vehicleOkMessageTime "uniform(0ms, 100ms)"
-config *.node[*].appl.randomTimeHelpMessage "uniform(30s, 40s)"
+config *.veinsApp.stillAvailableProbability "uniform(0, 1)"
+config *.veinsApp.stillAvailableThreshold 0.5
+config *.veinsApp.randomVehicleLoadActual "uniform(0, 1)"
+config *.veinsApp.randomCpuVehicleFreq "uniform(1.20GHz, 2.70GHz)"
+config **.veinsApp.minimumVehicleLoadActual 900MB
+config *.node[*].veinsApp.commonVehicleLoad 900MB
+config *.node[*].veinsApp.busWaitingTime "uniform(100ms, 200ms)"
+config *.veinsApp.vehicleOkMessageTime "uniform(0ms, 100ms)"
+config *.veinsApp.randomTimeHelpMessage "uniform(30s, 40s)"
 
 vector 0 v5_0.rsu[0].nic.mac1609_4 channelBusy:vector ETV
 attr recordingmode vector
@@ -284,21 +283,22 @@ vector 136 v5_0.node[7].appl okMessageLoad:vector ETV
 attr interpolationmode none
 attr recordingmode vector
 attr source ok_message_load
-vector 137 v5_0.node[17].appl okMessageLoad:vector ETV
+vector 137 v5_0.node[11].appl okMessageLoad:vector ETV
 attr interpolationmode none
 attr recordingmode vector
 attr source ok_message_load
-vector 138 v5_0.node[19].appl okMessageLoad:vector ETV
+vector 138 v5_0.node[14].appl okMessageLoad:vector ETV
 attr interpolationmode none
 attr recordingmode vector
 attr source ok_message_load
-vector 139 v5_0.node[17].appl okMessageSent:vector ETV
+vector 139 v5_0.node[17].appl okMessageLoad:vector ETV
 attr interpolationmode none
 attr recordingmode vector
-attr source ok_message_sent
-vector 140 v5_0.node[17].nic.mac1609_4 sentPackets:vector ETV
+attr source ok_message_load
+vector 140 v5_0.node[19].appl okMessageLoad:vector ETV
+attr interpolationmode none
 attr recordingmode vector
-attr source org_car2x_veins_modules_mac_sigSentPacket
+attr source ok_message_load
 0	0	0	0
 0	85	33.500015569273	1
 0	129	33.500247569273	0
@@ -3692,7 +3692,6 @@ attr source org_car2x_veins_modules_mac_sigSentPacket
 67	16	7	0
 67	77	33.500013217053	1
 67	113	33.500245217053	0
-67	158	33.531452620303	1
 68	16	7	2632.512985039
 68	17	7.5	2632.4323592804
 68	18	8	2632.2942522839
@@ -4370,7 +4369,6 @@ attr source org_car2x_veins_modules_mac_sigSentPacket
 83	21	9.5	0
 83	79	33.500013313941	1
 83	117	33.500245313941	0
-83	154	33.531452523415	1
 84	21	9.5	2632.5215680323
 84	22	10	2632.4542266976
 84	23	10.5	2632.3304986707
@@ -4988,7 +4986,6 @@ attr source org_car2x_veins_modules_mac_sigSentPacket
 99	26	12	0
 99	81	33.500013418678	1
 99	121	33.500245418678	0
-99	150	33.531451418678	1
 100	26	12	2632.5300726173
 100	27	12.5	2632.4894875179
 100	28	13	2632.3863220086
@@ -5584,7 +5581,6 @@ attr source org_car2x_veins_modules_mac_sigSentPacket
 115	32	15	0
 115	83	33.500013572369	1
 115	125	33.500245572369	0
-115	156	33.53145257237	1
 116	32	15	2632.5024971736
 116	33	15.5	2632.4112629094
 116	34	16	2632.2557264407
@@ -6096,8 +6092,8 @@ attr source org_car2x_veins_modules_mac_sigSentPacket
 134	69	33.5	33.5
 135	71	33.500012	1
 136	110	33.500245120617	833315810.18865
-137	122	33.500245418678	703217493.13734
-138	126	33.500245572369	889287316.93886
-139	148	33.531439918232	33.531439918232
-140	150	33.531451418678	1
+137	114	33.500245217053	321042990.07915
+138	118	33.500245313941	399660019.66968
+139	122	33.500245418678	703217493.13734
+140	126	33.500245572369	889287316.93886
 
