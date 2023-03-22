@@ -20,12 +20,14 @@ using namespace task_offloading;
 void VeinsApp::handleOkMessage(OkMessage* okMsg)
 {
     if (findHost()->getIndex() == busIndex) {
-        // Color the bus that received help
-        findHost()->getDisplayString().setTagArg("i", 1, "green");
+        // Store the helper load and CPU freq only if the load has minimum requirements
+        if (okMsg->getAvailableLoad() >= par("minimumVehicleLoadActual").doubleValue()) {
+            // Color the bus that received help
+            findHost()->getDisplayString().setTagArg("i", 1, "green");
 
-        // Store the helper load and CPU freq
-        helpersLoad[okMsg->getHostID()] = okMsg->getAvailableLoad();
-        helpersFreq[okMsg->getHostID()] = okMsg->getCpuFreq();
-        helpersAddresses[okMsg->getHostID()] = okMsg->getSenderAddress();
+            helpersLoad[okMsg->getHostID()] = okMsg->getAvailableLoad();
+            helpersFreq[okMsg->getHostID()] = okMsg->getCpuFreq();
+            helpersAddresses[okMsg->getHostID()] = okMsg->getSenderAddress();
+        }
     }
 }

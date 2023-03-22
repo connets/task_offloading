@@ -28,7 +28,7 @@ void VeinsApp::handleResponseMessage(ResponseMessage* responseMsg)
         scheduleAt(simTime() + 2 + uniform(1, 2), ackMsg);
     }
 
-    if (findHost()->getIndex() == busIndex) {
+    if (findHost()->getIndex() == busIndex && !(responseMsg->getStillAvailable())) {
         helpersLoad.erase(responseMsg->getHostIndex());
         EV << "Deleted host: " << responseMsg->getHostIndex() << std::endl <<"Host remaining: " << helpersLoad.size() - 1 << std::endl;
 
