@@ -29,8 +29,8 @@ void VeinsApp::handleResponseMessage(ResponseMessage* responseMsg)
     }
 
     if (findHost()->getIndex() == busIndex && !(responseMsg->getStillAvailable())) {
-        helpersLoad.erase(responseMsg->getHostIndex());
-        EV << "Deleted host: " << responseMsg->getHostIndex() << std::endl <<"Host remaining: " << helpersLoad.size() - 1 << std::endl;
+        helpers.erase(responseMsg->getHostIndex());
+        EV << "Deleted host: " << responseMsg->getHostIndex() << std::endl <<"Host remaining: " << helpers.size() - 1 << std::endl;
 
         // Check if there is more data to load at the end of the last response
         // message, to send signal of task terminated
@@ -41,7 +41,7 @@ void VeinsApp::handleResponseMessage(ResponseMessage* responseMsg)
         // Send signal for having received response message statistic
         emit(stopResponseMessages, responseMsg->getHostIndex());
 
-        if (helpersLoad.size() == 1) {
+        if (helpers.size() == 1) {
             findHost()->getDisplayString().setTagArg("i", 1, "white");
             helpReceived = false;
             sentHelpMessage = false;

@@ -20,8 +20,8 @@ using namespace task_offloading;
 
 void VeinsApp::sendAgainData(int index, double load)
 {
-    auto found = helpersLoad.find(index);
-    if (found != helpersLoad.end()) {
+    auto found = helpers.find(index);
+    if (found != helpers.end()) {
         // Prepare the new data message
         DataMessage* dataMsg = new DataMessage();
         populateWSM(dataMsg);

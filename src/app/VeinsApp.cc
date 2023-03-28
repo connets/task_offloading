@@ -44,13 +44,19 @@ void VeinsApp::initialize(int stage)
         lastDroveAt = simTime();
         sentHelpMessage = false;
         helpReceived = false;
-        helpersLoad[0] = par("busVehicleLoad").doubleValue();
-        helpersFreq[0] = par("randomCpuVehicleFreq").doubleValue();
-        busIndex = 0;
         newRandomTime = 0;
-        loadBalancingState = LoadBalancingContext(new Disabled);
         ackReceived = false;
         hostCpuFreq = 0;
+
+        // BUS SECTION
+        // Calculate BUS load
+        double busLoad = par("randomVehicleLoadActual").doubleValue() * par("busVehicleLoad").doubleValue();
+        double busFreq = par("randomCpuVehicleFreq").doubleValue();
+        busIndex = 0;
+        helpers[0] = new HelperVehicleInfo(busLoad, busFreq, simTime(), busIndex);
+
+        // Initialize the BUS state
+        loadBalancingState = LoadBalancingContext(new Disabled);
 
         // Registering all signals
         startTask = registerSignal("task_started");
@@ -70,6 +76,10 @@ void VeinsApp::initialize(int stage)
 
 void VeinsApp::finish()
 {
+    // Destroy the load balancing state class and the BUS info
+    loadBalancingState.~LoadBalancingContext();
+    helpers[0]->~HelperVehicleInfo();
+
     veins::DemoBaseApplLayer::finish();
 }
 
