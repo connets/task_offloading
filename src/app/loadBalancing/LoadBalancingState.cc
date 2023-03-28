@@ -19,11 +19,11 @@ using namespace task_offloading;
 
 LoadBalancingState::~LoadBalancingState()
 {
-    delete this;
+    //
 }
 
 LoadBalancingContext::~LoadBalancingContext() {
-    delete this;
+    //
 }
 
 LoadBalancingContext::LoadBalancingContext()

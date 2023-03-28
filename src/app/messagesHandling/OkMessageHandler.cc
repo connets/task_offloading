@@ -25,10 +25,10 @@ void VeinsApp::handleOkMessage(OkMessage* okMsg)
             // Color the bus that received help
             findHost()->getDisplayString().setTagArg("i", 1, "green");
 
-            helpers[okMsg->getHostID()] = new HelperVehicleInfo();
-            helpers[okMsg->getHostID()]->setCurrentLoad(okMsg->getAvailableLoad());
-            helpers[okMsg->getHostID()]->setCPUFreq(okMsg->getCpuFreq());
-            helpers[okMsg->getHostID()]->setAddress(okMsg->getSenderAddress());
+            helpers[okMsg->getHostID()] = HelperVehicleInfo();
+            helpers[okMsg->getHostID()].setCurrentLoad(okMsg->getAvailableLoad());
+            helpers[okMsg->getHostID()].setCPUFreq(okMsg->getCpuFreq());
+            helpers[okMsg->getHostID()].setAddress(okMsg->getSenderAddress());
         }
     }
 }

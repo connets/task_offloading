@@ -26,7 +26,7 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
     // Send signal for stopping accepting help requests
     emit(stopHelp, simTime());
 
-    std::map<int, HelperVehicleInfo*>::iterator vehiclesIterator = helpers.begin();
+    std::map<int, HelperVehicleInfo>::iterator vehiclesIterator = helpers.begin();
     int vehiclesCounter = helpers.size();
 
     if (vehiclesCounter > 1) {
@@ -37,7 +37,7 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
             if (vehiclesIterator->first != busIndex) {
                 // Check if there's data to process
                 double data = par("computationLoad").doubleValue();
-                double vehicleLoad = vehiclesIterator->second->getCurrentLoad();
+                double vehicleLoad = vehiclesIterator->second.getCurrentLoad();
 
                 // If there's data to load then send the messages
                 if (data > 0) {
@@ -49,7 +49,7 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
                     // If auto acks is active then populate wsm with the sender address
                     // otherwise populate it without address
                     if (par("useAcks").boolValue()) {
-                        populateWSM(dataMsg, vehiclesIterator->second->getAddress());
+                        populateWSM(dataMsg, vehiclesIterator->second.getAddress());
                     } else {
                         populateWSM(dataMsg);
                     }
@@ -60,7 +60,7 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
                     // If data - vehicleLoad >= 0 then set new data, otherwise send the remaining data
                     if ((data - vehicleLoad) >= 0) {
                         data = data - vehicleLoad;
-                        dataMsg->setLoadToProcess(vehiclesIterator->second->getCurrentLoad());
+                        dataMsg->setLoadToProcess(vehiclesIterator->second.getCurrentLoad());
                     } else {
                         data = 0;
                         dataMsg->setLoadToProcess(data);
@@ -80,12 +80,12 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
                         populateWSM(computationTimerMsg);
                         computationTimerMsg->setSimulationTime(simTime());
                         computationTimerMsg->setIndexHost(vehiclesIterator->first);
-                        computationTimerMsg->setLoadHost(vehiclesIterator->second->getCurrentLoad());
+                        computationTimerMsg->setLoadHost(vehiclesIterator->second.getCurrentLoad());
 
                         // Calculate time for timer
                         double CPI = 3;
-                        double I = vehiclesIterator->second->getCurrentLoad();
-                        double CR = vehiclesIterator->second->getCPUFreq();
+                        double I = vehiclesIterator->second.getCurrentLoad();
+                        double CR = vehiclesIterator->second.getCPUFreq();
 
                         double timeToCompute = CPI * I * (1 / CR);
 

@@ -81,7 +81,7 @@ protected:
     simtime_t lastDroveAt;
     bool sentHelpMessage;
     bool helpReceived;
-    std::map<int, HelperVehicleInfo*> helpers;
+    std::map<int, HelperVehicleInfo> helpers;
     simtime_t newRandomTime;
     int busIndex;
     LoadBalancingContext loadBalancingState;

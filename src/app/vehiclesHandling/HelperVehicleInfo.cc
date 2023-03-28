@@ -32,7 +32,7 @@ HelperVehicleInfo::HelperVehicleInfo(double load, double freq, simtime_t time, v
 }
 
 HelperVehicleInfo::~HelperVehicleInfo() {
-    delete this;
+    //
 }
 
 double HelperVehicleInfo::getCurrentLoad() {
