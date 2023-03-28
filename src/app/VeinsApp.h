@@ -29,6 +29,7 @@
 #include "app/messages/DataMessage_m.h"
 #include "app/messages/ResponseMessage_m.h"
 #include "app/loadBalancing/LoadBalancingState.h"
+#include "app/vehiclesHandling/HelperVehicleInfo.h"
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
 
 using namespace omnetpp;
@@ -80,9 +81,7 @@ protected:
     simtime_t lastDroveAt;
     bool sentHelpMessage;
     bool helpReceived;
-    std::map<int, double> helpersLoad;
-    std::map<int, double> helpersFreq;
-    std::map<int, veins::LAddress::L2Type> helpersAddresses;
+    std::map<int, HelperVehicleInfo> helpers;
     simtime_t newRandomTime;
     int busIndex;
     LoadBalancingContext loadBalancingState;
