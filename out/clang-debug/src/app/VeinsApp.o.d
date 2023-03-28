@@ -11,6 +11,7 @@
   app/messages/OkMessage_m.h app/messages/DataMessage_m.h \
   app/messages/ResponseMessage_m.h \
   app/loadBalancing/LoadBalancingState.h \
+  app/vehiclesHandling/HelperVehicleInfo.h \
   ../../veins-5.2/src/veins/modules/application/ieee80211p/DemoBaseApplLayer.h \
   ../../veins-5.2/src/veins/base/modules/BaseApplLayer.h \
   ../../veins-5.2/src/veins/base/modules/BaseLayer.h \
@@ -88,6 +89,8 @@ app/messages/DataMessage_m.h:
 app/messages/ResponseMessage_m.h:
 
 app/loadBalancing/LoadBalancingState.h:
+
+app/vehiclesHandling/HelperVehicleInfo.h:
 
 ../../veins-5.2/src/veins/modules/application/ieee80211p/DemoBaseApplLayer.h:
 
