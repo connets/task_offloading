@@ -25,7 +25,7 @@ void VeinsApp::handleResponseMessage(ResponseMessage* responseMsg)
         AckMessage* ackMsg = new AckMessage();
         populateWSM(ackMsg);
         ackMsg->setHostIndex(responseMsg->getHostIndex());
-        scheduleAt(simTime() + 2 + uniform(1, 2), ackMsg);
+        scheduleAt(simTime(), ackMsg);
     }
 
     if (findHost()->getIndex() == busIndex && !(responseMsg->getStillAvailable())) {

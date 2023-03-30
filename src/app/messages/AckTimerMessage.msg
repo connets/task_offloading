@@ -21,4 +21,5 @@ namespace task_offloading;
 
 packet AckTimerMessage extends veins::BaseFrame1609_4 {
     int hostIndex;
+    double taskComputationTime;
 }

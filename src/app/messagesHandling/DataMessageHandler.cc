@@ -30,7 +30,7 @@ void VeinsApp::handleDataMessage(DataMessage* dataMsg)
         emit(stopDataMessages, dataMsg->getHostIndex());
 
         // Calculate time for computation
-        double CPI = 3;
+        double CPI = par("vehicleCPI").intValue();
         double I = dataMsg->getLoadToProcess();
         double CR = hostCpuFreq;
 
@@ -52,7 +52,7 @@ void VeinsApp::handleDataMessage(DataMessage* dataMsg)
         bool stillAvailable = par("stillAvailableProbability").doubleValue() > par("stillAvailableThreshold").doubleValue();
 
         responseMsg->setStillAvailable(stillAvailable);
-        scheduleAt(simTime() + timeToCompute + uniform(0.01, 0.2), responseMsg);
+        scheduleAt(simTime() + timeToCompute, responseMsg);
 
         // Generate ACK timer if parameter useAcks is false
         // to achieve secure protocol manually
@@ -60,7 +60,8 @@ void VeinsApp::handleDataMessage(DataMessage* dataMsg)
             AckTimerMessage* ackTimerMsg = new AckTimerMessage();
             populateWSM(ackTimerMsg);
             ackTimerMsg->setHostIndex(dataMsg->getHostIndex());
-            scheduleAt(simTime() + 2 + uniform(3, 4), ackTimerMsg);
+            ackTimerMsg->setTaskComputationTime(timeToCompute);
+            scheduleAt(simTime() + timeToCompute + par("ackMessageThreshold").doubleValue(), ackTimerMsg);
         }
 
         EV << "Finished computation of: " << dataMsg->getLoadToProcess() << std::endl;

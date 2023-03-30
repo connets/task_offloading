@@ -38,6 +38,9 @@ simple VeinsApp extends DemoBaseApplLayer
         double stillAvailableThreshold = default(0.5);
         double busWaitingTime @unit(s) = default(uniform(100ms, 200ms));
         double vehicleOkMessageTime @unit(s) = default(uniform(0ms, 100ms));
+        volatile double dataComputationThreshold @unit(s) = default(uniform(100ms, 200ms));
+        volatile double ackMessageThreshold @unit(s) = default(uniform(50ms, 100ms));
+        int vehicleCPI = default(3);
         
         // General statistic for task time
         @signal[task_started](type = simtime_t);

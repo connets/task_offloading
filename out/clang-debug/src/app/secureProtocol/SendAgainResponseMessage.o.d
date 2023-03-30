@@ -55,7 +55,8 @@
   ../../veins-5.2/src/veins/base/utils/EnumBitset.h \
   ../../veins-5.2/src/veins/modules/mobility/traci/TraCIRegionOfInterest.h \
   ../../veins-5.2/src/veins/modules/mobility/traci/TraCICommandInterface.h \
-  ../../veins-5.2/src/veins/modules/world/traci/trafficLight/TraCITrafficLightProgram.h
+  ../../veins-5.2/src/veins/modules/world/traci/trafficLight/TraCITrafficLightProgram.h \
+  app/messages/AckTimerMessage_m.h
 
 app/VeinsApp.h:
 
@@ -174,3 +175,5 @@ app/vehiclesHandling/HelperVehicleInfo.h:
 ../../veins-5.2/src/veins/modules/mobility/traci/TraCICommandInterface.h:
 
 ../../veins-5.2/src/veins/modules/world/traci/trafficLight/TraCITrafficLightProgram.h:
+
+app/messages/AckTimerMessage_m.h:
