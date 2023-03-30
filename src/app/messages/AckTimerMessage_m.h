@@ -38,6 +38,7 @@ namespace task_offloading {
  * packet AckTimerMessage extends veins::BaseFrame1609_4
  * {
  *     int hostIndex;
+ *     double taskComputationTime;
  * }
  * </pre>
  */
@@ -45,6 +46,7 @@ class AckTimerMessage : public ::veins::BaseFrame1609_4
 {
   protected:
     int hostIndex = 0;
+    double taskComputationTime = 0;
 
   private:
     void copy(const AckTimerMessage& other);
@@ -63,6 +65,9 @@ class AckTimerMessage : public ::veins::BaseFrame1609_4
 
     virtual int getHostIndex() const;
     virtual void setHostIndex(int hostIndex);
+
+    virtual double getTaskComputationTime() const;
+    virtual void setTaskComputationTime(double taskComputationTime);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const AckTimerMessage& obj) {obj.parsimPack(b);}

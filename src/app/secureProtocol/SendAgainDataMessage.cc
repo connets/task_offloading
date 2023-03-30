@@ -18,7 +18,7 @@
 
 using namespace task_offloading;
 
-void VeinsApp::sendAgainData(int index, double load)
+void VeinsApp::sendAgainData(int index, double load, double taskComputationTime)
 {
     auto found = helpers.find(index);
     if (found != helpers.end()) {
@@ -35,6 +35,6 @@ void VeinsApp::sendAgainData(int index, double load)
         computationTimerMsg->setSimulationTime(simTime());
         computationTimerMsg->setIndexHost(index);
         computationTimerMsg->setLoadHost(load);
-        scheduleAt(simTime() + 10 + uniform(5, 10), computationTimerMsg);
+        scheduleAt(simTime() + taskComputationTime + par("dataComputationThreshold").doubleValue(), computationTimerMsg);
     }
 }

@@ -18,18 +18,18 @@
 
 using namespace task_offloading;
 
-void VeinsApp::sendAgainResponse(int index)
+void VeinsApp::sendAgainResponse(int index, double computationTime)
 {
     if (!ackReceived) {
         ResponseMessage* responseMsg = new ResponseMessage();
         populateWSM(responseMsg);
         responseMsg->setHostIndex(index);
-        scheduleAt(simTime() + 2 + uniform(0.01, 0.2), responseMsg);
+        scheduleAt(simTime() + computationTime, responseMsg);
 
         // Restart the ACK timer
         AckTimerMessage* ackTimerMsg = new AckTimerMessage();
         populateWSM(ackTimerMsg);
         ackTimerMsg->setHostIndex(index);
-        scheduleAt(simTime() + 2 + uniform(3, 4), ackTimerMsg);
+        scheduleAt(simTime() + par("ackMessageThreshold").doubleValue(), ackTimerMsg);
     }
 }

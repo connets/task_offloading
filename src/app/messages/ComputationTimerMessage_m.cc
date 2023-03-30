@@ -180,6 +180,7 @@ void ComputationTimerMessage::copy(const ComputationTimerMessage& other)
     this->simulationTime = other.simulationTime;
     this->indexHost = other.indexHost;
     this->loadHost = other.loadHost;
+    this->taskComputationTime = other.taskComputationTime;
 }
 
 void ComputationTimerMessage::parsimPack(omnetpp::cCommBuffer *b) const
@@ -188,6 +189,7 @@ void ComputationTimerMessage::parsimPack(omnetpp::cCommBuffer *b) const
     doParsimPacking(b,this->simulationTime);
     doParsimPacking(b,this->indexHost);
     doParsimPacking(b,this->loadHost);
+    doParsimPacking(b,this->taskComputationTime);
 }
 
 void ComputationTimerMessage::parsimUnpack(omnetpp::cCommBuffer *b)
@@ -196,6 +198,7 @@ void ComputationTimerMessage::parsimUnpack(omnetpp::cCommBuffer *b)
     doParsimUnpacking(b,this->simulationTime);
     doParsimUnpacking(b,this->indexHost);
     doParsimUnpacking(b,this->loadHost);
+    doParsimUnpacking(b,this->taskComputationTime);
 }
 
 ::omnetpp::simtime_t ComputationTimerMessage::getSimulationTime() const
@@ -228,6 +231,16 @@ void ComputationTimerMessage::setLoadHost(double loadHost)
     this->loadHost = loadHost;
 }
 
+double ComputationTimerMessage::getTaskComputationTime() const
+{
+    return this->taskComputationTime;
+}
+
+void ComputationTimerMessage::setTaskComputationTime(double taskComputationTime)
+{
+    this->taskComputationTime = taskComputationTime;
+}
+
 class ComputationTimerMessageDescriptor : public omnetpp::cClassDescriptor
 {
   private:
@@ -236,6 +249,7 @@ class ComputationTimerMessageDescriptor : public omnetpp::cClassDescriptor
         FIELD_simulationTime,
         FIELD_indexHost,
         FIELD_loadHost,
+        FIELD_taskComputationTime,
     };
   public:
     ComputationTimerMessageDescriptor();
@@ -302,7 +316,7 @@ const char *ComputationTimerMessageDescriptor::getProperty(const char *propertyN
 int ComputationTimerMessageDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 3+base->getFieldCount() : 3;
+    return base ? 4+base->getFieldCount() : 4;
 }
 
 unsigned int ComputationTimerMessageDescriptor::getFieldTypeFlags(int field) const
@@ -317,8 +331,9 @@ unsigned int ComputationTimerMessageDescriptor::getFieldTypeFlags(int field) con
         FD_ISEDITABLE,    // FIELD_simulationTime
         FD_ISEDITABLE,    // FIELD_indexHost
         FD_ISEDITABLE,    // FIELD_loadHost
+        FD_ISEDITABLE,    // FIELD_taskComputationTime
     };
-    return (field >= 0 && field < 3) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 4) ? fieldTypeFlags[field] : 0;
 }
 
 const char *ComputationTimerMessageDescriptor::getFieldName(int field) const
@@ -333,8 +348,9 @@ const char *ComputationTimerMessageDescriptor::getFieldName(int field) const
         "simulationTime",
         "indexHost",
         "loadHost",
+        "taskComputationTime",
     };
-    return (field >= 0 && field < 3) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 4) ? fieldNames[field] : nullptr;
 }
 
 int ComputationTimerMessageDescriptor::findField(const char *fieldName) const
@@ -344,6 +360,7 @@ int ComputationTimerMessageDescriptor::findField(const char *fieldName) const
     if (strcmp(fieldName, "simulationTime") == 0) return baseIndex + 0;
     if (strcmp(fieldName, "indexHost") == 0) return baseIndex + 1;
     if (strcmp(fieldName, "loadHost") == 0) return baseIndex + 2;
+    if (strcmp(fieldName, "taskComputationTime") == 0) return baseIndex + 3;
     return base ? base->findField(fieldName) : -1;
 }
 
@@ -359,8 +376,9 @@ const char *ComputationTimerMessageDescriptor::getFieldTypeString(int field) con
         "omnetpp::simtime_t",    // FIELD_simulationTime
         "int",    // FIELD_indexHost
         "double",    // FIELD_loadHost
+        "double",    // FIELD_taskComputationTime
     };
-    return (field >= 0 && field < 3) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 4) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **ComputationTimerMessageDescriptor::getFieldPropertyNames(int field) const
@@ -446,6 +464,7 @@ std::string ComputationTimerMessageDescriptor::getFieldValueAsString(omnetpp::an
         case FIELD_simulationTime: return simtime2string(pp->getSimulationTime());
         case FIELD_indexHost: return long2string(pp->getIndexHost());
         case FIELD_loadHost: return double2string(pp->getLoadHost());
+        case FIELD_taskComputationTime: return double2string(pp->getTaskComputationTime());
         default: return "";
     }
 }
@@ -465,6 +484,7 @@ void ComputationTimerMessageDescriptor::setFieldValueAsString(omnetpp::any_ptr o
         case FIELD_simulationTime: pp->setSimulationTime(string2simtime(value)); break;
         case FIELD_indexHost: pp->setIndexHost(string2long(value)); break;
         case FIELD_loadHost: pp->setLoadHost(string2double(value)); break;
+        case FIELD_taskComputationTime: pp->setTaskComputationTime(string2double(value)); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'ComputationTimerMessage'", field);
     }
 }
@@ -482,6 +502,7 @@ omnetpp::cValue ComputationTimerMessageDescriptor::getFieldValue(omnetpp::any_pt
         case FIELD_simulationTime: return pp->getSimulationTime().dbl();
         case FIELD_indexHost: return pp->getIndexHost();
         case FIELD_loadHost: return pp->getLoadHost();
+        case FIELD_taskComputationTime: return pp->getTaskComputationTime();
         default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'ComputationTimerMessage' as cValue -- field index out of range?", field);
     }
 }
@@ -501,6 +522,7 @@ void ComputationTimerMessageDescriptor::setFieldValue(omnetpp::any_ptr object, i
         case FIELD_simulationTime: pp->setSimulationTime(value.doubleValue()); break;
         case FIELD_indexHost: pp->setIndexHost(omnetpp::checked_int_cast<int>(value.intValue())); break;
         case FIELD_loadHost: pp->setLoadHost(value.doubleValue()); break;
+        case FIELD_taskComputationTime: pp->setTaskComputationTime(value.doubleValue()); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'ComputationTimerMessage'", field);
     }
 }

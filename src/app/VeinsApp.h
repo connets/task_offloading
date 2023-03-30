@@ -98,8 +98,8 @@ protected:
     void handleOkMessage(OkMessage* okMsg);
     void handleDataMessage(DataMessage* dataMsg);
     void handleResponseMessage(ResponseMessage* responseMsg);
-    void sendAgainData(int index, double load);
-    void sendAgainResponse(int index);
+    void sendAgainData(int index, double load, double taskComputationTime);
+    void sendAgainResponse(int index, double computationTime);
     void balanceLoad(simtime_t previousRandomTime);
     void vehicleHandler();
     void handlePositionUpdate(cObject* obj) override;

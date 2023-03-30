@@ -140,12 +140,12 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
 
     // Timer for re-send ACK messages
     if (AckTimerMessage* ackTimerMsg = dynamic_cast<AckTimerMessage*>(msg)) {
-        sendAgainResponse(ackTimerMsg->getHostIndex());
+        sendAgainResponse(ackTimerMsg->getHostIndex(), ackTimerMsg->getTaskComputationTime());
     }
 
     // Timer for data computation
     if (ComputationTimerMessage* computationTimerMsg = dynamic_cast<ComputationTimerMessage*>(msg)) {
-        sendAgainData(computationTimerMsg->getIndexHost(), computationTimerMsg->getLoadHost());
+        sendAgainData(computationTimerMsg->getIndexHost(), computationTimerMsg->getLoadHost(), computationTimerMsg->getTaskComputationTime());
     }
 
     // Timer for ok message

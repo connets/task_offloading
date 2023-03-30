@@ -69,7 +69,7 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
                     EV << "Load remaining: " << data << std::endl;
 
                     // Schedule the data message
-                    scheduleAt(simTime() + 2 + uniform(0.01, 0.2), dataMsg);
+                    scheduleAt(simTime(), dataMsg);
 
                     // Update global parameter data
                     par("computationLoad").setDoubleValue(data);
@@ -83,13 +83,12 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
                         computationTimerMsg->setLoadHost(vehiclesIterator->second.getCurrentLoad());
 
                         // Calculate time for timer
-                        double CPI = 3;
-                        double I = vehiclesIterator->second.getCurrentLoad();
-                        double CR = vehiclesIterator->second.getCPUFreq();
+                        double CPI = par("vehicleCPI").intValue();
+                        double timeToCompute = vehiclesIterator->second.getTotalComputationTime(CPI);
 
-                        double timeToCompute = CPI * I * (1 / CR);
+                        computationTimerMsg->setTaskComputationTime(timeToCompute);
 
-                        scheduleAt(simTime() + timeToCompute + uniform(5, 10), computationTimerMsg);
+                        scheduleAt(simTime() + timeToCompute + par("dataComputationThreshold").doubleValue(), computationTimerMsg);
                     }
                 }
             }
