@@ -112,7 +112,7 @@ void VeinsApp::onWSM(veins::BaseFrame1609_4* wsm)
         handleResponseMessage(responseMsg);
     }
 
-    // SECTION - When the bus receive the ACK message
+    // SECTION - When the host receive the ACK message
     if (AckMessage* ackMessage = dynamic_cast<AckMessage*>(wsm)) {
         if (findHost()->getIndex() == ackMessage->getHostIndex()) {
             ackReceived = true;
@@ -140,9 +140,7 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
 
     // Timer for re-send ACK messages
     if (AckTimerMessage* ackTimerMsg = dynamic_cast<AckTimerMessage*>(msg)) {
-        if (!ackReceived) {
-            sendAgainResponse(ackTimerMsg->getHostIndex());
-        }
+        sendAgainResponse(ackTimerMsg->getHostIndex());
     }
 
     // Timer for data computation

@@ -14,13 +14,22 @@
 // 
 
 #include "app/VeinsApp.h"
+#include "app/messages/AckTimerMessage_m.h"
 
 using namespace task_offloading;
 
 void VeinsApp::sendAgainResponse(int index)
 {
-    ResponseMessage* responseMsg = new ResponseMessage();
-    populateWSM(responseMsg);
-    responseMsg->setHostIndex(index);
-    scheduleAt(simTime() + 2 + uniform(0.01, 0.2), responseMsg);
+    if (!ackReceived) {
+        ResponseMessage* responseMsg = new ResponseMessage();
+        populateWSM(responseMsg);
+        responseMsg->setHostIndex(index);
+        scheduleAt(simTime() + 2 + uniform(0.01, 0.2), responseMsg);
+
+        // Restart the ACK timer
+        AckTimerMessage* ackTimerMsg = new AckTimerMessage();
+        populateWSM(ackTimerMsg);
+        ackTimerMsg->setHostIndex(index);
+        scheduleAt(simTime() + 2 + uniform(3, 4), ackTimerMsg);
+    }
 }
