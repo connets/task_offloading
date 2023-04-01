@@ -12,6 +12,7 @@
   app/messages/OkMessage_m.h app/messages/DataMessage_m.h \
   app/messages/ResponseMessage_m.h \
   app/loadBalancing/LoadBalancingState.h \
+  app/vehiclesHandling/HelperVehicleInfo.h \
   ../../veins-5.2/src/veins/modules/application/ieee80211p/DemoBaseApplLayer.h \
   ../../veins-5.2/src/veins/base/modules/BaseApplLayer.h \
   ../../veins-5.2/src/veins/base/modules/BaseLayer.h \
@@ -54,7 +55,8 @@
   ../../veins-5.2/src/veins/base/utils/EnumBitset.h \
   ../../veins-5.2/src/veins/modules/mobility/traci/TraCIRegionOfInterest.h \
   ../../veins-5.2/src/veins/modules/mobility/traci/TraCICommandInterface.h \
-  ../../veins-5.2/src/veins/modules/world/traci/trafficLight/TraCITrafficLightProgram.h
+  ../../veins-5.2/src/veins/modules/world/traci/trafficLight/TraCITrafficLightProgram.h \
+  app/messages/AckTimerMessage_m.h
 
 app/VeinsApp.h:
 
@@ -85,6 +87,8 @@ app/messages/DataMessage_m.h:
 app/messages/ResponseMessage_m.h:
 
 app/loadBalancing/LoadBalancingState.h:
+
+app/vehiclesHandling/HelperVehicleInfo.h:
 
 ../../veins-5.2/src/veins/modules/application/ieee80211p/DemoBaseApplLayer.h:
 
@@ -171,3 +175,5 @@ app/loadBalancing/LoadBalancingState.h:
 ../../veins-5.2/src/veins/modules/mobility/traci/TraCICommandInterface.h:
 
 ../../veins-5.2/src/veins/modules/world/traci/trafficLight/TraCITrafficLightProgram.h:
+
+app/messages/AckTimerMessage_m.h:

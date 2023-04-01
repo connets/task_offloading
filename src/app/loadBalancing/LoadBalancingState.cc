@@ -22,6 +22,10 @@ LoadBalancingState::~LoadBalancingState()
     //
 }
 
+LoadBalancingContext::~LoadBalancingContext() {
+    //
+}
+
 LoadBalancingContext::LoadBalancingContext()
 {
     currentState = new Disabled;

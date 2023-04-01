@@ -40,6 +40,7 @@ namespace task_offloading {
         public:
             LoadBalancingContext();
             LoadBalancingContext(LoadBalancingState* newState);
+            virtual ~LoadBalancingContext();
             void setState(LoadBalancingState* newState);
             bool getCurrentState();
 

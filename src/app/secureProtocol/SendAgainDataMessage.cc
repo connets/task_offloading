@@ -18,10 +18,10 @@
 
 using namespace task_offloading;
 
-void VeinsApp::sendAgainData(int index, double load)
+void VeinsApp::sendAgainData(int index, double load, double taskComputationTime)
 {
-    auto found = helpersLoad.find(index);
-    if (found != helpersLoad.end()) {
+    auto found = helpers.find(index);
+    if (found != helpers.end()) {
         // Prepare the new data message
         DataMessage* dataMsg = new DataMessage();
         populateWSM(dataMsg);
@@ -35,6 +35,6 @@ void VeinsApp::sendAgainData(int index, double load)
         computationTimerMsg->setSimulationTime(simTime());
         computationTimerMsg->setIndexHost(index);
         computationTimerMsg->setLoadHost(load);
-        scheduleAt(simTime() + 10 + uniform(5, 10), computationTimerMsg);
+        scheduleAt(simTime() + taskComputationTime + par("dataComputationThreshold").doubleValue(), computationTimerMsg);
     }
 }

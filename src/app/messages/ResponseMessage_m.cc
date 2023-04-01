@@ -178,18 +178,21 @@ ResponseMessage& ResponseMessage::operator=(const ResponseMessage& other)
 void ResponseMessage::copy(const ResponseMessage& other)
 {
     this->hostIndex = other.hostIndex;
+    this->stillAvailable = other.stillAvailable;
 }
 
 void ResponseMessage::parsimPack(omnetpp::cCommBuffer *b) const
 {
     ::veins::BaseFrame1609_4::parsimPack(b);
     doParsimPacking(b,this->hostIndex);
+    doParsimPacking(b,this->stillAvailable);
 }
 
 void ResponseMessage::parsimUnpack(omnetpp::cCommBuffer *b)
 {
     ::veins::BaseFrame1609_4::parsimUnpack(b);
     doParsimUnpacking(b,this->hostIndex);
+    doParsimUnpacking(b,this->stillAvailable);
 }
 
 int ResponseMessage::getHostIndex() const
@@ -202,12 +205,23 @@ void ResponseMessage::setHostIndex(int hostIndex)
     this->hostIndex = hostIndex;
 }
 
+bool ResponseMessage::getStillAvailable() const
+{
+    return this->stillAvailable;
+}
+
+void ResponseMessage::setStillAvailable(bool stillAvailable)
+{
+    this->stillAvailable = stillAvailable;
+}
+
 class ResponseMessageDescriptor : public omnetpp::cClassDescriptor
 {
   private:
     mutable const char **propertyNames;
     enum FieldConstants {
         FIELD_hostIndex,
+        FIELD_stillAvailable,
     };
   public:
     ResponseMessageDescriptor();
@@ -274,7 +288,7 @@ const char *ResponseMessageDescriptor::getProperty(const char *propertyName) con
 int ResponseMessageDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 1+base->getFieldCount() : 1;
+    return base ? 2+base->getFieldCount() : 2;
 }
 
 unsigned int ResponseMessageDescriptor::getFieldTypeFlags(int field) const
@@ -287,8 +301,9 @@ unsigned int ResponseMessageDescriptor::getFieldTypeFlags(int field) const
     }
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,    // FIELD_hostIndex
+        FD_ISEDITABLE,    // FIELD_stillAvailable
     };
-    return (field >= 0 && field < 1) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 2) ? fieldTypeFlags[field] : 0;
 }
 
 const char *ResponseMessageDescriptor::getFieldName(int field) const
@@ -301,8 +316,9 @@ const char *ResponseMessageDescriptor::getFieldName(int field) const
     }
     static const char *fieldNames[] = {
         "hostIndex",
+        "stillAvailable",
     };
-    return (field >= 0 && field < 1) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 2) ? fieldNames[field] : nullptr;
 }
 
 int ResponseMessageDescriptor::findField(const char *fieldName) const
@@ -310,6 +326,7 @@ int ResponseMessageDescriptor::findField(const char *fieldName) const
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     int baseIndex = base ? base->getFieldCount() : 0;
     if (strcmp(fieldName, "hostIndex") == 0) return baseIndex + 0;
+    if (strcmp(fieldName, "stillAvailable") == 0) return baseIndex + 1;
     return base ? base->findField(fieldName) : -1;
 }
 
@@ -323,8 +340,9 @@ const char *ResponseMessageDescriptor::getFieldTypeString(int field) const
     }
     static const char *fieldTypeStrings[] = {
         "int",    // FIELD_hostIndex
+        "bool",    // FIELD_stillAvailable
     };
-    return (field >= 0 && field < 1) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 2) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **ResponseMessageDescriptor::getFieldPropertyNames(int field) const
@@ -408,6 +426,7 @@ std::string ResponseMessageDescriptor::getFieldValueAsString(omnetpp::any_ptr ob
     ResponseMessage *pp = omnetpp::fromAnyPtr<ResponseMessage>(object); (void)pp;
     switch (field) {
         case FIELD_hostIndex: return long2string(pp->getHostIndex());
+        case FIELD_stillAvailable: return bool2string(pp->getStillAvailable());
         default: return "";
     }
 }
@@ -425,6 +444,7 @@ void ResponseMessageDescriptor::setFieldValueAsString(omnetpp::any_ptr object, i
     ResponseMessage *pp = omnetpp::fromAnyPtr<ResponseMessage>(object); (void)pp;
     switch (field) {
         case FIELD_hostIndex: pp->setHostIndex(string2long(value)); break;
+        case FIELD_stillAvailable: pp->setStillAvailable(string2bool(value)); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'ResponseMessage'", field);
     }
 }
@@ -440,6 +460,7 @@ omnetpp::cValue ResponseMessageDescriptor::getFieldValue(omnetpp::any_ptr object
     ResponseMessage *pp = omnetpp::fromAnyPtr<ResponseMessage>(object); (void)pp;
     switch (field) {
         case FIELD_hostIndex: return pp->getHostIndex();
+        case FIELD_stillAvailable: return pp->getStillAvailable();
         default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'ResponseMessage' as cValue -- field index out of range?", field);
     }
 }
@@ -457,6 +478,7 @@ void ResponseMessageDescriptor::setFieldValue(omnetpp::any_ptr object, int field
     ResponseMessage *pp = omnetpp::fromAnyPtr<ResponseMessage>(object); (void)pp;
     switch (field) {
         case FIELD_hostIndex: pp->setHostIndex(omnetpp::checked_int_cast<int>(value.intValue())); break;
+        case FIELD_stillAvailable: pp->setStillAvailable(value.boolValue()); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'ResponseMessage'", field);
     }
 }

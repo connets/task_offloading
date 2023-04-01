@@ -29,6 +29,7 @@
 #include "app/messages/DataMessage_m.h"
 #include "app/messages/ResponseMessage_m.h"
 #include "app/loadBalancing/LoadBalancingState.h"
+#include "app/vehiclesHandling/HelperVehicleInfo.h"
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
 
 using namespace omnetpp;
@@ -50,13 +51,37 @@ public:
     void initialize(int stage) override;
     void finish() override;
 
+private:
+    // Simulations signals
+    // SECTION - Task
+    simsignal_t startTask;
+    simsignal_t stopTask;
+
+    // SECTION - BalanceLoad
+    simsignal_t startBalance;
+    simsignal_t stopBalance;
+
+    // SECTION - Help requests collection
+    simsignal_t startHelp;
+    simsignal_t stopHelp;
+
+    // SECTION - Data messages statistics
+    simsignal_t startDataMessages;
+    simsignal_t stopDataMessages;
+
+    // SECTION - Response messages statistics
+    simsignal_t startResponseMessages;
+    simsignal_t stopResponseMessages;
+
+    // SECTION - OK messages statistics
+    simsignal_t okMessageSent;
+    simsignal_t okMessageLoad;
+
 protected:
     simtime_t lastDroveAt;
     bool sentHelpMessage;
     bool helpReceived;
-    std::map<int, double> helpersLoad;
-    std::map<int, double> helpersFreq;
-    std::map<int, veins::LAddress::L2Type> helpersAddresses;
+    std::map<int, HelperVehicleInfo> helpers;
     simtime_t newRandomTime;
     int busIndex;
     LoadBalancingContext loadBalancingState;
@@ -73,8 +98,8 @@ protected:
     void handleOkMessage(OkMessage* okMsg);
     void handleDataMessage(DataMessage* dataMsg);
     void handleResponseMessage(ResponseMessage* responseMsg);
-    void sendAgainData(int index, double load);
-    void sendAgainResponse(int index);
+    void sendAgainData(int index, double load, double taskComputationTime);
+    void sendAgainResponse(int index, double computationTime);
     void balanceLoad(simtime_t previousRandomTime);
     void vehicleHandler();
     void handlePositionUpdate(cObject* obj) override;

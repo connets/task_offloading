@@ -23,4 +23,5 @@ packet ComputationTimerMessage extends veins::BaseFrame1609_4 {
     simtime_t simulationTime;
     int indexHost;
     double loadHost;
+    double taskComputationTime;
 }
