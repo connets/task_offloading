@@ -40,6 +40,7 @@ namespace task_offloading {
  *     simtime_t simulationTime;
  *     int indexHost;
  *     double loadHost;
+ *     double taskComputationTime;
  * }
  * </pre>
  */
@@ -49,6 +50,7 @@ class ComputationTimerMessage : public ::veins::BaseFrame1609_4
     ::omnetpp::simtime_t simulationTime = SIMTIME_ZERO;
     int indexHost = 0;
     double loadHost = 0;
+    double taskComputationTime = 0;
 
   private:
     void copy(const ComputationTimerMessage& other);
@@ -73,6 +75,9 @@ class ComputationTimerMessage : public ::veins::BaseFrame1609_4
 
     virtual double getLoadHost() const;
     virtual void setLoadHost(double loadHost);
+
+    virtual double getTaskComputationTime() const;
+    virtual void setTaskComputationTime(double taskComputationTime);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const ComputationTimerMessage& obj) {obj.parsimPack(b);}
