@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 
 <!--
 // Copyright (C) 2011 Christoph Sommer <sommer@ccs-labs.org>
@@ -31,28 +31,11 @@
 // work.  If not, see <http://creativecommons.org/licenses/by-sa/4.0/>.
 -->
 
-<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+<!-- debug config -->
+<launch>
+    <copy file="task_offloading.net.xml" />
+    <copy file="task_offloading.rou.xml" />
+    <copy file="task_offloading.poly.xml" />
+    <copy file="task_offloading.sumo.cfg" type="config" />
+</launch>
 
-    <input>
-        <net-file value="v5_0_Final.net.xml"/>
-        <route-files value="v5_0_Final.rou.xml"/>
-        <additional-files value="v5_0_Final.poly.xml"/>
-    </input>
-
-    <time>
-        <begin value="0"/>
-        <end value="1000"/>
-        <step-length value="0.1"/>
-    </time>
-
-    <report>
-        <xml-validation value="never"/>
-        <xml-validation.net value="never"/>
-        <no-step-log value="true"/>
-    </report>
-
-    <gui_only>
-        <start value="true"/>
-    </gui_only>
-
-</configuration>
