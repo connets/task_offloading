@@ -30,6 +30,8 @@
 #include "app/messages/ResponseMessage_m.h"
 #include "app/loadBalancing/LoadBalancingState.h"
 #include "app/vehiclesHandling/HelperVehicleInfo.h"
+#include "app/loadBalancing/sortingAlgorithm/FIFO.h"
+#include "app/loadBalancing/sortingAlgorithm/ComputationTime.h"
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
 
 using namespace omnetpp;
@@ -87,6 +89,8 @@ protected:
     LoadBalancingContext loadBalancingState;
     bool ackReceived;
     double hostCpuFreq;
+    FIFO* loadBalancingFIFO;
+    ComputationTime* loadBalancingCompTime;
 
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;

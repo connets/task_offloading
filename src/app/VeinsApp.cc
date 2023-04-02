@@ -58,6 +58,9 @@ void VeinsApp::initialize(int stage)
         // Initialize the BUS state
         loadBalancingState = LoadBalancingContext(new Disabled);
 
+        // Initialize the load balancing algorithm
+        loadBalancingFIFO = dynamic_cast<FIFO*>(getParentModule()->getSubmodule("loadBalancingAlgorithm"));
+        loadBalancingCompTime = dynamic_cast<ComputationTime*>(getParentModule()->getSubmodule("loadBalancingAlgorithm"));
 
         // Registering all signals
         startTask = registerSignal("task_started");
