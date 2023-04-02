@@ -18,15 +18,21 @@ package task_offloading.simulations.task_offloading;
 import org.car2x.veins.nodes.RSU;
 import org.car2x.veins.nodes.Scenario;
 import task_offloading.app.VeinsApp;
+import task_offloading.app.loadBalancing.sortingAlgorithm.ISorting;
 
 network task_offloading extends Scenario
 {
+    @display("bgb=3500,3500");
     submodules:
         rsu[1]: RSU {
-            @display("p=150,140;i=veins/sign/yellowdiamond;is=vs");
+            @display("p=170,140;i=veins/sign/yellowdiamond;is=vs");
         }
 
         veinsApp: VeinsApp {
-            @display("p=150,140");
+            @display("p=98,140");
+        }
+        
+        loadBalancingAlgorithm: <default("FIFO")> like ISorting {
+            @display("i=block/cogwheel;p=248,140");
         }
 }
