@@ -38,6 +38,8 @@ OBJS = \
     $O/app/VeinsApp.o \
     $O/app/loadBalancing/LoadBalancing.o \
     $O/app/loadBalancing/LoadBalancingState.o \
+    $O/app/loadBalancing/sortingAlgorithm/ComputationTime.o \
+    $O/app/loadBalancing/sortingAlgorithm/FIFO.o \
     $O/app/messagesHandling/DataMessageHandler.o \
     $O/app/messagesHandling/HelpMessageHandler.o \
     $O/app/messagesHandling/OkMessageHandler.o \
