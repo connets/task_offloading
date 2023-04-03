@@ -27,16 +27,7 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
     emit(stopHelp, simTime());
 
     int vehiclesCounter = helpers.size();
-    std::list<int> vehiclesOrdered;
-
-    // Get the sorting algorithm from ini file and then check which one to use
-    const char* algorithm = par("sortingAlgorithm").stringValue();
-
-    if (strcmp(algorithm, "ComputationTime") == 0) {
-        vehiclesOrdered = loadBalancingCompTime->sort(helpers);
-    } else if (strcmp(algorithm, "FIFO") == 0) {
-        vehiclesOrdered = loadBalancingFIFO->sort(helpers);
-    }
+    std::list<int> vehiclesOrdered = loadBalancingAlgorithm->sort(helpers);
 
     // Send signal for stop balance load
     emit(stopBalance, simTime());
