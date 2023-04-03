@@ -13,21 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef APP_LOADBALANCING_SORTINGALGORITHM_COMPUTATIONTIME_H_
-#define APP_LOADBALANCING_SORTINGALGORITHM_COMPUTATIONTIME_H_
+#include "BaseSorting.h"
 
-#include "veins/veins.h"
-#include "app/vehiclesHandling/HelperVehicleInfo.h"
-#include "app/loadBalancing/sortingAlgorithm/BaseSorting.h"
-#include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
+using namespace task_offloading;
 
-namespace task_offloading {
-    class ComputationTime : public BaseSorting {
-    public:
-        ComputationTime();
-        virtual ~ComputationTime();
-        std::list<int> sort(const std::map<int, HelperVehicleInfo> &map) override;
-    };
+BaseSorting::BaseSorting() {
+    //
+
 }
 
-#endif /* APP_LOADBALANCING_SORTINGALGORITHM_COMPUTATIONTIME_H_ */
+BaseSorting::~BaseSorting() {
+    //
+}

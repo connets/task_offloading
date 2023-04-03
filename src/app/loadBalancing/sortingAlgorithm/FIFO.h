@@ -18,14 +18,15 @@
 
 #include "veins/veins.h"
 #include "app/vehiclesHandling/HelperVehicleInfo.h"
+#include "app/loadBalancing/sortingAlgorithm/BaseSorting.h"
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
 
 namespace task_offloading {
-    class FIFO : public cSimpleModule {
+    class FIFO : public BaseSorting {
     public:
         FIFO();
         virtual ~FIFO();
-        std::list<int> sort(const std::map<int, HelperVehicleInfo> &map);
+        std::list<int> sort(const std::map<int, HelperVehicleInfo> &map) override;
     };
 }
 

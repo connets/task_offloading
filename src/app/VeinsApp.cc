@@ -39,6 +39,7 @@ Define_Module(task_offloading::VeinsApp);
 void VeinsApp::initialize(int stage)
 {
     veins::DemoBaseApplLayer::initialize(stage);
+
     if (stage == 0) {
         // Initializing members and pointers of your application goes here
         lastDroveAt = simTime();
@@ -59,8 +60,7 @@ void VeinsApp::initialize(int stage)
         loadBalancingState = LoadBalancingContext(new Disabled);
 
         // Initialize the load balancing algorithm
-        loadBalancingFIFO = dynamic_cast<FIFO*>(getParentModule()->getSubmodule("loadBalancingAlgorithm"));
-        loadBalancingCompTime = dynamic_cast<ComputationTime*>(getParentModule()->getSubmodule("loadBalancingAlgorithm"));
+        loadBalancingAlgorithm = check_and_cast<BaseSorting*>(findModuleByPath("task_offloading.loadBalancingAlgorithm"));
 
         // Registering all signals
         startTask = registerSignal("task_started");
