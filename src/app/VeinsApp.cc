@@ -39,18 +39,42 @@ Define_Module(task_offloading::VeinsApp);
 void VeinsApp::initialize(int stage)
 {
     veins::DemoBaseApplLayer::initialize(stage);
+
     if (stage == 0) {
         // Initializing members and pointers of your application goes here
         lastDroveAt = simTime();
         sentHelpMessage = false;
         helpReceived = false;
-        helpersLoad[0] = par("busVehicleLoad").doubleValue();
-        helpersFreq[0] = par("randomCpuVehicleFreq").doubleValue();
-        busIndex = 0;
         newRandomTime = 0;
-        loadBalancingState = LoadBalancingContext(new Disabled);
         ackReceived = false;
         hostCpuFreq = 0;
+
+        // BUS SECTION
+        // Calculate BUS load
+        double busLoad = par("randomVehicleLoadActual").doubleValue() * par("busVehicleLoad").doubleValue();
+        double busFreq = par("randomCpuVehicleFreq").doubleValue();
+        busIndex = 0;
+        helpers[0] = HelperVehicleInfo(busLoad, busFreq, simTime(), busIndex);
+
+        // Initialize the BUS state
+        loadBalancingState = LoadBalancingContext(new Disabled);
+
+        // Initialize the load balancing algorithm
+        loadBalancingAlgorithm = check_and_cast<BaseSorting*>(findModuleByPath("task_offloading.loadBalancingAlgorithm"));
+
+        // Registering all signals
+        startTask = registerSignal("task_started");
+        stopTask = registerSignal("task_stopped");
+        startBalance = registerSignal("start_balance_loading");
+        stopBalance = registerSignal("stop_balance_loading");
+        startHelp = registerSignal("start_bus_help_rq");
+        stopHelp = registerSignal("stop_bus_help_rq");
+        startDataMessages = registerSignal("start_sending_data");
+        stopDataMessages = registerSignal("stop_sending_data");
+        startResponseMessages = registerSignal("start_getting_response");
+        stopResponseMessages = registerSignal("stop_getting_response");
+        okMessageSent = registerSignal("ok_message_sent");
+        okMessageLoad = registerSignal("ok_message_load");
     }
 }
 
@@ -91,7 +115,7 @@ void VeinsApp::onWSM(veins::BaseFrame1609_4* wsm)
         handleResponseMessage(responseMsg);
     }
 
-    // SECTION - When the bus receive the ACK message
+    // SECTION - When the host receive the ACK message
     if (AckMessage* ackMessage = dynamic_cast<AckMessage*>(wsm)) {
         if (findHost()->getIndex() == ackMessage->getHostIndex()) {
             ackReceived = true;
@@ -119,14 +143,12 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
 
     // Timer for re-send ACK messages
     if (AckTimerMessage* ackTimerMsg = dynamic_cast<AckTimerMessage*>(msg)) {
-        if (!ackReceived) {
-            sendAgainResponse(ackTimerMsg->getHostIndex());
-        }
+        sendAgainResponse(ackTimerMsg->getHostIndex(), ackTimerMsg->getTaskComputationTime());
     }
 
     // Timer for data computation
     if (ComputationTimerMessage* computationTimerMsg = dynamic_cast<ComputationTimerMessage*>(msg)) {
-        sendAgainData(computationTimerMsg->getIndexHost(), computationTimerMsg->getLoadHost());
+        sendAgainData(computationTimerMsg->getIndexHost(), computationTimerMsg->getLoadHost(), computationTimerMsg->getTaskComputationTime());
     }
 
     // Timer for ok message
@@ -137,18 +159,27 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
 
             // Send the ok message
             sendDown(okMsg->dup());
+
+            // Emit the signal of ok message sent
+            emit(okMessageSent, simTime());
         }
     }
 
     // Timer for data message
     if (DataMessage* dataMsg = dynamic_cast<DataMessage*>(msg)) {
         sendDown(dataMsg->dup());
+
+        // Send signal for data message statistic with the host ID
+        emit(startDataMessages, dataMsg->getHostIndex());
     }
 
     // Timer for response message
     if (ResponseMessage* responseMsg = dynamic_cast<ResponseMessage*>(msg)) {
         findHost()->getDisplayString().setTagArg("i", 1, "white");
         sendDown(responseMsg->dup());
+
+        // Send signal for response message statistic with the host ID
+        emit(startResponseMessages, responseMsg->getHostIndex());
     }
 
     // Timer for ACK message

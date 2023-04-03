@@ -38,12 +38,16 @@ OBJS = \
     $O/app/VeinsApp.o \
     $O/app/loadBalancing/LoadBalancing.o \
     $O/app/loadBalancing/LoadBalancingState.o \
+    $O/app/loadBalancing/sortingAlgorithm/BaseSorting.o \
+    $O/app/loadBalancing/sortingAlgorithm/ComputationTime.o \
+    $O/app/loadBalancing/sortingAlgorithm/FIFO.o \
     $O/app/messagesHandling/DataMessageHandler.o \
     $O/app/messagesHandling/HelpMessageHandler.o \
     $O/app/messagesHandling/OkMessageHandler.o \
     $O/app/messagesHandling/ResponseMessageHandler.o \
     $O/app/secureProtocol/SendAgainDataMessage.o \
     $O/app/secureProtocol/SendAgainResponseMessage.o \
+    $O/app/vehiclesHandling/HelperVehicleInfo.o \
     $O/app/vehiclesHandling/VehicleHandler.o \
     $O/app/messages/AckMessage_m.o \
     $O/app/messages/AckTimerMessage_m.o \

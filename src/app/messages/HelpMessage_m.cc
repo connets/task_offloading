@@ -178,18 +178,21 @@ HelpMessage& HelpMessage::operator=(const HelpMessage& other)
 void HelpMessage::copy(const HelpMessage& other)
 {
     this->vehicleIndex = other.vehicleIndex;
+    this->minimumLoadRequested = other.minimumLoadRequested;
 }
 
 void HelpMessage::parsimPack(omnetpp::cCommBuffer *b) const
 {
     ::veins::BaseFrame1609_4::parsimPack(b);
     doParsimPacking(b,this->vehicleIndex);
+    doParsimPacking(b,this->minimumLoadRequested);
 }
 
 void HelpMessage::parsimUnpack(omnetpp::cCommBuffer *b)
 {
     ::veins::BaseFrame1609_4::parsimUnpack(b);
     doParsimUnpacking(b,this->vehicleIndex);
+    doParsimUnpacking(b,this->minimumLoadRequested);
 }
 
 int HelpMessage::getVehicleIndex() const
@@ -202,12 +205,23 @@ void HelpMessage::setVehicleIndex(int vehicleIndex)
     this->vehicleIndex = vehicleIndex;
 }
 
+double HelpMessage::getMinimumLoadRequested() const
+{
+    return this->minimumLoadRequested;
+}
+
+void HelpMessage::setMinimumLoadRequested(double minimumLoadRequested)
+{
+    this->minimumLoadRequested = minimumLoadRequested;
+}
+
 class HelpMessageDescriptor : public omnetpp::cClassDescriptor
 {
   private:
     mutable const char **propertyNames;
     enum FieldConstants {
         FIELD_vehicleIndex,
+        FIELD_minimumLoadRequested,
     };
   public:
     HelpMessageDescriptor();
@@ -274,7 +288,7 @@ const char *HelpMessageDescriptor::getProperty(const char *propertyName) const
 int HelpMessageDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 1+base->getFieldCount() : 1;
+    return base ? 2+base->getFieldCount() : 2;
 }
 
 unsigned int HelpMessageDescriptor::getFieldTypeFlags(int field) const
@@ -287,8 +301,9 @@ unsigned int HelpMessageDescriptor::getFieldTypeFlags(int field) const
     }
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,    // FIELD_vehicleIndex
+        FD_ISEDITABLE,    // FIELD_minimumLoadRequested
     };
-    return (field >= 0 && field < 1) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 2) ? fieldTypeFlags[field] : 0;
 }
 
 const char *HelpMessageDescriptor::getFieldName(int field) const
@@ -301,8 +316,9 @@ const char *HelpMessageDescriptor::getFieldName(int field) const
     }
     static const char *fieldNames[] = {
         "vehicleIndex",
+        "minimumLoadRequested",
     };
-    return (field >= 0 && field < 1) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 2) ? fieldNames[field] : nullptr;
 }
 
 int HelpMessageDescriptor::findField(const char *fieldName) const
@@ -310,6 +326,7 @@ int HelpMessageDescriptor::findField(const char *fieldName) const
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     int baseIndex = base ? base->getFieldCount() : 0;
     if (strcmp(fieldName, "vehicleIndex") == 0) return baseIndex + 0;
+    if (strcmp(fieldName, "minimumLoadRequested") == 0) return baseIndex + 1;
     return base ? base->findField(fieldName) : -1;
 }
 
@@ -323,8 +340,9 @@ const char *HelpMessageDescriptor::getFieldTypeString(int field) const
     }
     static const char *fieldTypeStrings[] = {
         "int",    // FIELD_vehicleIndex
+        "double",    // FIELD_minimumLoadRequested
     };
-    return (field >= 0 && field < 1) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 2) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **HelpMessageDescriptor::getFieldPropertyNames(int field) const
@@ -408,6 +426,7 @@ std::string HelpMessageDescriptor::getFieldValueAsString(omnetpp::any_ptr object
     HelpMessage *pp = omnetpp::fromAnyPtr<HelpMessage>(object); (void)pp;
     switch (field) {
         case FIELD_vehicleIndex: return long2string(pp->getVehicleIndex());
+        case FIELD_minimumLoadRequested: return double2string(pp->getMinimumLoadRequested());
         default: return "";
     }
 }
@@ -425,6 +444,7 @@ void HelpMessageDescriptor::setFieldValueAsString(omnetpp::any_ptr object, int f
     HelpMessage *pp = omnetpp::fromAnyPtr<HelpMessage>(object); (void)pp;
     switch (field) {
         case FIELD_vehicleIndex: pp->setVehicleIndex(string2long(value)); break;
+        case FIELD_minimumLoadRequested: pp->setMinimumLoadRequested(string2double(value)); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'HelpMessage'", field);
     }
 }
@@ -440,6 +460,7 @@ omnetpp::cValue HelpMessageDescriptor::getFieldValue(omnetpp::any_ptr object, in
     HelpMessage *pp = omnetpp::fromAnyPtr<HelpMessage>(object); (void)pp;
     switch (field) {
         case FIELD_vehicleIndex: return pp->getVehicleIndex();
+        case FIELD_minimumLoadRequested: return pp->getMinimumLoadRequested();
         default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'HelpMessage' as cValue -- field index out of range?", field);
     }
 }
@@ -457,6 +478,7 @@ void HelpMessageDescriptor::setFieldValue(omnetpp::any_ptr object, int field, in
     HelpMessage *pp = omnetpp::fromAnyPtr<HelpMessage>(object); (void)pp;
     switch (field) {
         case FIELD_vehicleIndex: pp->setVehicleIndex(omnetpp::checked_int_cast<int>(value.intValue())); break;
+        case FIELD_minimumLoadRequested: pp->setMinimumLoadRequested(value.doubleValue()); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'HelpMessage'", field);
     }
 }

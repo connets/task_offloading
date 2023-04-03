@@ -25,14 +25,23 @@ void VeinsApp::handleResponseMessage(ResponseMessage* responseMsg)
         AckMessage* ackMsg = new AckMessage();
         populateWSM(ackMsg);
         ackMsg->setHostIndex(responseMsg->getHostIndex());
-        scheduleAt(simTime() + 2 + uniform(1, 2), ackMsg);
+        scheduleAt(simTime(), ackMsg);
     }
 
-    if (findHost()->getIndex() == busIndex) {
-        helpersLoad.erase(responseMsg->getHostIndex());
-        EV << "Deleted host: " << responseMsg->getHostIndex() << std::endl <<"Host remaining: " << helpersLoad.size() - 1 << std::endl;
+    if (findHost()->getIndex() == busIndex && !(responseMsg->getStillAvailable())) {
+        helpers.erase(responseMsg->getHostIndex());
+        EV << "Deleted host: " << responseMsg->getHostIndex() << std::endl <<"Host remaining: " << helpers.size() - 1 << std::endl;
 
-        if (helpersLoad.size() == 1) {
+        // Check if there is more data to load at the end of the last response
+        // message, to send signal of task terminated
+        if(!(par("computationLoad").doubleValue() > 0)) {
+            emit(stopTask, simTime());
+        }
+
+        // Send signal for having received response message statistic
+        emit(stopResponseMessages, responseMsg->getHostIndex());
+
+        if (helpers.size() == 1) {
             findHost()->getDisplayString().setTagArg("i", 1, "white");
             helpReceived = false;
             sentHelpMessage = false;

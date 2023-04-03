@@ -38,6 +38,7 @@ namespace task_offloading {
  * packet ResponseMessage extends veins::BaseFrame1609_4
  * {
  *     int hostIndex;
+ *     bool stillAvailable;
  * }
  * </pre>
  */
@@ -45,6 +46,7 @@ class ResponseMessage : public ::veins::BaseFrame1609_4
 {
   protected:
     int hostIndex = 0;
+    bool stillAvailable = false;
 
   private:
     void copy(const ResponseMessage& other);
@@ -63,6 +65,9 @@ class ResponseMessage : public ::veins::BaseFrame1609_4
 
     virtual int getHostIndex() const;
     virtual void setHostIndex(int hostIndex);
+
+    virtual bool getStillAvailable() const;
+    virtual void setStillAvailable(bool stillAvailable);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const ResponseMessage& obj) {obj.parsimPack(b);}

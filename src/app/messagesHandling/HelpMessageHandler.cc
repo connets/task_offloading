@@ -26,35 +26,34 @@ void VeinsApp::handleHelpMessage(HelpMessage* helpMsg)
 
         // Set for every single host a random value for current load and cpu freq
         double randomVehicleLoad = par("randomVehicleLoadActual").doubleValue();
-        double maximumVehicleLoad = par("maximumVehicleLoadActual").doubleValue();
         double commonVehicleLoad = par("commonVehicleLoad").doubleValue();
 
         // Get the CPU freq and assign to host variable
         double cpuFreq = par("randomCpuVehicleFreq").doubleValue();
         hostCpuFreq = cpuFreq;
 
-        // Check the random vehicle load is inferior to maximum
-        // actual vehicle load for computation
-        if (randomVehicleLoad < maximumVehicleLoad) {
-            // Calculate real actual load
-            // Actual load = common load - random actual load
-            double actualLoad = commonVehicleLoad - randomVehicleLoad - 1e08;
+        // Calculate real actual load
+        // Actual load = common load (MB) * random actual load (% between 0 and 1)
+        double actualLoad = commonVehicleLoad * randomVehicleLoad;
+        double minimumLoadRequested = helpMsg->getMinimumLoadRequested();
 
-            // If the host is available send an ok message after
-            // some time with ID and the computation load available
-            if (actualLoad > 0) {
-                // Prepare the message
-                OkMessage* okMsg = new OkMessage();
-                populateWSM(okMsg);
-                okMsg->setSenderAddress(myId);
-                okMsg->setHostID(findHost()->getIndex());
-                okMsg->setAvailableLoad(actualLoad);
-                okMsg->setCpuFreq(cpuFreq);
+        // If the host is available send an ok message after
+        // some time with ID and the computation load available
+        if (actualLoad >= minimumLoadRequested) {
+            // Prepare the message
+            OkMessage* okMsg = new OkMessage();
+            populateWSM(okMsg);
+            okMsg->setSenderAddress(myId);
+            okMsg->setHostID(findHost()->getIndex());
+            okMsg->setAvailableLoad(actualLoad);
+            okMsg->setCpuFreq(cpuFreq);
 
-                // Schedule the ok message
-                scheduleAt(simTime() + 2 + uniform(2, 4), okMsg);
-            }
-        } else if (findHost()->getIndex() != busIndex) {
+            // Emit the signal of the ok message load
+            emit(okMessageLoad, actualLoad);
+
+            // Schedule the ok message
+            scheduleAt(simTime() + par("vehicleOkMessageTime").doubleValue(), okMsg);
+        } else if (findHost()->getIndex() != busIndex && actualLoad < minimumLoadRequested) {
             findHost()->getDisplayString().setTagArg("i", 1, "white");
         }
     }

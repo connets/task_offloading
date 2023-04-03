@@ -178,18 +178,21 @@ AckTimerMessage& AckTimerMessage::operator=(const AckTimerMessage& other)
 void AckTimerMessage::copy(const AckTimerMessage& other)
 {
     this->hostIndex = other.hostIndex;
+    this->taskComputationTime = other.taskComputationTime;
 }
 
 void AckTimerMessage::parsimPack(omnetpp::cCommBuffer *b) const
 {
     ::veins::BaseFrame1609_4::parsimPack(b);
     doParsimPacking(b,this->hostIndex);
+    doParsimPacking(b,this->taskComputationTime);
 }
 
 void AckTimerMessage::parsimUnpack(omnetpp::cCommBuffer *b)
 {
     ::veins::BaseFrame1609_4::parsimUnpack(b);
     doParsimUnpacking(b,this->hostIndex);
+    doParsimUnpacking(b,this->taskComputationTime);
 }
 
 int AckTimerMessage::getHostIndex() const
@@ -202,12 +205,23 @@ void AckTimerMessage::setHostIndex(int hostIndex)
     this->hostIndex = hostIndex;
 }
 
+double AckTimerMessage::getTaskComputationTime() const
+{
+    return this->taskComputationTime;
+}
+
+void AckTimerMessage::setTaskComputationTime(double taskComputationTime)
+{
+    this->taskComputationTime = taskComputationTime;
+}
+
 class AckTimerMessageDescriptor : public omnetpp::cClassDescriptor
 {
   private:
     mutable const char **propertyNames;
     enum FieldConstants {
         FIELD_hostIndex,
+        FIELD_taskComputationTime,
     };
   public:
     AckTimerMessageDescriptor();
@@ -274,7 +288,7 @@ const char *AckTimerMessageDescriptor::getProperty(const char *propertyName) con
 int AckTimerMessageDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 1+base->getFieldCount() : 1;
+    return base ? 2+base->getFieldCount() : 2;
 }
 
 unsigned int AckTimerMessageDescriptor::getFieldTypeFlags(int field) const
@@ -287,8 +301,9 @@ unsigned int AckTimerMessageDescriptor::getFieldTypeFlags(int field) const
     }
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,    // FIELD_hostIndex
+        FD_ISEDITABLE,    // FIELD_taskComputationTime
     };
-    return (field >= 0 && field < 1) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 2) ? fieldTypeFlags[field] : 0;
 }
 
 const char *AckTimerMessageDescriptor::getFieldName(int field) const
@@ -301,8 +316,9 @@ const char *AckTimerMessageDescriptor::getFieldName(int field) const
     }
     static const char *fieldNames[] = {
         "hostIndex",
+        "taskComputationTime",
     };
-    return (field >= 0 && field < 1) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 2) ? fieldNames[field] : nullptr;
 }
 
 int AckTimerMessageDescriptor::findField(const char *fieldName) const
@@ -310,6 +326,7 @@ int AckTimerMessageDescriptor::findField(const char *fieldName) const
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
     int baseIndex = base ? base->getFieldCount() : 0;
     if (strcmp(fieldName, "hostIndex") == 0) return baseIndex + 0;
+    if (strcmp(fieldName, "taskComputationTime") == 0) return baseIndex + 1;
     return base ? base->findField(fieldName) : -1;
 }
 
@@ -323,8 +340,9 @@ const char *AckTimerMessageDescriptor::getFieldTypeString(int field) const
     }
     static const char *fieldTypeStrings[] = {
         "int",    // FIELD_hostIndex
+        "double",    // FIELD_taskComputationTime
     };
-    return (field >= 0 && field < 1) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 2) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **AckTimerMessageDescriptor::getFieldPropertyNames(int field) const
@@ -408,6 +426,7 @@ std::string AckTimerMessageDescriptor::getFieldValueAsString(omnetpp::any_ptr ob
     AckTimerMessage *pp = omnetpp::fromAnyPtr<AckTimerMessage>(object); (void)pp;
     switch (field) {
         case FIELD_hostIndex: return long2string(pp->getHostIndex());
+        case FIELD_taskComputationTime: return double2string(pp->getTaskComputationTime());
         default: return "";
     }
 }
@@ -425,6 +444,7 @@ void AckTimerMessageDescriptor::setFieldValueAsString(omnetpp::any_ptr object, i
     AckTimerMessage *pp = omnetpp::fromAnyPtr<AckTimerMessage>(object); (void)pp;
     switch (field) {
         case FIELD_hostIndex: pp->setHostIndex(string2long(value)); break;
+        case FIELD_taskComputationTime: pp->setTaskComputationTime(string2double(value)); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'AckTimerMessage'", field);
     }
 }
@@ -440,6 +460,7 @@ omnetpp::cValue AckTimerMessageDescriptor::getFieldValue(omnetpp::any_ptr object
     AckTimerMessage *pp = omnetpp::fromAnyPtr<AckTimerMessage>(object); (void)pp;
     switch (field) {
         case FIELD_hostIndex: return pp->getHostIndex();
+        case FIELD_taskComputationTime: return pp->getTaskComputationTime();
         default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'AckTimerMessage' as cValue -- field index out of range?", field);
     }
 }
@@ -457,6 +478,7 @@ void AckTimerMessageDescriptor::setFieldValue(omnetpp::any_ptr object, int field
     AckTimerMessage *pp = omnetpp::fromAnyPtr<AckTimerMessage>(object); (void)pp;
     switch (field) {
         case FIELD_hostIndex: pp->setHostIndex(omnetpp::checked_int_cast<int>(value.intValue())); break;
+        case FIELD_taskComputationTime: pp->setTaskComputationTime(value.doubleValue()); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'AckTimerMessage'", field);
     }
 }
