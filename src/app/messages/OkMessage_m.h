@@ -38,6 +38,7 @@ namespace task_offloading {
  * packet OkMessage extends veins::BaseFrame1609_4
  * {
  *     int hostID;
+ *     string index;
  *     double availableLoad;
  *     double cpuFreq;
  *     veins::LAddress::L2Type senderAddress = -1;
@@ -48,6 +49,7 @@ class OkMessage : public ::veins::BaseFrame1609_4
 {
   protected:
     int hostID = 0;
+    ::omnetpp::opp_string index;
     double availableLoad = 0;
     double cpuFreq = 0;
     ::veins::LAddress::L2Type senderAddress = -1;
@@ -69,6 +71,9 @@ class OkMessage : public ::veins::BaseFrame1609_4
 
     virtual int getHostID() const;
     virtual void setHostID(int hostID);
+
+    virtual const char * getIndex() const;
+    virtual void setIndex(const char * index);
 
     virtual double getAvailableLoad() const;
     virtual void setAvailableLoad(double availableLoad);

@@ -22,4 +22,5 @@ namespace task_offloading;
 packet ResponseMessage extends veins::BaseFrame1609_4 {
     int hostIndex;
     bool stillAvailable;
+    double dataComputed;
 }

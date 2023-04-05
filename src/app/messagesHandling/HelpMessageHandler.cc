@@ -47,6 +47,7 @@ void VeinsApp::handleHelpMessage(HelpMessage* helpMsg)
             okMsg->setHostID(findHost()->getIndex());
             okMsg->setAvailableLoad(actualLoad);
             okMsg->setCpuFreq(cpuFreq);
+            okMsg->setIndex(findHost()->getName());
 
             // Emit the signal of the ok message load
             emit(okMessageLoad, actualLoad);

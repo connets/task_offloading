@@ -18,21 +18,30 @@
 using namespace task_offloading;
 
 HelperVehicleInfo::HelperVehicleInfo() {
+    this->index = "auto0";
     this->hostCurrentLoad = 0;
     this->hostCPUFreq = 0;
     this->createdAt = simTime();
     this->address = 0;
 }
 
-HelperVehicleInfo::HelperVehicleInfo(double load, double freq, simtime_t time, veins::LAddress::L2Type address) {
+HelperVehicleInfo::HelperVehicleInfo(std::string index, double load, double freq, veins::LAddress::L2Type address) {
+    this->index = index;
     this->hostCurrentLoad = load;
     this->hostCPUFreq = freq;
-    this->createdAt = time;
+    this->createdAt = simTime();
     this->address = address;
 }
 
 HelperVehicleInfo::~HelperVehicleInfo() {
     //
+}
+
+/**
+ * @returns Current index of a vehicle
+ */
+std::string HelperVehicleInfo::getIndex() {
+    return this->index;
 }
 
 /**
@@ -61,6 +70,15 @@ simtime_t HelperVehicleInfo::getCreatedAt() {
  */
 veins::LAddress::L2Type HelperVehicleInfo::getAddress() {
     return this->address;
+}
+
+/**
+ * Set the current index of a vehicle
+ *
+ * @param newIndex The new index of a vehicle
+ */
+void HelperVehicleInfo::setIndex(std::string index) {
+    this->index = index;
 }
 
 /**

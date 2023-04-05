@@ -18,10 +18,10 @@
 
 using namespace task_offloading;
 
-void VeinsApp::sendAgainData(int index, double load, double taskComputationTime)
+void VeinsApp::sendAgainData(int index, double load, double taskComputationTime, int loadBalanceProgressiveNumber)
 {
     auto found = helpers.find(index);
-    if (found != helpers.end()) {
+    if (found != helpers.end() && (loadBalancingID == loadBalanceProgressiveNumber)) {
         // Prepare the new data message
         DataMessage* dataMsg = new DataMessage();
         populateWSM(dataMsg);

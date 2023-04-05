@@ -22,19 +22,23 @@
 namespace task_offloading {
     class HelperVehicleInfo {
     private:
+        std::string index;
         double hostCurrentLoad;
         double hostCPUFreq;
         simtime_t createdAt;
         veins::LAddress::L2Type address;
+        // TO-DO add traCI vector infos about speed and direction
 
     public:
         HelperVehicleInfo();
-        HelperVehicleInfo(double load, double freq, simtime_t time, veins::LAddress::L2Type address);
+        HelperVehicleInfo(std::string index, double load, double freq, veins::LAddress::L2Type address);
         virtual ~HelperVehicleInfo();
+        std::string getIndex();
         double getCurrentLoad();
         double getCPUFreq();
         simtime_t getCreatedAt();
         veins::LAddress::L2Type getAddress();
+        void setIndex(std::string index);
         void setCurrentLoad(double newLoad);
         void setCPUFreq(double newFreq);
         void setCreatedAt(simtime_t newTime);

@@ -41,6 +41,7 @@ namespace task_offloading {
  *     int indexHost;
  *     double loadHost;
  *     double taskComputationTime;
+ *     int loadBalancingID;
  * }
  * </pre>
  */
@@ -51,6 +52,7 @@ class ComputationTimerMessage : public ::veins::BaseFrame1609_4
     int indexHost = 0;
     double loadHost = 0;
     double taskComputationTime = 0;
+    int loadBalancingID = 0;
 
   private:
     void copy(const ComputationTimerMessage& other);
@@ -78,6 +80,9 @@ class ComputationTimerMessage : public ::veins::BaseFrame1609_4
 
     virtual double getTaskComputationTime() const;
     virtual void setTaskComputationTime(double taskComputationTime);
+
+    virtual int getLoadBalancingID() const;
+    virtual void setLoadBalancingID(int loadBalancingID);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const ComputationTimerMessage& obj) {obj.parsimPack(b);}

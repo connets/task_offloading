@@ -21,6 +21,7 @@ namespace task_offloading;
 
 packet OkMessage extends veins::BaseFrame1609_4 {
 	int hostID;
+	string index;
 	double availableLoad;
 	double cpuFreq;
 	veins::LAddress::L2Type senderAddress = -1;
