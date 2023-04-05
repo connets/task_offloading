@@ -27,14 +27,14 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
     emit(stopHelp, simTime());
 
     int vehiclesCounter = helpers.size();
-    std::list<int> vehiclesOrdered = loadBalancingAlgorithm->sort(helpers);
+    helpersOrderedList = loadBalancingAlgorithm->sort(helpers);
 
     // Send signal for stop balance load
     emit(stopBalance, simTime());
 
     EV << "List ordered: ";
 
-    for (auto const &i: vehiclesOrdered) {
+    for (auto const &i: helpersOrderedList) {
         EV << i << " ";
     }
 
@@ -43,11 +43,15 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
     if (vehiclesCounter > 1) {
         helpReceived = true;
 
-        for (auto const &i: vehiclesOrdered) {
-            // Check if I'm not the bus
+        // Check if there's data to process
+        double data = par("computationLoad").doubleValue();
+
+        for (auto const &i: helpersOrderedList) {
+            // Check if the vehicle isn't the bus and if the response received are different from oks
             if (i != busIndex) {
-                // Check if there's data to process
-                double data = par("computationLoad").doubleValue();
+                EV << "Index of vehicle: " << i << std::endl;
+
+                // Load of vehicle i
                 double vehicleLoad = helpers[i].getCurrentLoad();
 
                 // If there's data to load then send the messages
@@ -68,24 +72,23 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
                     dataMsg->setSenderAddress(myId);
                     dataMsg->setHostIndex(i);
 
-                    // If data - vehicleLoad >= 0 then set new data, otherwise send the remaining data
+                    // If data - vehicleLoad >= 0 then set data to maximum vehicle load
+                    // otherwise send the remaining data
                     if ((data - vehicleLoad) >= 0) {
+                        dataMsg->setLoadToProcess(vehicleLoad);
                         data = data - vehicleLoad;
-                        dataMsg->setLoadToProcess(helpers[i].getCurrentLoad());
                     } else {
-                        data = 0;
                         dataMsg->setLoadToProcess(data);
+                        data = 0;
                     }
 
                     EV << "Load remaining: " << data << std::endl;
                     EV << "Load vehicle " << i << " time to complete " << helpers[i].getCurrentLoad() << std::endl;
                     EV << "Load vehicle " << i << " arrival time " << helpers[i].getCreatedAt() << std::endl;
+                    EV << "Index vehicle " << i << " value " << helpers[i].getIndex() << std::endl;
 
                     // Schedule the data message
                     scheduleAt(simTime(), dataMsg);
-
-                    // Update global parameter data
-                    par("computationLoad").setDoubleValue(data);
 
                     // Create timer computation message for each host if auto ACKs are disabled
                     if (!(par("useAcks").boolValue())) {
@@ -94,6 +97,7 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
                         computationTimerMsg->setSimulationTime(simTime());
                         computationTimerMsg->setIndexHost(i);
                         computationTimerMsg->setLoadHost(helpers[i].getCurrentLoad());
+                        computationTimerMsg->setLoadBalancingID(loadBalancingID);
 
                         // Calculate time for timer
                         double CPI = par("vehicleCPI").intValue();
