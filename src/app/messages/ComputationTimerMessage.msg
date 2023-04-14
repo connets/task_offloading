@@ -24,4 +24,5 @@ packet ComputationTimerMessage extends veins::BaseFrame1609_4 {
     int indexHost;
     double loadHost;
     double taskComputationTime;
+    int loadBalancingID;
 }

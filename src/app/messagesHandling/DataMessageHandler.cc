@@ -52,6 +52,7 @@ void VeinsApp::handleDataMessage(DataMessage* dataMsg)
         bool stillAvailable = par("stillAvailableProbability").doubleValue() > par("stillAvailableThreshold").doubleValue();
 
         responseMsg->setStillAvailable(stillAvailable);
+        responseMsg->setDataComputed(dataMsg->getLoadToProcess());
         scheduleAt(simTime() + timeToCompute, responseMsg);
 
         // Generate ACK timer if parameter useAcks is false
