@@ -47,10 +47,15 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
         double data = par("computationLoad").doubleValue();
 
         for (auto const &i: helpersOrderedList) {
+            // Debug messages
+            EV << "Index of vehicle: " << i << std::endl;
+            EV << "Load remaining: " << data << std::endl;
+            EV << "Vehicle " << i << " time to complete " << helpers[i].getTotalComputationTime(3) << std::endl;
+            EV << "Vehicle " << i << " arrival time " << helpers[i].getCreatedAt() << std::endl;
+            EV << "Index vehicle " << i << " value " << helpers[i].getIndex() << std::endl;
+
             // Check if the vehicle isn't the bus and if the response received are different from oks
             if (i != busIndex) {
-                EV << "Index of vehicle: " << i << std::endl;
-
                 // Load of vehicle i
                 double vehicleLoad = helpers[i].getCurrentLoad();
 
@@ -81,11 +86,6 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
                         dataMsg->setLoadToProcess(data);
                         data = 0;
                     }
-
-                    EV << "Load remaining: " << data << std::endl;
-                    EV << "Load vehicle " << i << " time to complete " << helpers[i].getCurrentLoad() << std::endl;
-                    EV << "Load vehicle " << i << " arrival time " << helpers[i].getCreatedAt() << std::endl;
-                    EV << "Index vehicle " << i << " value " << helpers[i].getIndex() << std::endl;
 
                     // Schedule the data message
                     scheduleAt(simTime(), dataMsg);
