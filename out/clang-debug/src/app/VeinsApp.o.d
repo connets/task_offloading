@@ -55,6 +55,7 @@
   ../../veins-5.2/src/veins/modules/mobility/traci/TraCIRegionOfInterest.h \
   ../../veins-5.2/src/veins/modules/mobility/traci/TraCICommandInterface.h \
   ../../veins-5.2/src/veins/modules/world/traci/trafficLight/TraCITrafficLightProgram.h \
+  app/loadBalancing/sortingAlgorithm/BaseSorting.h \
   app/messages/AckMessage_m.h app/messages/AckTimerMessage_m.h \
   app/messages/LoadBalanceTimerMessage_m.h \
   app/messages/ComputationTimerMessage_m.h \
@@ -177,6 +178,8 @@ app/vehiclesHandling/HelperVehicleInfo.h:
 ../../veins-5.2/src/veins/modules/mobility/traci/TraCICommandInterface.h:
 
 ../../veins-5.2/src/veins/modules/world/traci/trafficLight/TraCITrafficLightProgram.h:
+
+app/loadBalancing/sortingAlgorithm/BaseSorting.h:
 
 app/messages/AckMessage_m.h:
 

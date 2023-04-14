@@ -30,6 +30,7 @@
 #include "app/messages/ResponseMessage_m.h"
 #include "app/loadBalancing/LoadBalancingState.h"
 #include "app/vehiclesHandling/HelperVehicleInfo.h"
+#include "app/loadBalancing/sortingAlgorithm/BaseSorting.h"
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
 
 using namespace omnetpp;
@@ -82,11 +83,16 @@ protected:
     bool sentHelpMessage;
     bool helpReceived;
     std::map<int, HelperVehicleInfo> helpers;
+    std::list<int> helpersOrderedList;
     simtime_t newRandomTime;
     int busIndex;
     LoadBalancingContext loadBalancingState;
     bool ackReceived;
     double hostCpuFreq;
+    BaseSorting* loadBalancingAlgorithm;
+    int okReceived;
+    int responsesReceived;
+    int loadBalancingID;
 
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;
@@ -98,7 +104,7 @@ protected:
     void handleOkMessage(OkMessage* okMsg);
     void handleDataMessage(DataMessage* dataMsg);
     void handleResponseMessage(ResponseMessage* responseMsg);
-    void sendAgainData(int index, double load, double taskComputationTime);
+    void sendAgainData(int index, double load, double taskComputationTime, int loadBalancingProgressiveNumber);
     void sendAgainResponse(int index, double computationTime);
     void balanceLoad(simtime_t previousRandomTime);
     void vehicleHandler();

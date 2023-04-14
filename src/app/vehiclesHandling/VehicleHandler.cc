@@ -29,6 +29,12 @@ void VeinsApp::vehicleHandler()
         HelpMessage* helpRequest = new HelpMessage();
         populateWSM(helpRequest);
 
+        // Fill the map with BUS vehicle info
+        double busLoad = par("randomVehicleLoadActual").doubleValue() * par("busVehicleLoad").doubleValue();
+        double busFreq = par("randomCpuVehicleFreq").doubleValue();
+        std::string hostBUSIndex = "node0";
+        helpers[0] = HelperVehicleInfo(hostBUSIndex, busLoad, busFreq, busIndex);
+
         // Color the bus
         findHost()->getDisplayString().setTagArg("i", 1, "red");
 

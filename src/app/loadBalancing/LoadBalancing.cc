@@ -26,18 +26,38 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
     // Send signal for stopping accepting help requests
     emit(stopHelp, simTime());
 
-    std::map<int, HelperVehicleInfo>::iterator vehiclesIterator = helpers.begin();
     int vehiclesCounter = helpers.size();
+    helpersOrderedList = loadBalancingAlgorithm->sort(helpers);
+
+    // Send signal for stop balance load
+    emit(stopBalance, simTime());
+
+    EV << "List ordered: ";
+
+    for (auto const &i: helpersOrderedList) {
+        EV << i << " ";
+    }
+
+    EV << std::endl;
 
     if (vehiclesCounter > 1) {
         helpReceived = true;
 
-        while (vehiclesIterator != helpers.end()) {
-            // Check if I'm not the bus
-            if (vehiclesIterator->first != busIndex) {
-                // Check if there's data to process
-                double data = par("computationLoad").doubleValue();
-                double vehicleLoad = vehiclesIterator->second.getCurrentLoad();
+        // Check if there's data to process
+        double data = par("computationLoad").doubleValue();
+
+        for (auto const &i: helpersOrderedList) {
+            // Debug messages
+            EV << "Index of vehicle: " << i << std::endl;
+            EV << "Load remaining: " << data << std::endl;
+            EV << "Vehicle " << i << " time to complete " << helpers[i].getTotalComputationTime(3) << std::endl;
+            EV << "Vehicle " << i << " arrival time " << helpers[i].getCreatedAt() << std::endl;
+            EV << "Index vehicle " << i << " value " << helpers[i].getIndex() << std::endl;
+
+            // Check if the vehicle isn't the bus and if the response received are different from oks
+            if (i != busIndex) {
+                // Load of vehicle i
+                double vehicleLoad = helpers[i].getCurrentLoad();
 
                 // If there's data to load then send the messages
                 if (data > 0) {
@@ -49,42 +69,39 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
                     // If auto acks is active then populate wsm with the sender address
                     // otherwise populate it without address
                     if (par("useAcks").boolValue()) {
-                        populateWSM(dataMsg, vehiclesIterator->second.getAddress());
+                        populateWSM(dataMsg, helpers[i].getAddress());
                     } else {
                         populateWSM(dataMsg);
                     }
 
                     dataMsg->setSenderAddress(myId);
-                    dataMsg->setHostIndex(vehiclesIterator->first);
+                    dataMsg->setHostIndex(i);
 
-                    // If data - vehicleLoad >= 0 then set new data, otherwise send the remaining data
+                    // If data - vehicleLoad >= 0 then set data to maximum vehicle load
+                    // otherwise send the remaining data
                     if ((data - vehicleLoad) >= 0) {
+                        dataMsg->setLoadToProcess(vehicleLoad);
                         data = data - vehicleLoad;
-                        dataMsg->setLoadToProcess(vehiclesIterator->second.getCurrentLoad());
                     } else {
-                        data = 0;
                         dataMsg->setLoadToProcess(data);
+                        data = 0;
                     }
-
-                    EV << "Load remaining: " << data << std::endl;
 
                     // Schedule the data message
                     scheduleAt(simTime(), dataMsg);
-
-                    // Update global parameter data
-                    par("computationLoad").setDoubleValue(data);
 
                     // Create timer computation message for each host if auto ACKs are disabled
                     if (!(par("useAcks").boolValue())) {
                         ComputationTimerMessage* computationTimerMsg = new ComputationTimerMessage();
                         populateWSM(computationTimerMsg);
                         computationTimerMsg->setSimulationTime(simTime());
-                        computationTimerMsg->setIndexHost(vehiclesIterator->first);
-                        computationTimerMsg->setLoadHost(vehiclesIterator->second.getCurrentLoad());
+                        computationTimerMsg->setIndexHost(i);
+                        computationTimerMsg->setLoadHost(helpers[i].getCurrentLoad());
+                        computationTimerMsg->setLoadBalancingID(loadBalancingID);
 
                         // Calculate time for timer
                         double CPI = par("vehicleCPI").intValue();
-                        double timeToCompute = vehiclesIterator->second.getTotalComputationTime(CPI);
+                        double timeToCompute = helpers[i].getTotalComputationTime(CPI);
 
                         computationTimerMsg->setTaskComputationTime(timeToCompute);
 
@@ -92,12 +109,6 @@ void VeinsApp::balanceLoad(simtime_t previousSimulationTime)
                     }
                 }
             }
-
-            // Increment the iterator
-            vehiclesIterator++;
-
-            // Send signal for stop balance load
-            emit(stopBalance, simTime());
         }
     } else {
         sentHelpMessage = false;

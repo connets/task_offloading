@@ -39,6 +39,7 @@ Define_Module(task_offloading::VeinsApp);
 void VeinsApp::initialize(int stage)
 {
     veins::DemoBaseApplLayer::initialize(stage);
+
     if (stage == 0) {
         // Initializing members and pointers of your application goes here
         lastDroveAt = simTime();
@@ -46,18 +47,19 @@ void VeinsApp::initialize(int stage)
         helpReceived = false;
         newRandomTime = 0;
         ackReceived = false;
+        loadBalancingID = 0;
         hostCpuFreq = 0;
 
         // BUS SECTION
-        // Calculate BUS load
-        double busLoad = par("randomVehicleLoadActual").doubleValue() * par("busVehicleLoad").doubleValue();
-        double busFreq = par("randomCpuVehicleFreq").doubleValue();
+        // Set the BUS index
         busIndex = 0;
-        helpers[0] = HelperVehicleInfo(busLoad, busFreq, simTime(), busIndex);
-
+        responsesReceived = 0;
+        okReceived = 0;
         // Initialize the BUS state
         loadBalancingState = LoadBalancingContext(new Disabled);
 
+        // Initialize the load balancing algorithm
+        loadBalancingAlgorithm = check_and_cast<BaseSorting*>(findModuleByPath("task_offloading.loadBalancingAlgorithm"));
 
         // Registering all signals
         startTask = registerSignal("task_started");
@@ -131,21 +133,29 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
     // This method is for self messages (mostly timers)
     // Timer for help message
     if (LoadBalanceTimerMessage* loadBalanceMsg = dynamic_cast<LoadBalanceTimerMessage*>(msg)) {
-        // Set the load balance mode to active
-        loadBalancingState.setState(new Active);
+        if (findHost()->getIndex() == busIndex) {
+            // Set the load balance mode to active
+            loadBalancingState.setState(new Active);
 
-        // Effective balance of the load
-        balanceLoad(loadBalanceMsg->getSimulationTime());
+            // Effective balance of the load
+            balanceLoad(loadBalanceMsg->getSimulationTime());
+        }
     }
 
     // Timer for re-send ACK messages
     if (AckTimerMessage* ackTimerMsg = dynamic_cast<AckTimerMessage*>(msg)) {
-        sendAgainResponse(ackTimerMsg->getHostIndex(), ackTimerMsg->getTaskComputationTime());
+        int hostIndex = ackTimerMsg->getHostIndex();
+        double completionTime = ackTimerMsg->getTaskComputationTime();
+        sendAgainResponse(hostIndex, completionTime);
     }
 
     // Timer for data computation
     if (ComputationTimerMessage* computationTimerMsg = dynamic_cast<ComputationTimerMessage*>(msg)) {
-        sendAgainData(computationTimerMsg->getIndexHost(), computationTimerMsg->getLoadHost(), computationTimerMsg->getTaskComputationTime());
+        int hostIndex = computationTimerMsg->getIndexHost();
+        double load = computationTimerMsg->getLoadHost();
+        double completionTime = computationTimerMsg->getTaskComputationTime();
+        int loadBalancingProgressiveNumber = computationTimerMsg->getLoadBalancingID();
+        sendAgainData(hostIndex, load, completionTime, loadBalancingProgressiveNumber);
     }
 
     // Timer for ok message
