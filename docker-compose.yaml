@@ -5,7 +5,7 @@ services:
         build: .
         volumes:
             - type: bind
-              source: ./simulations/v5_0_Final
-              target: /app/task_offloading/simulations/v5_0_Final
+              source: ./simulations/task_offloading
+              target: /app/task_offloading/simulations/task_offloading
               read_only: true
-            - ./simulations/v5_0_Final/results:/app/results
+            - ./simulations/task_offloading/results:/app/results
