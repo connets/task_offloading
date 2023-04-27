@@ -42,6 +42,7 @@ namespace task_offloading {
  *     double availableLoad;
  *     double cpuFreq;
  *     veins::LAddress::L2Type senderAddress = -1;
+ *     double vehicleAngle;
  * }
  * </pre>
  */
@@ -53,6 +54,7 @@ class OkMessage : public ::veins::BaseFrame1609_4
     double availableLoad = 0;
     double cpuFreq = 0;
     ::veins::LAddress::L2Type senderAddress = -1;
+    double vehicleAngle = 0;
 
   private:
     void copy(const OkMessage& other);
@@ -84,6 +86,9 @@ class OkMessage : public ::veins::BaseFrame1609_4
     virtual const ::veins::LAddress::L2Type& getSenderAddress() const;
     virtual ::veins::LAddress::L2Type& getSenderAddressForUpdate() { return const_cast<::veins::LAddress::L2Type&>(const_cast<OkMessage*>(this)->getSenderAddress());}
     virtual void setSenderAddress(const ::veins::LAddress::L2Type& senderAddress);
+
+    virtual double getVehicleAngle() const;
+    virtual void setVehicleAngle(double vehicleAngle);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const OkMessage& obj) {obj.parsimPack(b);}

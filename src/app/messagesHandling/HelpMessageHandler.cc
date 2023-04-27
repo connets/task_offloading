@@ -48,6 +48,7 @@ void VeinsApp::handleHelpMessage(HelpMessage* helpMsg)
             okMsg->setAvailableLoad(actualLoad);
             okMsg->setCpuFreq(cpuFreq);
             okMsg->setIndex(findHost()->getName());
+            okMsg->setVehicleAngle(traciVehicle->getAngle());
 
             // Emit the signal of the ok message load
             emit(okMessageLoad, actualLoad);

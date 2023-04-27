@@ -28,6 +28,7 @@ namespace task_offloading {
         simtime_t createdAt;
         veins::LAddress::L2Type address;
         // TO-DO add traCI vector infos about speed and direction
+        double vehicleAngle;
 
     public:
         HelperVehicleInfo();
@@ -38,11 +39,13 @@ namespace task_offloading {
         double getCPUFreq();
         simtime_t getCreatedAt();
         veins::LAddress::L2Type getAddress();
+        double getVehicleAngle();
         void setIndex(std::string index);
         void setCurrentLoad(double newLoad);
         void setCPUFreq(double newFreq);
         void setCreatedAt(simtime_t newTime);
         void setAddress(veins::LAddress::L2Type newAddress);
+        void setVehicleAngle(double newAngle);
         double getTotalComputationTime(int CPI);
     };
 }

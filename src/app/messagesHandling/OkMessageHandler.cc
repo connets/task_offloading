@@ -28,8 +28,10 @@ void VeinsApp::handleOkMessage(OkMessage* okMsg)
             double currentLoad = okMsg->getAvailableLoad();
             double CPUFreq = okMsg->getCpuFreq();
             veins::LAddress::L2Type address = okMsg->getSenderAddress();
+            double vehicleAngle = okMsg->getVehicleAngle();
 
             helpers[okMsg->getHostID()] = HelperVehicleInfo(currentHostIndex, currentLoad, CPUFreq, address);
+            helpers[okMsg->getHostID()].setVehicleAngle(vehicleAngle);
 
             okReceived++;
         }
