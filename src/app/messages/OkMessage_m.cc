@@ -182,6 +182,7 @@ void OkMessage::copy(const OkMessage& other)
     this->availableLoad = other.availableLoad;
     this->cpuFreq = other.cpuFreq;
     this->senderAddress = other.senderAddress;
+    this->vehicleAngle = other.vehicleAngle;
 }
 
 void OkMessage::parsimPack(omnetpp::cCommBuffer *b) const
@@ -192,6 +193,7 @@ void OkMessage::parsimPack(omnetpp::cCommBuffer *b) const
     doParsimPacking(b,this->availableLoad);
     doParsimPacking(b,this->cpuFreq);
     doParsimPacking(b,this->senderAddress);
+    doParsimPacking(b,this->vehicleAngle);
 }
 
 void OkMessage::parsimUnpack(omnetpp::cCommBuffer *b)
@@ -202,6 +204,7 @@ void OkMessage::parsimUnpack(omnetpp::cCommBuffer *b)
     doParsimUnpacking(b,this->availableLoad);
     doParsimUnpacking(b,this->cpuFreq);
     doParsimUnpacking(b,this->senderAddress);
+    doParsimUnpacking(b,this->vehicleAngle);
 }
 
 int OkMessage::getHostID() const
@@ -254,6 +257,16 @@ void OkMessage::setSenderAddress(const ::veins::LAddress::L2Type& senderAddress)
     this->senderAddress = senderAddress;
 }
 
+double OkMessage::getVehicleAngle() const
+{
+    return this->vehicleAngle;
+}
+
+void OkMessage::setVehicleAngle(double vehicleAngle)
+{
+    this->vehicleAngle = vehicleAngle;
+}
+
 class OkMessageDescriptor : public omnetpp::cClassDescriptor
 {
   private:
@@ -264,6 +277,7 @@ class OkMessageDescriptor : public omnetpp::cClassDescriptor
         FIELD_availableLoad,
         FIELD_cpuFreq,
         FIELD_senderAddress,
+        FIELD_vehicleAngle,
     };
   public:
     OkMessageDescriptor();
@@ -330,7 +344,7 @@ const char *OkMessageDescriptor::getProperty(const char *propertyName) const
 int OkMessageDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 5+base->getFieldCount() : 5;
+    return base ? 6+base->getFieldCount() : 6;
 }
 
 unsigned int OkMessageDescriptor::getFieldTypeFlags(int field) const
@@ -347,8 +361,9 @@ unsigned int OkMessageDescriptor::getFieldTypeFlags(int field) const
         FD_ISEDITABLE,    // FIELD_availableLoad
         FD_ISEDITABLE,    // FIELD_cpuFreq
         0,    // FIELD_senderAddress
+        FD_ISEDITABLE,    // FIELD_vehicleAngle
     };
-    return (field >= 0 && field < 5) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 6) ? fieldTypeFlags[field] : 0;
 }
 
 const char *OkMessageDescriptor::getFieldName(int field) const
@@ -365,8 +380,9 @@ const char *OkMessageDescriptor::getFieldName(int field) const
         "availableLoad",
         "cpuFreq",
         "senderAddress",
+        "vehicleAngle",
     };
-    return (field >= 0 && field < 5) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 6) ? fieldNames[field] : nullptr;
 }
 
 int OkMessageDescriptor::findField(const char *fieldName) const
@@ -378,6 +394,7 @@ int OkMessageDescriptor::findField(const char *fieldName) const
     if (strcmp(fieldName, "availableLoad") == 0) return baseIndex + 2;
     if (strcmp(fieldName, "cpuFreq") == 0) return baseIndex + 3;
     if (strcmp(fieldName, "senderAddress") == 0) return baseIndex + 4;
+    if (strcmp(fieldName, "vehicleAngle") == 0) return baseIndex + 5;
     return base ? base->findField(fieldName) : -1;
 }
 
@@ -395,8 +412,9 @@ const char *OkMessageDescriptor::getFieldTypeString(int field) const
         "double",    // FIELD_availableLoad
         "double",    // FIELD_cpuFreq
         "veins::LAddress::L2Type",    // FIELD_senderAddress
+        "double",    // FIELD_vehicleAngle
     };
-    return (field >= 0 && field < 5) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 6) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **OkMessageDescriptor::getFieldPropertyNames(int field) const
@@ -484,6 +502,7 @@ std::string OkMessageDescriptor::getFieldValueAsString(omnetpp::any_ptr object, 
         case FIELD_availableLoad: return double2string(pp->getAvailableLoad());
         case FIELD_cpuFreq: return double2string(pp->getCpuFreq());
         case FIELD_senderAddress: return "";
+        case FIELD_vehicleAngle: return double2string(pp->getVehicleAngle());
         default: return "";
     }
 }
@@ -504,6 +523,7 @@ void OkMessageDescriptor::setFieldValueAsString(omnetpp::any_ptr object, int fie
         case FIELD_index: pp->setIndex((value)); break;
         case FIELD_availableLoad: pp->setAvailableLoad(string2double(value)); break;
         case FIELD_cpuFreq: pp->setCpuFreq(string2double(value)); break;
+        case FIELD_vehicleAngle: pp->setVehicleAngle(string2double(value)); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'OkMessage'", field);
     }
 }
@@ -523,6 +543,7 @@ omnetpp::cValue OkMessageDescriptor::getFieldValue(omnetpp::any_ptr object, int 
         case FIELD_availableLoad: return pp->getAvailableLoad();
         case FIELD_cpuFreq: return pp->getCpuFreq();
         case FIELD_senderAddress: return omnetpp::toAnyPtr(&pp->getSenderAddress()); break;
+        case FIELD_vehicleAngle: return pp->getVehicleAngle();
         default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'OkMessage' as cValue -- field index out of range?", field);
     }
 }
@@ -543,6 +564,7 @@ void OkMessageDescriptor::setFieldValue(omnetpp::any_ptr object, int field, int 
         case FIELD_index: pp->setIndex(value.stringValue()); break;
         case FIELD_availableLoad: pp->setAvailableLoad(value.doubleValue()); break;
         case FIELD_cpuFreq: pp->setCpuFreq(value.doubleValue()); break;
+        case FIELD_vehicleAngle: pp->setVehicleAngle(value.doubleValue()); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'OkMessage'", field);
     }
 }

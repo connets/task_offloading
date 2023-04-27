@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for task_offloading
 #
 # This file was generated with the command:
-#  opp_makemake -f --deep -KINET4_4_PROJ=../../inet4.4 -KVEINS_5_2_PROJ=../../veins-5.2 -DINET_IMPORT -DVEINS_IMPORT -I$$\(INET4_4_PROJ\)/src -I$$\(VEINS_5_2_PROJ\)/src -I. -L$$\(INET4_4_PROJ\)/src -L$$\(VEINS_5_2_PROJ\)/src -lINET$$\(D\) -lveins$$\(D\)
+#  opp_makemake -f --deep -KVEINS_5_2_PROJ=../../veins-5.2 -DVEINS_IMPORT -I$$\(VEINS_5_2_PROJ\)/src -I. -L$$\(VEINS_5_2_PROJ\)/src -lveins$$\(D\)
 #
 
 # Name of target to be created (-o option)
@@ -19,13 +19,13 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(QTENV_LIBS) $(CMDENV_LIBS)
 #USERIF_LIBS = $(QTENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = -I$(INET4_4_PROJ)/src -I$(VEINS_5_2_PROJ)/src -I.
+INCLUDE_PATH = -I$(VEINS_5_2_PROJ)/src -I.
 
 # Additional object and library files to link with
 EXTRA_OBJS =
 
 # Additional libraries (-L, -l options)
-LIBS = $(LDFLAG_LIBPATH)$(INET4_4_PROJ)/src $(LDFLAG_LIBPATH)$(VEINS_5_2_PROJ)/src  -lINET$(D) -lveins$(D)
+LIBS = $(LDFLAG_LIBPATH)$(VEINS_5_2_PROJ)/src  -lveins$(D)
 
 # Output directory
 PROJECT_OUTPUT_DIR = ../out
@@ -75,7 +75,6 @@ MSGFILES = \
 SMFILES =
 
 # Other makefile variables (-K)
-INET4_4_PROJ=../../inet4.4
 VEINS_5_2_PROJ=../../veins-5.2
 
 #------------------------------------------------------------------------------
@@ -97,10 +96,10 @@ include $(CONFIGFILE)
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS = $(OPPMAIN_LIB) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 ifneq ($(PLATFORM),win32)
-LIBS += -Wl,-rpath,$(abspath $(INET4_4_PROJ)/src) -Wl,-rpath,$(abspath $(VEINS_5_2_PROJ)/src)
+LIBS += -Wl,-rpath,$(abspath $(VEINS_5_2_PROJ)/src)
 endif
 
-COPTS = $(CFLAGS) $(IMPORT_DEFINES) -DINET_IMPORT -DVEINS_IMPORT $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+COPTS = $(CFLAGS) $(IMPORT_DEFINES) -DVEINS_IMPORT $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 MSGCOPTS = $(INCLUDE_PATH)
 SMCOPTS =
 
