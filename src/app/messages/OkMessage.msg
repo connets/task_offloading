@@ -25,4 +25,5 @@ packet OkMessage extends veins::BaseFrame1609_4 {
 	double availableLoad;
 	double cpuFreq;
 	veins::LAddress::L2Type senderAddress = -1;
+	double vehicleAngle;
 }
