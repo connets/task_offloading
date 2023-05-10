@@ -1,1 +1,0 @@
--O0 -Wall -glldb -fstandalone-debug   -MMD -MP -MF .d  -fPIC  -Wno-deprecated-register -Wno-unused-function -fno-omit-frame-pointer -DHAVE_SWAPCONTEXT -DWITH_QTENV -DWITH_NETBUILDER -DWITH_OSG -DOMNETPPLIBS_IMPORT -DINET_IMPORT -DVEINS_IMPORT -I../../inet4.4/src -I../../veins-5.2/src -I. -I/opt/omnetpp-6.0.1/include
