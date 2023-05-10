@@ -33,7 +33,8 @@ void VeinsApp::vehicleHandler()
         double busLoad = par("randomVehicleLoadActual").doubleValue() * par("busVehicleLoad").doubleValue();
         double busFreq = par("randomCpuVehicleFreq").doubleValue();
         std::string hostBUSIndex = "node0";
-        helpers[0] = HelperVehicleInfo(hostBUSIndex, busLoad, busFreq, busIndex);
+        helpers[busIndex] = HelperVehicleInfo(hostBUSIndex, busLoad, busFreq, busIndex);
+        helpers[busIndex].setVehicleAngle(traciVehicle->getAngle());
 
         // Color the bus
         findHost()->getDisplayString().setTagArg("i", 1, "red");

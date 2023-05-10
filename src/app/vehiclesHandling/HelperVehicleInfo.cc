@@ -73,6 +73,13 @@ veins::LAddress::L2Type HelperVehicleInfo::getAddress() {
 }
 
 /**
+ * @returns The angle of a vehicle in degrees
+ */
+double HelperVehicleInfo::getVehicleAngle() {
+    return this->vehicleAngle;
+}
+
+/**
  * Set the current index of a vehicle
  *
  * @param newIndex The new index of a vehicle
@@ -115,6 +122,15 @@ void HelperVehicleInfo::setCreatedAt(simtime_t newTime) {
  */
 void HelperVehicleInfo::setAddress(veins::LAddress::L2Type newAddress) {
     this->address = newAddress;
+}
+
+/**
+ * Set the current angle of a vehicle in degrees
+ *
+ * @param newAddress The new angle in degrees of a vehicle
+ */
+void HelperVehicleInfo::setVehicleAngle(double newAngle) {
+    this->vehicleAngle = newAngle;
 }
 
 /**
