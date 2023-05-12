@@ -47,7 +47,7 @@ namespace task_offloading {
  *
  */
 
-class VEINS_API VeinsApp : public veins::DemoBaseApplLayer {
+class VEINS_API TaskGenerator : public veins::DemoBaseApplLayer {
 public:
     void initialize(int stage) override;
     void finish() override;
@@ -100,9 +100,7 @@ protected:
     void onWSA(veins::DemoServiceAdvertisment* wsa) override;
 
     void handleSelfMsg(cMessage* msg) override;
-    void handleHelpMessage(HelpMessage* helpMsg);
     void handleOkMessage(OkMessage* okMsg);
-    void handleDataMessage(DataMessage* dataMsg);
     void handleResponseMessage(ResponseMessage* responseMsg);
     void sendAgainData(int index, double load, double taskComputationTime, int loadBalancingProgressiveNumber);
     void sendAgainResponse(int index, double computationTime);

@@ -20,7 +20,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-#include "app/VeinsApp.h"
+#include "TaskGenerator.h"
 
 #include "app/messages/HelpMessage_m.h"
 #include "app/messages/OkMessage_m.h"
@@ -34,9 +34,9 @@
 
 using namespace task_offloading;
 
-Define_Module(task_offloading::VeinsApp);
+Define_Module(task_offloading::TaskGenerator);
 
-void VeinsApp::initialize(int stage)
+void TaskGenerator::initialize(int stage)
 {
     veins::DemoBaseApplLayer::initialize(stage);
 
@@ -77,58 +77,39 @@ void VeinsApp::initialize(int stage)
     }
 }
 
-void VeinsApp::finish()
+void TaskGenerator::finish()
 {
     veins::DemoBaseApplLayer::finish();
 }
 
-void VeinsApp::onBSM(veins::DemoSafetyMessage* bsm)
+void TaskGenerator::onBSM(veins::DemoSafetyMessage* bsm)
 {
     // Your application has received a beacon message from another car or RSU
 }
 
-void VeinsApp::onWSM(veins::BaseFrame1609_4* wsm)
+void TaskGenerator::onWSM(veins::BaseFrame1609_4* wsm)
 {
     /************************************************************************
       Your application has received a data message from another car or RSU
     ************************************************************************/
-
-    // SECTION - When the host receive an help message
-    if (HelpMessage* helpMsg = dynamic_cast<HelpMessage*>(wsm)) {
-        busIndex = helpMsg->getVehicleIndex();
-        handleHelpMessage(helpMsg);
-    }
 
     // SECTION - When the bus receives the ok messages
     if (OkMessage* okMsg = dynamic_cast<OkMessage*>(wsm)) {
         handleOkMessage(okMsg);
     }
 
-    // SECTION - When the host receive the data message
-    if (DataMessage* dataMsg = dynamic_cast<DataMessage*>(wsm)) {
-        handleDataMessage(dataMsg);
-    }
-
     // SECTION - When the bus receive the response message
     if (ResponseMessage* responseMsg = dynamic_cast<ResponseMessage*>(wsm)) {
         handleResponseMessage(responseMsg);
     }
-
-    // SECTION - When the host receive the ACK message
-    if (AckMessage* ackMessage = dynamic_cast<AckMessage*>(wsm)) {
-        if (findHost()->getIndex() == ackMessage->getHostIndex()) {
-            ackReceived = true;
-        }
-    }
-
 }
 
-void VeinsApp::onWSA(veins::DemoServiceAdvertisment* wsa)
+void TaskGenerator::onWSA(veins::DemoServiceAdvertisment* wsa)
 {
     // Your application has received a service advertisement from another car or RSU
 }
 
-void VeinsApp::handleSelfMsg(cMessage* msg)
+void TaskGenerator::handleSelfMsg(cMessage* msg)
 {
     // This method is for self messages (mostly timers)
     // Timer for help message
@@ -158,20 +139,6 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
         sendAgainData(hostIndex, load, completionTime, loadBalancingProgressiveNumber);
     }
 
-    // Timer for ok message
-    if (OkMessage* okMsg = dynamic_cast<OkMessage*>(msg)) {
-        if (loadBalancingState.getCurrentState() == true) {
-            // Color the available host in blue
-            findHost()->getDisplayString().setTagArg("i", 1, "blue");
-
-            // Send the ok message
-            sendDown(okMsg->dup());
-
-            // Emit the signal of ok message sent
-            emit(okMessageSent, simTime());
-        }
-    }
-
     // Timer for data message
     if (DataMessage* dataMsg = dynamic_cast<DataMessage*>(msg)) {
         sendDown(dataMsg->dup());
@@ -180,22 +147,13 @@ void VeinsApp::handleSelfMsg(cMessage* msg)
         emit(startDataMessages, dataMsg->getHostIndex());
     }
 
-    // Timer for response message
-    if (ResponseMessage* responseMsg = dynamic_cast<ResponseMessage*>(msg)) {
-        findHost()->getDisplayString().setTagArg("i", 1, "white");
-        sendDown(responseMsg->dup());
-
-        // Send signal for response message statistic with the host ID
-        emit(startResponseMessages, responseMsg->getHostIndex());
-    }
-
     // Timer for ACK message
     if (AckMessage* ackMsg = dynamic_cast<AckMessage*>(msg)) {
         sendDown(ackMsg->dup());
     }
 }
 
-void VeinsApp::handlePositionUpdate(cObject* obj)
+void TaskGenerator::handlePositionUpdate(cObject* obj)
 {
     // The vehicle has moved. Code that reacts to new positions goes here.
     // Member variables such as currentPosition and currentSpeed are updated in the parent class

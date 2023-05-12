@@ -23,7 +23,7 @@
 package task_offloading.app;
 import org.car2x.veins.modules.application.ieee80211p.DemoBaseApplLayer;
 
-simple VeinsApp extends DemoBaseApplLayer 
+simple TaskGenerator extends DemoBaseApplLayer 
 {
     parameters:
         volatile double randomTimeHelpMessage @unit(s) = default(uniform(30s, 40s));
@@ -79,6 +79,6 @@ simple VeinsApp extends DemoBaseApplLayer
         @statistic[okMessageSent](source = ok_message_sent; record = vector,stats; interpolationmode = none);
         @statistic[okMessageLoad](source = ok_message_load; record = vector,stats; interpolationmode = none);
 
-    @class(task_offloading::VeinsApp);
+    @class(task_offloading::TaskGenerator);
     @display("i=block/app2");
 }
