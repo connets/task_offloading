@@ -13,12 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "app/VeinsApp.h"
+#include "app/TaskGenerator.h"
 #include "app/messages/ComputationTimerMessage_m.h"
 
 using namespace task_offloading;
 
-void VeinsApp::sendAgainData(int index, double load, double taskComputationTime, int loadBalanceProgressiveNumber)
+void TaskGenerator::sendAgainData(int index, double load, double taskComputationTime, int loadBalanceProgressiveNumber)
 {
     auto found = helpers.find(index);
     if (found != helpers.end() && (loadBalancingID == loadBalanceProgressiveNumber)) {

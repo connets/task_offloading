@@ -13,12 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "app/VeinsApp.h"
+#include "app/TaskGenerator.h"
 #include "app/messages/AckTimerMessage_m.h"
 
 using namespace task_offloading;
 
-void VeinsApp::sendAgainResponse(int index, double computationTime)
+void TaskGenerator::sendAgainResponse(int index, double computationTime)
 {
     if (!ackReceived) {
         ResponseMessage* responseMsg = new ResponseMessage();
