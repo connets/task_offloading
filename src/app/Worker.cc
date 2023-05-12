@@ -90,7 +90,7 @@ void Worker::onBSM(veins::DemoSafetyMessage* bsm)
 void Worker::onWSM(veins::BaseFrame1609_4* wsm)
 {
     /************************************************************************
-      Your application has received a data message from another car or RSU
+      Your application has received a data message from a bus
     ************************************************************************/
 
     // SECTION - When the host receive an help message
@@ -114,7 +114,7 @@ void Worker::onWSM(veins::BaseFrame1609_4* wsm)
 
 void Worker::onWSA(veins::DemoServiceAdvertisment* wsa)
 {
-    // Your application has received a service advertisement from another car or RSU
+    // Your application has received a service advertisement from a bus
 }
 
 void Worker::handleSelfMsg(cMessage* msg)
