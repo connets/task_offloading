@@ -13,12 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "app/VeinsApp.h"
+#include "app/TaskGenerator.h"
 #include "app/messages/LoadBalanceTimerMessage_m.h"
 
 using namespace task_offloading;
 
-void VeinsApp::vehicleHandler()
+void TaskGenerator::vehicleHandler()
 {
     bool randomTimeReached = simTime() > par("randomTimeHelpMessage").doubleValue() + newRandomTime;
     bool isBus = findHost()->getIndex() == busIndex;

@@ -13,12 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "app/VeinsApp.h"
+#include "app/Worker.h"
 #include "app/messages/AckTimerMessage_m.h"
 
 using namespace task_offloading;
 
-void VeinsApp::handleDataMessage(DataMessage* dataMsg)
+void Worker::handleDataMessage(DataMessage* dataMsg)
 {
     if (findHost()->getIndex() == dataMsg->getHostIndex()) {
         // Color the host that needs to process data
