@@ -13,12 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "app/VeinsApp.h"
+#include "app/TaskGenerator.h"
 #include "app/messages/AckMessage_m.h"
 
 using namespace task_offloading;
 
-void VeinsApp::handleResponseMessage(ResponseMessage* responseMsg)
+void TaskGenerator::handleResponseMessage(ResponseMessage* responseMsg)
 {
     if (findHost()->getIndex() == busIndex) {
         responsesReceived++;

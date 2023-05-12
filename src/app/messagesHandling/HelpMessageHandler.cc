@@ -13,11 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "app/VeinsApp.h"
+#include "app/Worker.h"
 
 using namespace task_offloading;
 
-void VeinsApp::handleHelpMessage(HelpMessage* helpMsg)
+void Worker::handleHelpMessage(HelpMessage* helpMsg)
 {
     // Check that the help request come from the bus
     if (helpMsg->getVehicleIndex() == busIndex) {

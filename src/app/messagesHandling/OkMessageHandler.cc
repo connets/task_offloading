@@ -13,11 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "app/VeinsApp.h"
+#include "app/TaskGenerator.h"
 
 using namespace task_offloading;
 
-void VeinsApp::handleOkMessage(OkMessage* okMsg)
+void TaskGenerator::handleOkMessage(OkMessage* okMsg)
 {
     if (findHost()->getIndex() == busIndex) {
         // Store the helper load and CPU freq only if the load has minimum requirements
