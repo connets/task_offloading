@@ -18,7 +18,7 @@
 
 using namespace task_offloading;
 
-void TaskGenerator::sendAgainData(int index, double load, double taskComputationTime, int loadBalanceProgressiveNumber)
+void TaskGenerator::sendAgainData(int index, double load, double taskComputationTime, int loadBalanceProgressiveNumber, int previousTaskID, int previousPartitionID)
 {
     auto found = helpers.find(index);
     if (found != helpers.end() && (loadBalancingID == loadBalanceProgressiveNumber)) {
@@ -27,6 +27,8 @@ void TaskGenerator::sendAgainData(int index, double load, double taskComputation
         populateWSM(dataMsg);
         dataMsg->setHostIndex(index);
         dataMsg->setLoadToProcess(load);
+        dataMsg->setTaskID(previousTaskID);
+        dataMsg->setPartitionID(previousPartitionID);
         sendDown(dataMsg);
 
         // Restart again the timer
@@ -35,6 +37,8 @@ void TaskGenerator::sendAgainData(int index, double load, double taskComputation
         computationTimerMsg->setSimulationTime(simTime());
         computationTimerMsg->setIndexHost(index);
         computationTimerMsg->setLoadHost(load);
+        computationTimerMsg->setTaskID(previousTaskID);
+        computationTimerMsg->setPartitionID(previousPartitionID);
         scheduleAt(simTime() + taskComputationTime + par("dataComputationThreshold").doubleValue(), computationTimerMsg);
     }
 }

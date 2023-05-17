@@ -93,6 +93,8 @@ protected:
     int okReceived;
     int responsesReceived;
     int loadBalancingID;
+    int taskID;
+    int partitionID;
 
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;
@@ -102,8 +104,8 @@ protected:
     void handleSelfMsg(cMessage* msg) override;
     void handleOkMessage(OkMessage* okMsg);
     void handleResponseMessage(ResponseMessage* responseMsg);
-    void sendAgainData(int index, double load, double taskComputationTime, int loadBalancingProgressiveNumber);
-    void sendAgainResponse(int index, double computationTime);
+    void sendAgainData(int index, double load, double taskComputationTime, int loadBalancingProgressiveNumber, int taskID, int partitionID);
+    void sendAgainResponse(int index, double computationTime, int taskID, int partitionID);
     void balanceLoad(simtime_t previousRandomTime);
     void vehicleHandler();
     void handlePositionUpdate(cObject* obj) override;
