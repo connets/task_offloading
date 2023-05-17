@@ -61,6 +61,10 @@ void Worker::initialize(int stage)
         // Initialize the load balancing algorithm
         loadBalancingAlgorithm = check_and_cast<BaseSorting*>(findModuleByPath("task_offloading.loadBalancingAlgorithm"));
 
+        // Initialize the task and data partition IDs
+        taskID = 0;
+        partitionID = 0;
+
         // Registering all signals
         startTask = registerSignal("task_started");
         stopTask = registerSignal("task_stopped");
