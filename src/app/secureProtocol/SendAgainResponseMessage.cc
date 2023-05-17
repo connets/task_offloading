@@ -18,18 +18,22 @@
 
 using namespace task_offloading;
 
-void TaskGenerator::sendAgainResponse(int index, double computationTime)
+void TaskGenerator::sendAgainResponse(int index, double computationTime, int previousTaskID, int previousPartitionID)
 {
     if (!ackReceived) {
         ResponseMessage* responseMsg = new ResponseMessage();
         populateWSM(responseMsg);
         responseMsg->setHostIndex(index);
+        responseMsg->setTaskID(previousTaskID);
+        responseMsg->setPartitionID(previousPartitionID);
         scheduleAt(simTime() + computationTime, responseMsg);
 
         // Restart the ACK timer
         AckTimerMessage* ackTimerMsg = new AckTimerMessage();
         populateWSM(ackTimerMsg);
         ackTimerMsg->setHostIndex(index);
+        ackTimerMsg->setTaskID(previousTaskID);
+        ackTimerMsg->setPartitionID(previousPartitionID);
         scheduleAt(simTime() + par("ackMessageThreshold").doubleValue(), ackTimerMsg);
     }
 }
