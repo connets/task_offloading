@@ -74,6 +74,8 @@ void TaskGenerator::balanceLoad(simtime_t previousSimulationTime)
                         data = 0;
                     }
 
+                    dataMsg->addByteLength(vehicleLoad);
+
                     // Schedule the data message
                     scheduleAt(simTime(), dataMsg);
 
@@ -88,13 +90,16 @@ void TaskGenerator::balanceLoad(simtime_t previousSimulationTime)
                         computationTimerMsg->setTaskID(taskID);
                         computationTimerMsg->setPartitionID(partitionID);
 
-                        // Calculate time for timer
+                        // Calculate time to compute for timer
                         double CPI = par("vehicleCPI").intValue();
                         double timeToCompute = helpers[i].getTotalComputationTime(CPI);
 
+                        // Calculate time to file transmission
+                        double transferTime = (helpers[i].getCurrentLoad() * 8) / 6;
+
                         computationTimerMsg->setTaskComputationTime(timeToCompute);
 
-                        scheduleAt(simTime() + timeToCompute + par("dataComputationThreshold").doubleValue(), computationTimerMsg);
+                        scheduleAt(simTime() + timeToCompute + transferTime + par("dataComputationThreshold").doubleValue(), computationTimerMsg);
                     }
                     // Update the current data partition ID
                     partitionID++;

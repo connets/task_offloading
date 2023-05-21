@@ -29,14 +29,17 @@ simple TaskGenerator extends DemoBaseApplLayer
         volatile double randomTimeHelpMessage @unit(s) = default(uniform(30s, 40s));
         volatile double randomVehicleLoadActual = default(uniform(0, 1));
         volatile double randomCpuVehicleFreq @unit(Hz) = default(uniform(1.20GHz, 2.70GHz));
-        double minimumVehicleLoadActual @unit(byte) = default(300MB);
-        double busVehicleLoad @unit(byte) = default(4GB);
-        double computationLoad @mutable @unit(byte) = default(5GB);
+        double minimumVehicleLoadActual @unit(byte) = default(300kB);
+        double busVehicleLoad @unit(byte) = default(4MB);
+        double computationLoad @mutable @unit(byte) = default(10MB);
         bool useAcks = default(false);
         double busWaitingTime @unit(s) = default(uniform(100ms, 200ms));
         volatile double dataComputationThreshold @unit(s) = default(uniform(100ms, 200ms));
         string sortingAlgorithm = default("FIFO");
         int vehicleCPI = default(3);
+        
+        // Override default veins data length bits
+        dataLengthBits = 0bit;
         
         // General statistic for task time
         @signal[task_started](type = simtime_t);
