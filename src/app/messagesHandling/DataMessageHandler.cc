@@ -53,6 +53,7 @@ void Worker::handleDataMessage(DataMessage* dataMsg)
         responseMsg->setDataComputed(dataMsg->getLoadToProcess());
         responseMsg->setTaskID(dataMsg->getTaskID());
         responseMsg->setPartitionID(dataMsg->getPartitionID());
+        responseMsg->addByteLength(dataMsg->getLoadToProcess());
         scheduleAt(simTime() + timeToCompute, responseMsg);
 
         // Generate ACK timer if parameter useAcks is false
@@ -64,7 +65,11 @@ void Worker::handleDataMessage(DataMessage* dataMsg)
             ackTimerMsg->setTaskComputationTime(timeToCompute);
             ackTimerMsg->setTaskID(dataMsg->getTaskID());
             ackTimerMsg->setPartitionID(dataMsg->getPartitionID());
-            scheduleAt(simTime() + timeToCompute + par("ackMessageThreshold").doubleValue(), ackTimerMsg);
+
+            // Calculate time to file transmission
+            double transferTime = (dataMsg->getLoadToProcess() * 8) / 6;
+
+            scheduleAt(simTime() + timeToCompute + transferTime + par("ackMessageThreshold").doubleValue(), ackTimerMsg);
         }
     }
 }
