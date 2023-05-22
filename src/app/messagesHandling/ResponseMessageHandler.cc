@@ -22,31 +22,30 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMsg)
 {
     if (findHost()->getIndex() == busIndex) {
         responsesReceived++;
-        EV << "Received data from host: " << responseMsg->getHostIndex() << std::endl;
 
         // Update global parameter data
         double data = par("computationLoad").doubleValue() - responseMsg->getDataComputed();
 
-        EV << "Computed: " << responseMsg->getDataComputed() << std::endl << "Remaining: " << data << std::endl;
+        // Check if there is more data to load at the end of the last response
+        // message, to send signal of task terminated and update the task ID
+        if (data <= 0) {
+            emit(stopTask, simTime());
+            taskID++;
+        }
 
-        if (!(par("useAcks").boolValue())) {
+        if (!(par("useAcks").boolValue()) && (!(responseMsg->getStillAvailable()) || data <= 0)) {
             // Send ACK message to the host
             AckMessage* ackMsg = new AckMessage();
             populateWSM(ackMsg);
             ackMsg->setHostIndex(responseMsg->getHostIndex());
+            ackMsg->setTaskID(responseMsg->getTaskID());
+            ackMsg->setPartitionID(responseMsg->getPartitionID());
             scheduleAt(simTime(), ackMsg);
         }
 
-        if (!(responseMsg->getStillAvailable())) {
+        if (!(responseMsg->getStillAvailable()) || data <= 0) {
             helpers.erase(responseMsg->getHostIndex());
             helpersOrderedList.remove(responseMsg->getHostIndex());
-            EV << "Deleted host: " << responseMsg->getHostIndex() << std::endl <<"Host remaining: " << helpers.size() - 1 << std::endl;
-
-            // Check if there is more data to load at the end of the last response
-            // message, to send signal of task terminated
-            if(!(par("computationLoad").doubleValue() > 0)) {
-                emit(stopTask, simTime());
-            }
 
             // Send signal for having received response message statistic
             emit(stopResponseMessages, responseMsg->getHostIndex());
@@ -73,9 +72,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMsg)
         }
 
         // If the responses are equal to the total of vehicles update map and restart load balancing
-        if (responsesReceived == okReceived) {
-            EV << "Responses received: " << responsesReceived << std::endl;
-            EV << "Ok received: " << okReceived << std::endl;
+        if (responsesReceived == okReceived && data > 0) {
             responsesReceived = 0;
 
             if (helpers.size() > 1 && data > 0) {
@@ -89,8 +86,6 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMsg)
             } else {
                 okReceived = 0;
             }
-
-            EV << "Total data remaining: " << par("computationLoad").doubleValue() << std::endl;
         }
     }
 }

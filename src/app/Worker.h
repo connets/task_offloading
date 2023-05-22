@@ -93,6 +93,8 @@ protected:
     int okReceived;
     int responsesReceived;
     int loadBalancingID;
+    int taskID;
+    int partitionID;
 
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;

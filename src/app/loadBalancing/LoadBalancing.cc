@@ -32,14 +32,6 @@ void TaskGenerator::balanceLoad(simtime_t previousSimulationTime)
     // Send signal for stop balance load
     emit(stopBalance, simTime());
 
-    EV << "List ordered: ";
-
-    for (auto const &i: helpersOrderedList) {
-        EV << i << " ";
-    }
-
-    EV << std::endl;
-
     if (vehiclesCounter > 1) {
         helpReceived = true;
 
@@ -47,13 +39,6 @@ void TaskGenerator::balanceLoad(simtime_t previousSimulationTime)
         double data = par("computationLoad").doubleValue();
 
         for (auto const &i: helpersOrderedList) {
-            // Debug messages
-            EV << "Index of vehicle: " << i << std::endl;
-            EV << "Load remaining: " << data << std::endl;
-            EV << "Vehicle " << i << " time to complete " << helpers[i].getTotalComputationTime(3) << std::endl;
-            EV << "Vehicle " << i << " arrival time " << helpers[i].getCreatedAt() << std::endl;
-            EV << "Index vehicle " << i << " value " << helpers[i].getIndex() << std::endl;
-
             // Check if the vehicle isn't the bus and if the response received are different from oks
             if (i != busIndex) {
                 // Load of vehicle i
@@ -76,6 +61,8 @@ void TaskGenerator::balanceLoad(simtime_t previousSimulationTime)
 
                     dataMsg->setSenderAddress(myId);
                     dataMsg->setHostIndex(i);
+                    dataMsg->setTaskID(taskID);
+                    dataMsg->setPartitionID(partitionID);
 
                     // If data - vehicleLoad >= 0 then set data to maximum vehicle load
                     // otherwise send the remaining data
@@ -86,6 +73,8 @@ void TaskGenerator::balanceLoad(simtime_t previousSimulationTime)
                         dataMsg->setLoadToProcess(data);
                         data = 0;
                     }
+
+                    dataMsg->addByteLength(vehicleLoad);
 
                     // Schedule the data message
                     scheduleAt(simTime(), dataMsg);
@@ -98,15 +87,22 @@ void TaskGenerator::balanceLoad(simtime_t previousSimulationTime)
                         computationTimerMsg->setIndexHost(i);
                         computationTimerMsg->setLoadHost(helpers[i].getCurrentLoad());
                         computationTimerMsg->setLoadBalancingID(loadBalancingID);
+                        computationTimerMsg->setTaskID(taskID);
+                        computationTimerMsg->setPartitionID(partitionID);
 
-                        // Calculate time for timer
+                        // Calculate time to compute for timer
                         double CPI = par("vehicleCPI").intValue();
                         double timeToCompute = helpers[i].getTotalComputationTime(CPI);
 
+                        // Calculate time to file transmission
+                        double transferTime = (helpers[i].getCurrentLoad() * 8) / 6;
+
                         computationTimerMsg->setTaskComputationTime(timeToCompute);
 
-                        scheduleAt(simTime() + timeToCompute + par("dataComputationThreshold").doubleValue(), computationTimerMsg);
+                        scheduleAt(simTime() + timeToCompute + transferTime + par("dataComputationThreshold").doubleValue(), computationTimerMsg);
                     }
+                    // Update the current data partition ID
+                    partitionID++;
                 }
             }
         }

@@ -50,7 +50,9 @@ void TaskGenerator::vehicleHandler()
         emit(startHelp, simTime());
 
         // Send statistics for the start of the task
-        emit(startTask, simTime());
+        if (loadBalancingID == 0 && taskID == 0 && partitionID == 0) {
+            emit(startTask, simTime());
+        }
 
         // Schedule timer for the help request
         LoadBalanceTimerMessage* loadBalanceMsg = new LoadBalanceTimerMessage();

@@ -24,8 +24,6 @@ void Worker::handleDataMessage(DataMessage* dataMsg)
         // Color the host that needs to process data
         findHost()->getDisplayString().setTagArg("i", 1, "red");
 
-        EV << "Received " << dataMsg->getLoadToProcess() << " to load from BUS" << std::endl;
-
         // Send signal for data message statistics since I've received all data
         emit(stopDataMessages, dataMsg->getHostIndex());
 
@@ -53,18 +51,25 @@ void Worker::handleDataMessage(DataMessage* dataMsg)
 
         responseMsg->setStillAvailable(stillAvailable);
         responseMsg->setDataComputed(dataMsg->getLoadToProcess());
+        responseMsg->setTaskID(dataMsg->getTaskID());
+        responseMsg->setPartitionID(dataMsg->getPartitionID());
+        responseMsg->addByteLength(dataMsg->getLoadToProcess());
         scheduleAt(simTime() + timeToCompute, responseMsg);
 
         // Generate ACK timer if parameter useAcks is false
         // to achieve secure protocol manually
-        if (!(par("useAcks").boolValue())) {
+        if (!(par("useAcks").boolValue()) && !(stillAvailable)) {
             AckTimerMessage* ackTimerMsg = new AckTimerMessage();
             populateWSM(ackTimerMsg);
             ackTimerMsg->setHostIndex(dataMsg->getHostIndex());
             ackTimerMsg->setTaskComputationTime(timeToCompute);
-            scheduleAt(simTime() + timeToCompute + par("ackMessageThreshold").doubleValue(), ackTimerMsg);
-        }
+            ackTimerMsg->setTaskID(dataMsg->getTaskID());
+            ackTimerMsg->setPartitionID(dataMsg->getPartitionID());
 
-        EV << "Finished computation of: " << dataMsg->getLoadToProcess() << std::endl;
+            // Calculate time to file transmission
+            double transferTime = (dataMsg->getLoadToProcess() * 8) / 6;
+
+            scheduleAt(simTime() + timeToCompute + transferTime + par("ackMessageThreshold").doubleValue(), ackTimerMsg);
+        }
     }
 }

@@ -21,4 +21,6 @@ namespace task_offloading;
 
 packet AckMessage extends veins::BaseFrame1609_4 {
     int hostIndex;
+    int taskID;
+    int partitionID;
 }

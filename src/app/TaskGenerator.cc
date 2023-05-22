@@ -52,7 +52,7 @@ void TaskGenerator::initialize(int stage)
 
         // BUS SECTION
         // Set the BUS index
-        busIndex = 0;
+        busIndex = findHost()->getIndex();
         responsesReceived = 0;
         okReceived = 0;
         // Initialize the BUS state
@@ -60,6 +60,10 @@ void TaskGenerator::initialize(int stage)
 
         // Initialize the load balancing algorithm
         loadBalancingAlgorithm = check_and_cast<BaseSorting*>(findModuleByPath("task_offloading.loadBalancingAlgorithm"));
+
+        // Initialize the task and data partition IDs
+        taskID = 0;
+        partitionID = 0;
 
         // Registering all signals
         startTask = registerSignal("task_started");
@@ -127,7 +131,9 @@ void TaskGenerator::handleSelfMsg(cMessage* msg)
     if (AckTimerMessage* ackTimerMsg = dynamic_cast<AckTimerMessage*>(msg)) {
         int hostIndex = ackTimerMsg->getHostIndex();
         double completionTime = ackTimerMsg->getTaskComputationTime();
-        sendAgainResponse(hostIndex, completionTime);
+        int taskID = ackTimerMsg->getTaskID();
+        int partitionID = ackTimerMsg->getPartitionID();
+        sendAgainResponse(hostIndex, completionTime, taskID, partitionID);
     }
 
     // Timer for data computation
@@ -136,7 +142,9 @@ void TaskGenerator::handleSelfMsg(cMessage* msg)
         double load = computationTimerMsg->getLoadHost();
         double completionTime = computationTimerMsg->getTaskComputationTime();
         int loadBalancingProgressiveNumber = computationTimerMsg->getLoadBalancingID();
-        sendAgainData(hostIndex, load, completionTime, loadBalancingProgressiveNumber);
+        int taskID = computationTimerMsg->getTaskID();
+        int partitionID = computationTimerMsg->getPartitionID();
+        sendAgainData(hostIndex, load, completionTime, loadBalancingProgressiveNumber, taskID, partitionID);
     }
 
     // Timer for data message
