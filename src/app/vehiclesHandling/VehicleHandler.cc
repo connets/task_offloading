@@ -20,48 +20,68 @@ using namespace task_offloading;
 
 void TaskGenerator::vehicleHandler()
 {
-    bool randomTimeReached = simTime() > par("randomTimeHelpMessage").doubleValue() + newRandomTime;
-    bool isBus = findHost()->getIndex() == busIndex;
-    bool moreDataToLoad = par("computationLoad").doubleValue() > 0;
+    // Get the timer for the first help message
+    bool timerForFirstHelpMessage = simTime() > par("randomTimeFirstHelpMessage").doubleValue();
+    // Check the bus state
+    int currentBusState = busState.getCurrentState();
+    // Check if there's more data
+    bool moreDataToLoad = tasks[0].getData() > 0;
+    // Check if it's the second (or more) help message
+    bool isFirstHelpMessage = tasks[0].getHelpReceivedCounter() ==  0;
 
-    if (randomTimeReached && isBus && !(helpReceived) && !(sentHelpMessage) && moreDataToLoad) {
-        // Help message creation
-        HelpMessage* helpRequest = new HelpMessage();
-        populateWSM(helpRequest);
+    // If it's the first message then initialize the task
+    if (isFirstHelpMessage) {
+        tasks[0] = Task(0, par("computationLoad").doubleValue(), par("minimumVehicleLoadRequested").doubleValue(), 3);
+    }
 
-        // Fill the map with BUS vehicle info
-        double busLoad = par("randomVehicleLoadActual").doubleValue() * par("busVehicleLoad").doubleValue();
-        double busFreq = par("randomCpuVehicleFreq").doubleValue();
-        std::string hostBUSIndex = "node0";
-        helpers[busIndex] = HelperVehicleInfo(hostBUSIndex, busLoad, busFreq, busIndex);
-        helpers[busIndex].setVehicleAngle(traciVehicle->getAngle());
-
-        // Color the bus
+    // Check if we reach the time of the first help message
+    if (timerForFirstHelpMessage && (currentBusState == 0) && moreDataToLoad) {
+        // Color the bus icon in red
         findHost()->getDisplayString().setTagArg("i", 1, "red");
 
-        // Fill the data of the help request message
-        helpRequest->setVehicleIndex(findHost()->getIndex());
-        helpRequest->setMinimumLoadRequested(par("minimumVehicleLoadActual").doubleValue());
+        // Prepare the help message
+        HelpMessage* helpMessage = new HelpMessage();
 
-        // Send the help message
-        sendDown(helpRequest);
+        // Populate the message
+        populateWSM(helpMessage);
+        helpMessage->setId(tasks[0].getHelpReceivedCounter());
+        helpMessage->setVehicleIndex(busIndex);
+        helpMessage->setMinimumLoadRequested(tasks[0].getMinimumLoadRequested());
 
-        // Emit the signal that help requested has been sent
+        // Emit signal for start help message
         emit(startHelp, simTime());
 
-        // Send statistics for the start of the task
-        if (loadBalancingID == 0 && taskID == 0 && partitionID == 0) {
+        // Send the message in broadcast
+        sendDown(helpMessage);
+
+        if (tasks[0].getHelpReceivedCounter() == 0) {
             emit(startTask, simTime());
         }
 
-        // Schedule timer for the help request
-        LoadBalanceTimerMessage* loadBalanceMsg = new LoadBalanceTimerMessage();
-        populateWSM(loadBalanceMsg);
-        loadBalanceMsg->setSimulationTime(simTime());
-        scheduleAt(simTime() + par("busWaitingTime").doubleValue(), loadBalanceMsg);
+        // Start bus waiting timer for accepting availability messages
+        LoadBalanceTimerMessage* timerForLoadBalancing = new LoadBalanceTimerMessage();
 
-        sentHelpMessage = true;
-    } else if (!moreDataToLoad) {
+        // Save the actual simtime for future help messages
+        simtime_t simTimeActual = simTime();
+
+        // Populate the message
+        populateWSM(timerForLoadBalancing);
+        timerForLoadBalancing->setSimulationTime(simTimeActual);
+
+        // Change the load balancing state
+        busState.setState(new LoadBalancing);
+
+        newRandomTime = simTimeActual;
+
+        // Increment the counter for help messages
+        int helpCounter = tasks[0].getHelpReceivedCounter();
+        helpCounter++;
+        tasks[0].setHelpReceivedCounter(helpCounter);
+
+        // Schedule the message -> simTime + availability msgs threshold
+        scheduleAt(simTimeActual + par("busWaitingTimeForAvailability").doubleValue(), timerForLoadBalancing);
+    } else if (tasks[0].getData() <= 0) {
+        // Color the bus in white when computation ends
         findHost()->getDisplayString().setTagArg("i", 1, "white");
     }
 }
