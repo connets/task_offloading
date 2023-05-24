@@ -89,6 +89,20 @@ int HelperVehicleInfo::getDataPartitionId() {
 }
 
 /**
+ * @returns The current task cpi -> useful when calculating total compute time
+ */
+int HelperVehicleInfo::getTaskCpi() {
+    return this->taskCpi;
+}
+
+/**
+ * @returns The speed of a vehicle in m/s
+ */
+double HelperVehicleInfo::getVehicleSpeed() {
+    return this->vehicleSpeed;
+}
+
+/**
  * Set the current index of a vehicle
  *
  * @param newIndex The new index of a vehicle
@@ -149,6 +163,24 @@ void HelperVehicleInfo::setVehicleAngle(double newAngle) {
  */
 void HelperVehicleInfo::setDataPartitionId(int newPartitionId) {
     this->dataPartitionId = newPartitionId;
+}
+
+/**
+ * Set the current cpi of the task
+ *
+ * @param newCpi The new cpi of the task -> useful when calculating total compute time
+ */
+void HelperVehicleInfo::setTaskCpi(int newCpi) {
+    this->taskCpi = newCpi;
+}
+
+/**
+ * Set the current speed of a vehicle in m/s
+ *
+ * @param newSpeed The new current speed of a vehicle
+ */
+void HelperVehicleInfo::setVehicleSpeed(double newSpeed) {
+    this->vehicleSpeed = newSpeed;
 }
 
 /**
