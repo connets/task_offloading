@@ -24,13 +24,14 @@
 
 #include "veins/veins.h"
 
+#include "app/Task.h"
 #include "app/messages/HelpMessage_m.h"
-#include "app/messages/OkMessage_m.h"
+#include "app/messages/AvailabilityMessage_m.h"
 #include "app/messages/DataMessage_m.h"
 #include "app/messages/ResponseMessage_m.h"
-#include "app/loadBalancing/LoadBalancingState.h"
 #include "app/vehiclesHandling/HelperVehicleInfo.h"
 #include "app/loadBalancing/sortingAlgorithm/BaseSorting.h"
+#include "loadBalancing/BusState.h"
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
 
 using namespace omnetpp;
@@ -80,21 +81,13 @@ private:
 
 protected:
     simtime_t lastDroveAt;
-    bool sentHelpMessage;
-    bool helpReceived;
     std::map<int, HelperVehicleInfo> helpers;
+    std::map<int, Task> tasks;
     std::list<int> helpersOrderedList;
-    simtime_t newRandomTime;
     int busIndex;
-    LoadBalancingContext loadBalancingState;
-    bool ackReceived;
-    double hostCpuFreq;
+    simtime_t newRandomTime;
+    BusContext busState;
     BaseSorting* loadBalancingAlgorithm;
-    int okReceived;
-    int responsesReceived;
-    int loadBalancingID;
-    int taskID;
-    int partitionID;
 
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;
@@ -102,11 +95,10 @@ protected:
     void onWSA(veins::DemoServiceAdvertisment* wsa) override;
 
     void handleSelfMsg(cMessage* msg) override;
-    void handleOkMessage(OkMessage* okMsg);
+    void handleAvailabilityMessage(AvailabilityMessage* okMsg);
     void handleResponseMessage(ResponseMessage* responseMsg);
     void sendAgainData(int index, double load, double taskComputationTime, int loadBalancingProgressiveNumber, int taskID, int partitionID);
-    void sendAgainResponse(int index, double computationTime, int taskID, int partitionID);
-    void balanceLoad(simtime_t previousRandomTime);
+    void balanceLoad();
     void vehicleHandler();
     void handlePositionUpdate(cObject* obj) override;
 };
