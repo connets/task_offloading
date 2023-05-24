@@ -20,25 +20,34 @@ using namespace task_offloading;
 
 void TaskGenerator::sendAgainData(int index, double load, double taskComputationTime, int loadBalanceProgressiveNumber, int previousTaskID, int previousPartitionID)
 {
+    // Search the vehicle in the map
     auto found = helpers.find(index);
-    if (found != helpers.end() && (loadBalancingID == loadBalanceProgressiveNumber)) {
+
+    // Check load balancing id
+    bool loadBalancingIdCheck = tasks[0].getLoadBalancingId() == loadBalanceProgressiveNumber;
+
+    // Check the data partition id
+    bool checkDataPartitionId = helpers[index].getDataPartitionId() == previousPartitionID;
+
+    // If the vehicle is found check if I've received the data from it
+    if (found != helpers.end() && (loadBalancingIdCheck) && (checkDataPartitionId)) {
         // Prepare the new data message
-        DataMessage* dataMsg = new DataMessage();
-        populateWSM(dataMsg);
-        dataMsg->setHostIndex(index);
-        dataMsg->setLoadToProcess(load);
-        dataMsg->setTaskID(previousTaskID);
-        dataMsg->setPartitionID(previousPartitionID);
-        sendDown(dataMsg);
+        DataMessage* dataMessage = new DataMessage();
+        populateWSM(dataMessage);
+        dataMessage->setHostIndex(index);
+        dataMessage->setLoadToProcess(load);
+        dataMessage->setTaskID(previousTaskID);
+        dataMessage->setPartitionID(previousPartitionID);
+        sendDown(dataMessage);
 
         // Restart again the timer
-        ComputationTimerMessage* computationTimerMsg = new ComputationTimerMessage();
-        populateWSM(computationTimerMsg);
-        computationTimerMsg->setSimulationTime(simTime());
-        computationTimerMsg->setIndexHost(index);
-        computationTimerMsg->setLoadHost(load);
-        computationTimerMsg->setTaskID(previousTaskID);
-        computationTimerMsg->setPartitionID(previousPartitionID);
-        scheduleAt(simTime() + taskComputationTime + par("dataComputationThreshold").doubleValue(), computationTimerMsg);
+        ComputationTimerMessage* computationTimerMessage = new ComputationTimerMessage();
+        populateWSM(computationTimerMessage);
+        computationTimerMessage->setSimulationTime(simTime());
+        computationTimerMessage->setIndexHost(index);
+        computationTimerMessage->setLoadHost(load);
+        computationTimerMessage->setTaskID(previousTaskID);
+        computationTimerMessage->setPartitionID(previousPartitionID);
+        scheduleAt(simTime() + taskComputationTime + par("dataComputationThreshold").doubleValue(), computationTimerMessage);
     }
 }
