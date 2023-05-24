@@ -25,12 +25,12 @@
 #include "veins/veins.h"
 
 #include "app/messages/HelpMessage_m.h"
-#include "app/messages/OkMessage_m.h"
+#include "app/messages/AvailabilityMessage_m.h"
 #include "app/messages/DataMessage_m.h"
 #include "app/messages/ResponseMessage_m.h"
-#include "app/loadBalancing/LoadBalancingState.h"
 #include "app/vehiclesHandling/HelperVehicleInfo.h"
 #include "app/loadBalancing/sortingAlgorithm/BaseSorting.h"
+#include "loadBalancing/BusState.h"
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
 
 using namespace omnetpp;
@@ -75,26 +75,13 @@ private:
     simsignal_t stopResponseMessages;
 
     // SECTION - OK messages statistics
-    simsignal_t okMessageSent;
-    simsignal_t okMessageLoad;
+    simsignal_t availableMessageSent;
+    simsignal_t availableMessageLoad;
 
 protected:
     simtime_t lastDroveAt;
-    bool sentHelpMessage;
-    bool helpReceived;
-    std::map<int, HelperVehicleInfo> helpers;
-    std::list<int> helpersOrderedList;
-    simtime_t newRandomTime;
-    int busIndex;
-    LoadBalancingContext loadBalancingState;
-    bool ackReceived;
-    double hostCpuFreq;
-    BaseSorting* loadBalancingAlgorithm;
-    int okReceived;
-    int responsesReceived;
-    int loadBalancingID;
-    int taskID;
-    int partitionID;
+    double cpuFreq;
+    int currentDataPartitionId;
 
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;
@@ -104,6 +91,7 @@ protected:
     void handleSelfMsg(cMessage* msg) override;
     void handleHelpMessage(HelpMessage* helpMsg);
     void handleDataMessage(DataMessage* dataMsg);
+    void sendAgainResponse(int index, double computationTime, int taskID, int partitionID);
     void handlePositionUpdate(cObject* obj) override;
 };
 }
