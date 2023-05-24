@@ -13,40 +13,52 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef APP_LOADBALANCING_LOADBALANCINGSTATE_H_
-#define APP_LOADBALANCING_LOADBALANCINGSTATE_H_
+#ifndef APP_LOADBALANCING_BUSSTATE_H_
+#define APP_LOADBALANCING_BUSSTATE_H_
 
 namespace task_offloading {
-    class LoadBalancingState
+    class BusState
     {
         public:
-            virtual bool getCurrentState() = 0;
-            virtual ~LoadBalancingState();
+            virtual int getCurrentState() = 0;
+            virtual ~BusState();
     };
 
-    class Active : public LoadBalancingState
+    class Help : public BusState
     {
         public:
-            bool getCurrentState();
+            int getCurrentState();
     };
 
-    class Disabled : public LoadBalancingState
+    class LoadBalancing : public BusState
     {
         public:
-            bool getCurrentState();
+            int getCurrentState();
     };
 
-    class LoadBalancingContext {
+    class DataTransfer : public BusState
+    {
         public:
-            LoadBalancingContext();
-            LoadBalancingContext(LoadBalancingState* newState);
-            virtual ~LoadBalancingContext();
-            void setState(LoadBalancingState* newState);
-            bool getCurrentState();
+            int getCurrentState();
+    };
+
+    class FinishedComputation : public BusState
+    {
+        public:
+            int getCurrentState();
+    };
+
+    class BusContext {
+        public:
+            BusContext();
+            BusContext(BusState* newState);
+            virtual ~BusContext();
+            void setState(BusState* newState);
+            int getCurrentState();
 
         protected:
-            LoadBalancingState* currentState;
+            BusState* currentState;
     };
 }
 
-#endif /* APP_LOADBALANCING_LOADBALANCINGSTATE_H_ */
+#endif /* APP_LOADBALANCING_BUSSTATE_H_ */

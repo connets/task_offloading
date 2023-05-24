@@ -13,30 +13,30 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "LoadBalancingState.h"
+#include "BusState.h"
 
 using namespace task_offloading;
 
-LoadBalancingState::~LoadBalancingState()
+BusState::~BusState()
 {
     //
 }
 
-LoadBalancingContext::~LoadBalancingContext() {
+BusContext::~BusContext() {
     //
 }
 
-LoadBalancingContext::LoadBalancingContext()
+BusContext::BusContext()
 {
-    currentState = new Disabled;
+    currentState = new Help;
 }
 
-LoadBalancingContext::LoadBalancingContext(LoadBalancingState* newState)
+BusContext::BusContext(BusState* newState)
 {
     currentState = newState;
 }
 
-void LoadBalancingContext::setState(LoadBalancingState* newState)
+void BusContext::setState(BusState* newState)
 {
     if (currentState) {
         delete currentState;
@@ -44,17 +44,27 @@ void LoadBalancingContext::setState(LoadBalancingState* newState)
     }
 }
 
-bool LoadBalancingContext::getCurrentState()
+int BusContext::getCurrentState()
 {
     return currentState->getCurrentState();
 }
 
-bool Active::getCurrentState()
+int Help::getCurrentState()
 {
-    return false;
+    return 0;
 }
 
-bool Disabled::getCurrentState()
+int LoadBalancing::getCurrentState()
 {
-    return true;
+    return 1;
+}
+
+int DataTransfer::getCurrentState()
+{
+    return 2;
+}
+
+int FinishedComputation::getCurrentState()
+{
+    return 3;
 }
