@@ -30,9 +30,12 @@ void TaskGenerator::handleAvailabilityMessage(AvailabilityMessage* availabilityM
         double CPUFreq = availabilityMessage->getCpuFreq();
         veins::LAddress::L2Type address = availabilityMessage->getSenderAddress();
         double vehicleAngle = availabilityMessage->getVehicleAngle();
+        double vehicleSpeed = availabilityMessage->getVehicleSpeed();
 
         helpers[availabilityMessage->getHostID()] = HelperVehicleInfo(currentHostIndex, currentLoad, CPUFreq, address);
         helpers[availabilityMessage->getHostID()].setVehicleAngle(vehicleAngle);
+        helpers[availabilityMessage->getHostID()].setVehicleSpeed(vehicleSpeed);
+        helpers[availabilityMessage->getHostID()].setTaskCpi(tasks[0].getCpi());
 
         int previousAvailability = tasks[0].getAvailableReceivedCounter();
         previousAvailability++;

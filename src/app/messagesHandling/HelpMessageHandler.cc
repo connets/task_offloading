@@ -54,6 +54,7 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
         available->setAvailableLoad(currentVehicleLoad);
         available->setCpuFreq(cpuFreq);
         available->setVehicleAngle(traciVehicle->getAngle());
+        available->setVehicleSpeed(traciVehicle->getSpeed());
 
         // Schedule the ok message
         scheduleAt(simTime() + par("vehicleAvailabilityMessageTime").doubleValue(), available);

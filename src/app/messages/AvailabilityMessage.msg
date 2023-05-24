@@ -26,4 +26,5 @@ packet AvailabilityMessage extends veins::BaseFrame1609_4 {
 	double cpuFreq;
 	veins::LAddress::L2Type senderAddress = -1;
 	double vehicleAngle;
+	double vehicleSpeed;
 }
