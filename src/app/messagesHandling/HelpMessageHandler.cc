@@ -17,46 +17,45 @@
 
 using namespace task_offloading;
 
-void Worker::handleHelpMessage(HelpMessage* helpMsg)
+void Worker::handleHelpMessage(HelpMessage* helpMessage)
 {
-    // Check that the help request come from the bus
-    if (helpMsg->getVehicleIndex() == busIndex) {
-        // Color the host that received the help message
-        findHost()->getDisplayString().setTagArg("i", 1, "yellow");
+    // I've received an help request from bus
 
-        // Set for every single host a random value for current load and cpu freq
-        double randomVehicleLoad = par("randomVehicleLoadActual").doubleValue();
-        double commonVehicleLoad = par("commonVehicleLoad").doubleValue();
+    // Emit the help message received
+    emit(stopHelp, simTime());
 
-        // Get the CPU freq and assign to host variable
-        double cpuFreq = par("randomCpuVehicleFreq").doubleValue();
-        hostCpuFreq = cpuFreq;
+    // First check if I met requirements for the bus
+    double minimumLoadRequested = helpMessage->getMinimumLoadRequested();
 
-        // Calculate real actual load
-        // Actual load = common load (MB) * random actual load (% between 0 and 1)
-        double actualLoad = commonVehicleLoad * randomVehicleLoad;
-        double minimumLoadRequested = helpMsg->getMinimumLoadRequested();
+    // Check my current load
+    double currentVehicleLoad = par("randomVehicleFreeLoadPercentage").doubleValue() * par("commonVehicleLoad").doubleValue();
 
-        // If the host is available send an ok message after
-        // some time with ID and the computation load available
-        if (actualLoad >= minimumLoadRequested) {
-            // Prepare the message
-            OkMessage* okMsg = new OkMessage();
-            populateWSM(okMsg);
-            okMsg->setSenderAddress(myId);
-            okMsg->setHostID(findHost()->getIndex());
-            okMsg->setAvailableLoad(actualLoad);
-            okMsg->setCpuFreq(cpuFreq);
-            okMsg->setIndex(findHost()->getName());
-            okMsg->setVehicleAngle(traciVehicle->getAngle());
+    // Emit the signal for my current load
+    emit(availableMessageLoad, currentVehicleLoad);
 
-            // Emit the signal of the ok message load
-            emit(okMessageLoad, actualLoad);
+    // Check my current CPU freq
+    double CPUFreq = par("randomVehicleCpuFreq").doubleValue();
 
-            // Schedule the ok message
-            scheduleAt(simTime() + par("vehicleOkMessageTime").doubleValue(), okMsg);
-        } else if (findHost()->getIndex() != busIndex && actualLoad < minimumLoadRequested) {
-            findHost()->getDisplayString().setTagArg("i", 1, "white");
-        }
+    // Set my CPU freq
+    cpuFreq = CPUFreq;
+
+    // If I met requirements send an available message
+    if (currentVehicleLoad >= minimumLoadRequested) {
+        // Color the vehicle icon in blue
+        findHost()->getDisplayString().setTagArg("i", 1, "blue");
+
+        // Prepare the availability message
+        AvailabilityMessage* available = new AvailabilityMessage();
+
+        // Populate the message
+        populateWSM(available);
+        available->setHostID(findHost()->getIndex());
+        available->setIndex(findHost()->getName());
+        available->setAvailableLoad(currentVehicleLoad);
+        available->setCpuFreq(cpuFreq);
+        available->setVehicleAngle(traciVehicle->getAngle());
+
+        // Schedule the ok message
+        scheduleAt(simTime() + par("vehicleAvailabilityMessageTime").doubleValue(), available);
     }
 }

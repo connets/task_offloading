@@ -17,23 +17,25 @@
 
 using namespace task_offloading;
 
-void TaskGenerator::handleOkMessage(OkMessage* okMsg)
+void TaskGenerator::handleAvailabilityMessage(AvailabilityMessage* availabilityMessage)
 {
-    if (findHost()->getIndex() == busIndex) {
-        // Store the helper load and CPU freq only if the load has minimum requirements
-        if (okMsg->getAvailableLoad() >= par("minimumVehicleLoadActual").doubleValue()) {
-            // Color the bus that received help
-            findHost()->getDisplayString().setTagArg("i", 1, "green");
-            std::string currentHostIndex = okMsg->getIndex() + std::to_string(okMsg->getHostID());
-            double currentLoad = okMsg->getAvailableLoad();
-            double CPUFreq = okMsg->getCpuFreq();
-            veins::LAddress::L2Type address = okMsg->getSenderAddress();
-            double vehicleAngle = okMsg->getVehicleAngle();
+    // Check the bus state
+    int currentBusState = busState.getCurrentState();
 
-            helpers[okMsg->getHostID()] = HelperVehicleInfo(currentHostIndex, currentLoad, CPUFreq, address);
-            helpers[okMsg->getHostID()].setVehicleAngle(vehicleAngle);
+    if (findHost()->getIndex() == busIndex && currentBusState == 1) {
+        // Color the bus that received help
+        findHost()->getDisplayString().setTagArg("i", 1, "green");
+        std::string currentHostIndex = availabilityMessage->getIndex() + std::to_string(availabilityMessage->getHostID());
+        double currentLoad = availabilityMessage->getAvailableLoad();
+        double CPUFreq = availabilityMessage->getCpuFreq();
+        veins::LAddress::L2Type address = availabilityMessage->getSenderAddress();
+        double vehicleAngle = availabilityMessage->getVehicleAngle();
 
-            okReceived++;
-        }
+        helpers[availabilityMessage->getHostID()] = HelperVehicleInfo(currentHostIndex, currentLoad, CPUFreq, address);
+        helpers[availabilityMessage->getHostID()].setVehicleAngle(vehicleAngle);
+
+        int previousAvailability = tasks[0].getAvailableReceivedCounter();
+        previousAvailability++;
+        tasks[0].setAvailableReceivedCounter(previousAvailability);
     }
 }
