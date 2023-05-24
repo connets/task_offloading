@@ -19,7 +19,7 @@ import veins.base.utils.SimpleAddress;
 
 namespace task_offloading;
 
-packet OkMessage extends veins::BaseFrame1609_4 {
+packet AvailabilityMessage extends veins::BaseFrame1609_4 {
 	int hostID;
 	string index;
 	double availableLoad;
