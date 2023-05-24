@@ -23,7 +23,7 @@
 #include "Worker.h"
 
 #include "app/messages/HelpMessage_m.h"
-#include "app/messages/OkMessage_m.h"
+#include "app/messages/AvailabilityMessage_m.h"
 #include "app/messages/AckMessage_m.h"
 #include "app/messages/DataMessage_m.h"
 #include "app/messages/ResponseMessage_m.h"
@@ -43,41 +43,19 @@ void Worker::initialize(int stage)
     if (stage == 0) {
         // Initializing members and pointers of your application goes here
         lastDroveAt = simTime();
-        sentHelpMessage = false;
-        helpReceived = false;
-        newRandomTime = 0;
-        ackReceived = false;
-        loadBalancingID = 0;
-        hostCpuFreq = 0;
 
-        // BUS SECTION
-        // Set the BUS index
-        busIndex = 0;
-        responsesReceived = 0;
-        okReceived = 0;
-        // Initialize the BUS state
-        loadBalancingState = LoadBalancingContext(new Disabled);
+        // Initialize my cpu freq
+        cpuFreq = 0;
 
-        // Initialize the load balancing algorithm
-        loadBalancingAlgorithm = check_and_cast<BaseSorting*>(findModuleByPath("task_offloading.loadBalancingAlgorithm"));
-
-        // Initialize the task and data partition IDs
-        taskID = 0;
-        partitionID = 0;
+        // Initialize data partition id
+        currentDataPartitionId = -1;
 
         // Registering all signals
-        startTask = registerSignal("task_started");
-        stopTask = registerSignal("task_stopped");
-        startBalance = registerSignal("start_balance_loading");
-        stopBalance = registerSignal("stop_balance_loading");
-        startHelp = registerSignal("start_bus_help_rq");
         stopHelp = registerSignal("stop_bus_help_rq");
-        startDataMessages = registerSignal("start_sending_data");
         stopDataMessages = registerSignal("stop_sending_data");
         startResponseMessages = registerSignal("start_getting_response");
-        stopResponseMessages = registerSignal("stop_getting_response");
-        okMessageSent = registerSignal("ok_message_sent");
-        okMessageLoad = registerSignal("ok_message_load");
+        availableMessageSent = registerSignal("available_message_sent");
+        availableMessageLoad = registerSignal("available_message_load");
     }
 }
 
@@ -98,21 +76,21 @@ void Worker::onWSM(veins::BaseFrame1609_4* wsm)
     ************************************************************************/
 
     // SECTION - When the host receive an help message
-    if (HelpMessage* helpMsg = dynamic_cast<HelpMessage*>(wsm)) {
-        busIndex = helpMsg->getVehicleIndex();
-        handleHelpMessage(helpMsg);
+    if (HelpMessage* helpMessage = dynamic_cast<HelpMessage*>(wsm)) {
+        handleHelpMessage(helpMessage);
     }
 
     // SECTION - When the host receive the data message
-    if (DataMessage* dataMsg = dynamic_cast<DataMessage*>(wsm)) {
-        handleDataMessage(dataMsg);
+    if (DataMessage* dataMessage = dynamic_cast<DataMessage*>(wsm)) {
+        handleDataMessage(dataMessage);
     }
 
     // SECTION - When the host receive the ACK message
     if (AckMessage* ackMessage = dynamic_cast<AckMessage*>(wsm)) {
-        if (findHost()->getIndex() == ackMessage->getHostIndex()) {
-            ackReceived = true;
-        }
+        currentDataPartitionId = -1;
+
+        // Color the vehicle in white when computation ends
+        findHost()->getDisplayString().setTagArg("i", 1, "white");
     }
 }
 
@@ -124,26 +102,30 @@ void Worker::onWSA(veins::DemoServiceAdvertisment* wsa)
 void Worker::handleSelfMsg(cMessage* msg)
 {
     // Timer for ok message
-    if (OkMessage* okMsg = dynamic_cast<OkMessage*>(msg)) {
-        if (loadBalancingState.getCurrentState() == true) {
-            // Color the available host in blue
-            findHost()->getDisplayString().setTagArg("i", 1, "blue");
+    if (AvailabilityMessage* availabilityMessage = dynamic_cast<AvailabilityMessage*>(msg)) {
+        // Emit the signal of ok message sent
+        emit(availableMessageSent, simTime());
 
-            // Send the ok message
-            sendDown(okMsg->dup());
-
-            // Emit the signal of ok message sent
-            emit(okMessageSent, simTime());
-        }
+        // Send the ok message
+        sendDown(availabilityMessage->dup());
     }
 
     // Timer for response message
-    if (ResponseMessage* responseMsg = dynamic_cast<ResponseMessage*>(msg)) {
+    if (ResponseMessage* responseMessage = dynamic_cast<ResponseMessage*>(msg)) {
         findHost()->getDisplayString().setTagArg("i", 1, "white");
-        sendDown(responseMsg->dup());
+        sendDown(responseMessage->dup());
 
         // Send signal for response message statistic with the host ID
-        emit(startResponseMessages, responseMsg->getHostIndex());
+        emit(startResponseMessages, responseMessage->getHostIndex());
+    }
+
+    // Timer for re-send response message
+    if (AckTimerMessage* ackTimerMessage = dynamic_cast<AckTimerMessage*>(msg)) {
+        int hostIndex = ackTimerMessage->getHostIndex();
+        double completionTime = ackTimerMessage->getTaskComputationTime();
+        int taskID = ackTimerMessage->getTaskID();
+        int partitionID = ackTimerMessage->getPartitionID();
+        sendAgainResponse(hostIndex, completionTime, taskID, partitionID);
     }
 }
 

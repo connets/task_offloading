@@ -13,14 +13,14 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "app/TaskGenerator.h"
+#include "app/Worker.h"
 #include "app/messages/AckTimerMessage_m.h"
 
 using namespace task_offloading;
 
-void TaskGenerator::sendAgainResponse(int index, double computationTime, int previousTaskID, int previousPartitionID)
+void Worker::sendAgainResponse(int index, double computationTime, int previousTaskID, int previousPartitionID)
 {
-    if (!ackReceived) {
+    if (previousPartitionID == currentDataPartitionId) {
         ResponseMessage* responseMsg = new ResponseMessage();
         populateWSM(responseMsg);
         responseMsg->setHostIndex(index);
