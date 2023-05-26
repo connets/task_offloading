@@ -87,8 +87,8 @@ void TaskGenerator::onWSM(veins::BaseFrame1609_4* wsm)
     }
 
     // SECTION - When the bus receive the response message
-    if (ResponseMessage* responseMsg = dynamic_cast<ResponseMessage*>(wsm)) {
-        handleResponseMessage(responseMsg);
+    if (ResponseMessage* responseMessage = dynamic_cast<ResponseMessage*>(wsm)) {
+        handleResponseMessage(responseMessage);
     }
 }
 
@@ -114,14 +114,9 @@ void TaskGenerator::handleSelfMsg(cMessage* msg)
     }
 
     // Timer for data computation
-    if (ComputationTimerMessage* computationTimerMsg = dynamic_cast<ComputationTimerMessage*>(msg)) {
-        int hostIndex = computationTimerMsg->getIndexHost();
-        double load = computationTimerMsg->getLoadHost();
-        double completionTime = computationTimerMsg->getTaskComputationTime();
-        int loadBalancingProgressiveNumber = computationTimerMsg->getLoadBalancingID();
-        int taskID = computationTimerMsg->getTaskID();
-        int partitionID = computationTimerMsg->getPartitionID();
-        sendAgainData(hostIndex, load, completionTime, loadBalancingProgressiveNumber, taskID, partitionID);
+    if (ComputationTimerMessage* computationTimerMessage = dynamic_cast<ComputationTimerMessage*>(msg)) {
+        const DataMessage* data = computationTimerMessage->getData();
+        sendAgainData(data);
     }
 
     // Timer for data message

@@ -18,38 +18,31 @@
 
 using namespace task_offloading;
 
-void TaskGenerator::sendAgainData(int index, double load, double taskComputationTime, int loadBalanceProgressiveNumber, int previousTaskID, int previousPartitionID)
+void TaskGenerator::sendAgainData(const DataMessage* data)
 {
     // Search the vehicle in the map
-    auto found = helpers.find(index);
+    auto found = helpers.find(data->getHostIndex());
 
     // Check load balancing id
-    bool loadBalancingIdCheck = tasks[0].getLoadBalancingId() == loadBalanceProgressiveNumber;
+    bool loadBalancingIdCheck = tasks[0].getLoadBalancingId() == data->getLoadBalancingId();
 
     // If the vehicle is found check if I've received the data from it
     if (found != helpers.end() && (loadBalancingIdCheck)) {
         // Check the data partition id
-        bool checkDataPartitionId = helpers[index].getDataPartitionId() != -1;
+        bool checkDataPartitionId = helpers[data->getHostIndex()].getDataPartitionId() != -1;
 
         if (checkDataPartitionId) {
-            // Prepare the new data message
-            DataMessage* dataMessage = new DataMessage();
-            populateWSM(dataMessage);
-            dataMessage->setHostIndex(index);
-            dataMessage->setLoadToProcess(load);
-            dataMessage->setTaskID(previousTaskID);
-            dataMessage->setPartitionID(previousPartitionID);
-            sendDown(dataMessage);
+            // Send the duplicate data message
+            sendDown(data->dup());
 
             // Restart again the timer
             ComputationTimerMessage* computationTimerMessage = new ComputationTimerMessage();
             populateWSM(computationTimerMessage);
-            computationTimerMessage->setSimulationTime(simTime());
-            computationTimerMessage->setIndexHost(index);
-            computationTimerMessage->setLoadHost(load);
-            computationTimerMessage->setTaskID(previousTaskID);
-            computationTimerMessage->setPartitionID(previousPartitionID);
-            scheduleAt(simTime() + taskComputationTime + par("dataComputationThreshold").doubleValue(), computationTimerMessage);
+            computationTimerMessage->setData(data->dup());
+
+            double transferTime = 10.0;
+
+            scheduleAt(simTime() + transferTime + data->getComputationTime() + par("dataComputationThreshold").doubleValue(), computationTimerMessage);
         }
     }
 }

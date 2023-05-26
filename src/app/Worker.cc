@@ -130,11 +130,8 @@ void Worker::handleSelfMsg(cMessage* msg)
 
     // Timer for re-send response message
     if (AckTimerMessage* ackTimerMessage = dynamic_cast<AckTimerMessage*>(msg)) {
-        int hostIndex = ackTimerMessage->getHostIndex();
-        double completionTime = ackTimerMessage->getTaskComputationTime();
-        int taskID = ackTimerMessage->getTaskID();
-        int partitionID = ackTimerMessage->getPartitionID();
-        sendAgainResponse(hostIndex, completionTime, taskID, partitionID);
+        const ResponseMessage* response = ackTimerMessage->getData();
+        sendAgainResponse(response);
     }
 }
 

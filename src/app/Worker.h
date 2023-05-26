@@ -92,7 +92,7 @@ protected:
     void handleSelfMsg(cMessage* msg) override;
     void handleHelpMessage(HelpMessage* helpMsg);
     void handleDataMessage(DataMessage* dataMsg);
-    void sendAgainResponse(int index, double computationTime, int taskID, int partitionID);
+    void sendAgainResponse(const ResponseMessage* data);
     void handlePositionUpdate(cObject* obj) override;
 };
 }

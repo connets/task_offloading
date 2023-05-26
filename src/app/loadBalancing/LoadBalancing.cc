@@ -71,9 +71,16 @@ void TaskGenerator::balanceLoad()
             // Populate the other fields
             dataMessage->setSenderAddress(myId);
             dataMessage->setHostIndex(i);
-            dataMessage->setTaskID(tasks[0].getId());
-            dataMessage->setPartitionID(tasks[0].getDataPartitionId());
+            dataMessage->setTaskId(tasks[0].getId());
+            dataMessage->setPartitionId(tasks[0].getDataPartitionId());
+            dataMessage->setLoadBalancingId(tasks[0].getLoadBalancingId());
             dataMessage->setCpi(tasks[0].getCpi());
+
+            // Calculate time for timer
+            double CPI = tasks[0].getCpi();
+            double timeToCompute = helpers[i].getTotalComputationTime(CPI);
+
+            dataMessage->setComputationTime(timeToCompute);
 
             // Get the current data partition id
             int currentPartitionId = tasks[0].getDataPartitionId();
@@ -86,25 +93,14 @@ void TaskGenerator::balanceLoad()
 
             // Create timer computation message for each host if auto ACKs are disabled
             if (par("useAcks").boolValue() == false) {
-                ComputationTimerMessage* computationTimerMsg = new ComputationTimerMessage();
-                populateWSM(computationTimerMsg);
-                computationTimerMsg->setSimulationTime(simTime());
-                computationTimerMsg->setIndexHost(i);
-                computationTimerMsg->setLoadHost(helpers[i].getCurrentLoad());
-                computationTimerMsg->setLoadBalancingID(tasks[0].getLoadBalancingId());
-                computationTimerMsg->setTaskID(tasks[0].getId());
-                computationTimerMsg->setPartitionID(currentPartitionId);
-
-                // Calculate time for timer
-                double CPI = tasks[0].getCpi();
-                double timeToCompute = helpers[i].getTotalComputationTime(CPI);
-
-                computationTimerMsg->setTaskComputationTime(timeToCompute);
+                ComputationTimerMessage* computationTimerMessage = new ComputationTimerMessage();
+                populateWSM(computationTimerMessage);
+                computationTimerMessage->setData(dataMessage);
 
                 // Calculate time to file transmission
                 double transferTime = 10.0;
 
-                scheduleAt(simTime() + timeToCompute + transferTime + par("dataComputationThreshold").doubleValue(), computationTimerMsg);
+                scheduleAt(simTime() + timeToCompute + transferTime + par("dataComputationThreshold").doubleValue(), computationTimerMessage);
             }
 
             // Increment data partition ID

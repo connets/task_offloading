@@ -36,7 +36,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
         findHost()->getDisplayString().setTagArg("i", 1, "red");
 
         // Update the partition ID
-        currentDataPartitionId = dataMessage->getPartitionID();
+        currentDataPartitionId = dataMessage->getPartitionId();
 
         // Update if I'll be still available
         stillAvailableProbability = par("stillAvailableProbability").doubleValue() > par("stillAvailableThreshold").doubleValue();
@@ -58,8 +58,9 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
         responseMessage->setHostIndex(dataMessage->getHostIndex());
         responseMessage->setStillAvailable(stillAvailableProbability);
         responseMessage->setDataComputed(dataMessage->getLoadToProcess());
-        responseMessage->setTaskID(dataMessage->getTaskID());
-        responseMessage->setPartitionID(dataMessage->getPartitionID());
+        responseMessage->setTimeToCompute(timeToCompute);
+        responseMessage->setTaskID(dataMessage->getTaskId());
+        responseMessage->setPartitionID(dataMessage->getPartitionId());
         responseMessage->addByteLength(dataMessage->getLoadToProcess());
 
         // Schedule the response message
@@ -70,10 +71,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
         if (!(par("useAcks").boolValue()) && !(stillAvailableProbability)) {
             AckTimerMessage* ackTimerMessage = new AckTimerMessage();
             populateWSM(ackTimerMessage);
-            ackTimerMessage->setHostIndex(dataMessage->getHostIndex());
-            ackTimerMessage->setTaskComputationTime(timeToCompute);
-            ackTimerMessage->setTaskID(dataMessage->getTaskID());
-            ackTimerMessage->setPartitionID(currentDataPartitionId);
+            ackTimerMessage->setData(responseMessage);
 
             // Calculate time to file transmission
             double transferTime = 10.0;

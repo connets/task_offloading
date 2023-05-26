@@ -20,35 +20,87 @@ using namespace task_offloading;
 
 void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
 {
-    // Emit signal for having received response
-    emit(stopResponseMessages, responseMessage->getHostIndex());
+    // Search the vehicle in the map
+    auto found = helpers.find(responseMessage->getHostIndex());
 
-    // Update the data partiton id into the helpers map
-    helpers[responseMessage->getHostIndex()].setDataPartitionId(-1);
+    if (found != helpers.end() && helpers[responseMessage->getHostIndex()].getDataPartitionId() == responseMessage->getPartitionID()) {
+        // Emit signal for having received response
+        emit(stopResponseMessages, responseMessage->getHostIndex());
 
-    // Remove the data that the vehicle has computed
-    double localData = tasks[0].getData() - responseMessage->getDataComputed();
-    tasks[0].setData(localData);
+        // Update the data partiton id into the helpers map
+        helpers[responseMessage->getHostIndex()].setDataPartitionId(-1);
 
-    // If there's no more data then emit signal for task finished
-    if (localData <= 0) {
-        emit(stopTask, simTime());
-    }
+        // Remove the data that the vehicle has computed
+        double localData = tasks[0].getData() - responseMessage->getDataComputed();
+        tasks[0].setData(localData);
 
-    // Increment the task responses received
-    int responseReceived = tasks[0].getResponseReceivedCounter();
-    responseReceived++;
-    tasks[0].setResponseReceivedCounter(responseReceived);
+        // If there's no more data then emit signal for task finished
+        if (localData <= 0) {
+            emit(stopTask, simTime());
+        }
 
-    // Get the availability received
-    int vehiclesAvailable = tasks[0].getAvailableReceivedCounter();
+        // Increment the task responses received
+        int responseReceived = tasks[0].getResponseReceivedCounter();
+        responseReceived++;
+        tasks[0].setResponseReceivedCounter(responseReceived);
 
-    // Get the load balancing id
-    int loadBalanceId = tasks[0].getLoadBalancingId();
+        // Get the availability received
+        int vehiclesAvailable = tasks[0].getAvailableReceivedCounter();
 
-    // If the vehicle is not available anymore erase it from the map
-    // and from the list
-    if (responseMessage->getStillAvailable() == false) {
+        // Get the load balancing id
+        int loadBalanceId = tasks[0].getLoadBalancingId();
+
+        // If the vehicle is not available anymore erase it from the map
+        // and from the list
+        if (responseMessage->getStillAvailable() == false) {
+            helpers.erase(responseMessage->getHostIndex());
+            helpersOrderedList.remove(responseMessage->getHostIndex());
+
+            // Schedule the ack message
+            if (!(par("useAcks").boolValue())) {
+                // Send ACK message to the host
+                AckMessage* ackMessage = new AckMessage();
+                populateWSM(ackMessage);
+                ackMessage->setHostIndex(responseMessage->getHostIndex());
+                ackMessage->setTaskID(responseMessage->getTaskID());
+                ackMessage->setPartitionID(responseMessage->getPartitionID());
+                scheduleAt(simTime(), ackMessage);
+            }
+        }
+
+        // If there are more vehicles available and I've received all responses
+        // then restart load balancing
+        if (helpers.size() > 0 && localData > 0 && vehiclesAvailable == responseReceived) {
+            // Increment load balance id
+            loadBalanceId++;
+            tasks[0].setLoadBalancingId(loadBalanceId);
+
+            // Set the new availability
+            int newAvailability = helpers.size();
+            tasks[0].setAvailableReceivedCounter(newAvailability);
+
+            // Set the responses received to 0
+            tasks[0].setResponseReceivedCounter(0);
+
+            balanceLoad();
+        }
+
+        // If there are no more vehicles but still more data to compute then take the bus
+        // back in help status
+        if (helpers.size() == 0 && localData > 0 && vehiclesAvailable == responseReceived) {
+            // Color the bus in white when it has no more vehicles
+            findHost()->getDisplayString().setTagArg("i", 1, "white");
+
+            // Set the new availability
+            tasks[0].setAvailableReceivedCounter(0);
+
+            // Set the responses received to 0
+            tasks[0].setResponseReceivedCounter(0);
+
+            // Change it's status in help
+            busState.setState(new Help);
+        }
+    } else if (tasks[0].getData() <= 0) {
         helpers.erase(responseMessage->getHostIndex());
         helpersOrderedList.remove(responseMessage->getHostIndex());
 
@@ -62,38 +114,5 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
             ackMessage->setPartitionID(responseMessage->getPartitionID());
             scheduleAt(simTime(), ackMessage);
         }
-    }
-
-    // If there are more vehicles available and I've received all responses
-    // then restart load balancing
-    if (helpers.size() > 0 && localData > 0 && vehiclesAvailable == responseReceived) {
-        // Increment load balance id
-        loadBalanceId++;
-        tasks[0].setLoadBalancingId(loadBalanceId);
-
-        // Set the new availability
-        int newAvailability = helpers.size();
-        tasks[0].setAvailableReceivedCounter(newAvailability);
-
-        // Set the responses received to 0
-        tasks[0].setResponseReceivedCounter(0);
-
-        balanceLoad();
-    }
-
-    // If there are no more vehicles but still more data to compute then take the bus
-    // back in help status
-    if (helpers.size() == 0 && localData > 0 && vehiclesAvailable == responseReceived) {
-        // Color the bus in white when it has no more vehicles
-        findHost()->getDisplayString().setTagArg("i", 1, "white");
-
-        // Set the new availability
-        tasks[0].setAvailableReceivedCounter(0);
-
-        // Set the responses received to 0
-        tasks[0].setResponseReceivedCounter(0);
-
-        // Change it's status in help
-        busState.setState(new Help);
     }
 }
