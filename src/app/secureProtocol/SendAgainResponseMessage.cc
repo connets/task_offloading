@@ -20,7 +20,7 @@ using namespace task_offloading;
 
 void Worker::sendAgainResponse(int index, double computationTime, int previousTaskID, int previousPartitionID)
 {
-    if (previousPartitionID == currentDataPartitionId) {
+    if (currentDataPartitionId == previousPartitionID) {
         ResponseMessage* responseMsg = new ResponseMessage();
         populateWSM(responseMsg);
         responseMsg->setHostIndex(index);

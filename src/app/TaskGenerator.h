@@ -85,7 +85,6 @@ protected:
     std::map<int, Task> tasks;
     std::list<int> helpersOrderedList;
     int busIndex;
-    simtime_t newRandomTime;
     BusContext busState;
     BaseSorting* loadBalancingAlgorithm;
 

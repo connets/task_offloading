@@ -82,6 +82,7 @@ protected:
     simtime_t lastDroveAt;
     double cpuFreq;
     int currentDataPartitionId;
+    bool stillAvailableProbability;
 
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;

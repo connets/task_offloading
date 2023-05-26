@@ -71,8 +71,6 @@ void TaskGenerator::vehicleHandler()
         // Change the load balancing state
         busState.setState(new LoadBalancing);
 
-        newRandomTime = simTimeActual;
-
         // Increment the counter for help messages
         int helpCounter = tasks[0].getHelpReceivedCounter();
         helpCounter++;
