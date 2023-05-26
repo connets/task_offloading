@@ -29,13 +29,13 @@ void TaskGenerator::vehicleHandler()
     // Check if it's the second (or more) help message
     bool isFirstHelpMessage = tasks[0].getHelpReceivedCounter() ==  0;
 
-    // If it's the first message then initialize the task
-    if (isFirstHelpMessage) {
-        tasks[0] = Task(0, par("computationLoad").doubleValue(), par("minimumVehicleLoadRequested").doubleValue(), 3);
-    }
-
     // Check if we reach the time of the first help message
-    if (timerForFirstHelpMessage && (currentBusState == 0) && moreDataToLoad) {
+    if (timerForFirstHelpMessage && (currentBusState == 0) && moreDataToLoad && helpers.size() == 0) {
+        // If it's the first message then initialize the task
+        if (isFirstHelpMessage) {
+            tasks[0] = Task(0, par("computationLoad").doubleValue(), par("minimumVehicleLoadRequested").doubleValue(), 3);
+        }
+
         // Color the bus icon in red
         findHost()->getDisplayString().setTagArg("i", 1, "red");
 

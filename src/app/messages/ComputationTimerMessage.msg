@@ -16,15 +16,10 @@
 import veins.base.utils.Coord;
 import veins.modules.messages.BaseFrame1609_4;
 import veins.base.utils.SimpleAddress;
+import DataMessage;
 
 namespace task_offloading;
 
 packet ComputationTimerMessage extends veins::BaseFrame1609_4 {
-    simtime_t simulationTime;
-    int indexHost;
-    double loadHost;
-    double taskComputationTime;
-    int loadBalancingID;
-    int taskID;
-    int partitionID;
+    DataMessage* data;
 }

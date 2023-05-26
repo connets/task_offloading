@@ -96,7 +96,7 @@ protected:
     void handleSelfMsg(cMessage* msg) override;
     void handleAvailabilityMessage(AvailabilityMessage* okMsg);
     void handleResponseMessage(ResponseMessage* responseMsg);
-    void sendAgainData(int index, double load, double taskComputationTime, int loadBalancingProgressiveNumber, int taskID, int partitionID);
+    void sendAgainData(const DataMessage* data);
     void balanceLoad();
     void vehicleHandler();
     void handlePositionUpdate(cObject* obj) override;

@@ -18,22 +18,19 @@
 
 using namespace task_offloading;
 
-void Worker::sendAgainResponse(int index, double computationTime, int previousTaskID, int previousPartitionID)
+void Worker::sendAgainResponse(const ResponseMessage* response)
 {
-    if (currentDataPartitionId == previousPartitionID) {
-        ResponseMessage* responseMsg = new ResponseMessage();
-        populateWSM(responseMsg);
-        responseMsg->setHostIndex(index);
-        responseMsg->setTaskID(previousTaskID);
-        responseMsg->setPartitionID(previousPartitionID);
-        scheduleAt(simTime() + computationTime, responseMsg);
+    if (currentDataPartitionId == response->getPartitionID()) {
+        // Schedule the new duplicate response message
+        scheduleAt(simTime() + response->getTimeToCompute(), response->dup());
 
         // Restart the ACK timer
-        AckTimerMessage* ackTimerMsg = new AckTimerMessage();
-        populateWSM(ackTimerMsg);
-        ackTimerMsg->setHostIndex(index);
-        ackTimerMsg->setTaskID(previousTaskID);
-        ackTimerMsg->setPartitionID(previousPartitionID);
-        scheduleAt(simTime() + par("ackMessageThreshold").doubleValue(), ackTimerMsg);
+        AckTimerMessage* ackTimerMessage = new AckTimerMessage();
+        populateWSM(ackTimerMessage);
+        ackTimerMessage->setData(response->dup());
+
+        double transferTime = 10.0;
+
+        scheduleAt(simTime() + transferTime + response->getTimeToCompute() + par("ackMessageThreshold").doubleValue(), ackTimerMessage);
     }
 }
