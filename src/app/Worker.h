@@ -54,25 +54,15 @@ public:
 
 private:
     // Simulations signals
-    // SECTION - Task
-    simsignal_t startTask;
-    simsignal_t stopTask;
-
-    // SECTION - BalanceLoad
-    simsignal_t startBalance;
-    simsignal_t stopBalance;
 
     // SECTION - Help requests collection
-    simsignal_t startHelp;
     simsignal_t stopHelp;
 
     // SECTION - Data messages statistics
-    simsignal_t startDataMessages;
     simsignal_t stopDataMessages;
 
     // SECTION - Response messages statistics
     simsignal_t startResponseMessages;
-    simsignal_t stopResponseMessages;
 
     // SECTION - OK messages statistics
     simsignal_t availableMessageSent;

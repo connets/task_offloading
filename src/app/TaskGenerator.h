@@ -65,19 +65,12 @@ private:
 
     // SECTION - Help requests collection
     simsignal_t startHelp;
-    simsignal_t stopHelp;
 
     // SECTION - Data messages statistics
     simsignal_t startDataMessages;
-    simsignal_t stopDataMessages;
 
     // SECTION - Response messages statistics
-    simsignal_t startResponseMessages;
     simsignal_t stopResponseMessages;
-
-    // SECTION - OK messages statistics
-    simsignal_t okMessageSent;
-    simsignal_t okMessageLoad;
 
 protected:
     simtime_t lastDroveAt;
