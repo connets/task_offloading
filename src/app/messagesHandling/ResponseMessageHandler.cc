@@ -30,6 +30,11 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
     double localData = tasks[0].getData() - responseMessage->getDataComputed();
     tasks[0].setData(localData);
 
+    // If there's no more data then emit signal for task finished
+    if (localData <= 0) {
+        emit(stopTask, simTime());
+    }
+
     // Increment the task responses received
     int responseReceived = tasks[0].getResponseReceivedCounter();
     responseReceived++;
@@ -59,49 +64,36 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         }
     }
 
-    // Check if I've received all responses from vehicles
-    if (vehiclesAvailable == responseReceived) {
-        // Increment load balance id and restart load balancing
+    // If there are more vehicles available and I've received all responses
+    // then restart load balancing
+    if (helpers.size() > 0 && localData > 0 && vehiclesAvailable == responseReceived) {
+        // Increment load balance id
         loadBalanceId++;
         tasks[0].setLoadBalancingId(loadBalanceId);
 
-        // If there are more data to load and more vehicles in the map
-        // then restart load balancing
-        if (localData > 0 && helpers.size() > 0) {
-            // Update the number of vehicles available
-            tasks[0].setAvailableReceivedCounter(helpers.size());
-            tasks[0].setResponseReceivedCounter(0);
+        // Set the new availability
+        int newAvailability = helpers.size();
+        tasks[0].setAvailableReceivedCounter(newAvailability);
 
-            balanceLoad();
-        }
+        // Set the responses received to 0
+        tasks[0].setResponseReceivedCounter(0);
 
-        // If there's more data but no vehicles the change the state of
-        // the bus and increment the load balance id
-        if (localData > 0 && helpers.size() == 0) {
-            // Update the number of vehicles available
-            tasks[0].setAvailableReceivedCounter(0);
-            tasks[0].setResponseReceivedCounter(0);
+        balanceLoad();
+    }
 
-            busState.setState(new Help);
+    // If there are no more vehicles but still more data to compute then take the bus
+    // back in help status
+    if (helpers.size() == 0 && localData > 0 && vehiclesAvailable == responseReceived) {
+        // Color the bus in white when it has no more vehicles
+        findHost()->getDisplayString().setTagArg("i", 1, "white");
 
-            // Color the bus in white
-            findHost()->getDisplayString().setTagArg("i", 1, "white");
-        }
+        // Set the new availability
+        tasks[0].setAvailableReceivedCounter(0);
 
-        // If there's no more data then conclude the computation
-        if (localData <= 0) {
-            // Color the bus in white
-            findHost()->getDisplayString().setTagArg("i", 1, "white");
+        // Set the responses received to 0
+        tasks[0].setResponseReceivedCounter(0);
 
-            // Update the number of vehicles available
-            tasks[0].setAvailableReceivedCounter(0);
-            tasks[0].setResponseReceivedCounter(0);
-
-            // Change the bus state
-            busState.setState(new FinishedComputation);
-
-            // Emit signal for task stopped
-            emit(stopTask, simTime());
-        }
+        // Change it's status in help
+        busState.setState(new Help);
     }
 }

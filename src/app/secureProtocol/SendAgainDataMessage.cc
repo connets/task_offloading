@@ -26,28 +26,30 @@ void TaskGenerator::sendAgainData(int index, double load, double taskComputation
     // Check load balancing id
     bool loadBalancingIdCheck = tasks[0].getLoadBalancingId() == loadBalanceProgressiveNumber;
 
-    // Check the data partition id
-    bool checkDataPartitionId = helpers[index].getDataPartitionId() == previousPartitionID;
-
     // If the vehicle is found check if I've received the data from it
-    if (found != helpers.end() && (loadBalancingIdCheck) && (checkDataPartitionId)) {
-        // Prepare the new data message
-        DataMessage* dataMessage = new DataMessage();
-        populateWSM(dataMessage);
-        dataMessage->setHostIndex(index);
-        dataMessage->setLoadToProcess(load);
-        dataMessage->setTaskID(previousTaskID);
-        dataMessage->setPartitionID(previousPartitionID);
-        sendDown(dataMessage);
+    if (found != helpers.end() && (loadBalancingIdCheck)) {
+        // Check the data partition id
+        bool checkDataPartitionId = helpers[index].getDataPartitionId() != -1;
 
-        // Restart again the timer
-        ComputationTimerMessage* computationTimerMessage = new ComputationTimerMessage();
-        populateWSM(computationTimerMessage);
-        computationTimerMessage->setSimulationTime(simTime());
-        computationTimerMessage->setIndexHost(index);
-        computationTimerMessage->setLoadHost(load);
-        computationTimerMessage->setTaskID(previousTaskID);
-        computationTimerMessage->setPartitionID(previousPartitionID);
-        scheduleAt(simTime() + taskComputationTime + par("dataComputationThreshold").doubleValue(), computationTimerMessage);
+        if (checkDataPartitionId) {
+            // Prepare the new data message
+            DataMessage* dataMessage = new DataMessage();
+            populateWSM(dataMessage);
+            dataMessage->setHostIndex(index);
+            dataMessage->setLoadToProcess(load);
+            dataMessage->setTaskID(previousTaskID);
+            dataMessage->setPartitionID(previousPartitionID);
+            sendDown(dataMessage);
+
+            // Restart again the timer
+            ComputationTimerMessage* computationTimerMessage = new ComputationTimerMessage();
+            populateWSM(computationTimerMessage);
+            computationTimerMessage->setSimulationTime(simTime());
+            computationTimerMessage->setIndexHost(index);
+            computationTimerMessage->setLoadHost(load);
+            computationTimerMessage->setTaskID(previousTaskID);
+            computationTimerMessage->setPartitionID(previousPartitionID);
+            scheduleAt(simTime() + taskComputationTime + par("dataComputationThreshold").doubleValue(), computationTimerMessage);
+        }
     }
 }

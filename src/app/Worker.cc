@@ -50,6 +50,9 @@ void Worker::initialize(int stage)
         // Initialize data partition id
         currentDataPartitionId = -1;
 
+        // Initialize the probability to be still available after computation
+        stillAvailableProbability = false;
+
         // Registering all signals
         stopHelp = registerSignal("stop_bus_help_rq");
         stopDataMessages = registerSignal("stop_sending_data");
@@ -87,10 +90,13 @@ void Worker::onWSM(veins::BaseFrame1609_4* wsm)
 
     // SECTION - When the host receive the ACK message
     if (AckMessage* ackMessage = dynamic_cast<AckMessage*>(wsm)) {
-        currentDataPartitionId = -1;
+        // Check if I'm the host for the ack message
+        if (ackMessage->getHostIndex() == findHost()->getIndex()) {
+            currentDataPartitionId = -1;
 
-        // Color the vehicle in white when computation ends
-        findHost()->getDisplayString().setTagArg("i", 1, "white");
+            // Color the vehicle in white when computation ends
+            findHost()->getDisplayString().setTagArg("i", 1, "white");
+        }
     }
 }
 
@@ -112,11 +118,14 @@ void Worker::handleSelfMsg(cMessage* msg)
 
     // Timer for response message
     if (ResponseMessage* responseMessage = dynamic_cast<ResponseMessage*>(msg)) {
-        findHost()->getDisplayString().setTagArg("i", 1, "white");
-        sendDown(responseMessage->dup());
-
         // Send signal for response message statistic with the host ID
         emit(startResponseMessages, responseMessage->getHostIndex());
+
+        // Color the vehicle in white when send down the response
+        findHost()->getDisplayString().setTagArg("i", 1, "white");
+
+        // Send the response message
+        sendDown(responseMessage->dup());
     }
 
     // Timer for re-send response message

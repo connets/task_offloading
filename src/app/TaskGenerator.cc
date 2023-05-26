@@ -44,9 +44,6 @@ void TaskGenerator::initialize(int stage)
         // Initializing members and pointers of your application goes here
         lastDroveAt = simTime();
 
-        // New random time between help messages
-        newRandomTime = 0;
-
         // BUS SECTION
         // Set the BUS index
         busIndex = findHost()->getIndex();
@@ -107,7 +104,7 @@ void TaskGenerator::handleSelfMsg(cMessage* msg)
     if (LoadBalanceTimerMessage* loadBalanceMsg = dynamic_cast<LoadBalanceTimerMessage*>(msg)) {
         // If I'm the bus and I've received help then load balance
         // otherwise back to help messages
-        if (findHost()->getIndex() == busIndex && helpers.size() > 0) {
+        if (findHost()->getIndex() == busIndex && helpers.size() > 0 && busState.getCurrentState() == 1) {
             // Call to load balancing function
             balanceLoad();
         } else if (helpers.size() == 0) {

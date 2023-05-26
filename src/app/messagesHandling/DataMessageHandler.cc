@@ -30,9 +30,6 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
 
     double timeToCompute = CPI * I * (1 / CR);
 
-    // Calculate probability to be still available after computation
-    bool stillAvailable = par("stillAvailableProbability").doubleValue() > par("stillAvailableThreshold").doubleValue();
-
     // Check if I'm the vehicle designated for computation and if the data is different
     if (dataMessage->getHostIndex() == findHost()->getIndex()) {
         // Color the vehicle in red when computing
@@ -40,6 +37,9 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
 
         // Update the partition ID
         currentDataPartitionId = dataMessage->getPartitionID();
+
+        // Update if I'll be still available
+        stillAvailableProbability = par("stillAvailableProbability").doubleValue() > par("stillAvailableThreshold").doubleValue();
 
         // Prepare the response message
         ResponseMessage* responseMessage = new ResponseMessage();
@@ -56,7 +56,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
 
         // Populate other fields
         responseMessage->setHostIndex(dataMessage->getHostIndex());
-        responseMessage->setStillAvailable(stillAvailable);
+        responseMessage->setStillAvailable(stillAvailableProbability);
         responseMessage->setDataComputed(dataMessage->getLoadToProcess());
         responseMessage->setTaskID(dataMessage->getTaskID());
         responseMessage->setPartitionID(dataMessage->getPartitionID());
@@ -67,7 +67,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
 
         // Generate ACK timer if parameter useAcks is false
         // to achieve secure protocol manually and if I'm not still available
-        if (!(par("useAcks").boolValue()) && !(stillAvailable)) {
+        if (!(par("useAcks").boolValue()) && !(stillAvailableProbability)) {
             AckTimerMessage* ackTimerMessage = new AckTimerMessage();
             populateWSM(ackTimerMessage);
             ackTimerMessage->setHostIndex(dataMessage->getHostIndex());
@@ -76,7 +76,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
             ackTimerMessage->setPartitionID(currentDataPartitionId);
 
             // Calculate time to file transmission
-            double transferTime = (dataMessage->getLoadToProcess() * 8) / 6;
+            double transferTime = 10.0;
 
             scheduleAt(simTime() + timeToCompute + transferTime + par("ackMessageThreshold").doubleValue(), ackTimerMessage);
         }

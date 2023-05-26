@@ -22,8 +22,8 @@ void TaskGenerator::balanceLoad()
 {
     // We have to do some work -> load balance!
 
-    // But first change the bus state
-    busState.setState(new DataTransfer);
+    // But first change the bus state to load balancing
+    busState.setState(new LoadBalancing);
 
     // Then order the map of helpers by sorting them with the chosen sorting algorithm
     helpersOrderedList = loadBalancingAlgorithm->sort(helpers);
@@ -102,7 +102,7 @@ void TaskGenerator::balanceLoad()
                 computationTimerMsg->setTaskComputationTime(timeToCompute);
 
                 // Calculate time to file transmission
-                double transferTime = (helpers[i].getCurrentLoad() * 8) / 6;
+                double transferTime = 10.0;
 
                 scheduleAt(simTime() + timeToCompute + transferTime + par("dataComputationThreshold").doubleValue(), computationTimerMsg);
             }
@@ -112,6 +112,9 @@ void TaskGenerator::balanceLoad()
             tasks[0].setDataPartitionId(currentPartitionId);
         }
     }
+
+    // Change the bus state to data transfer
+    busState.setState(new DataTransfer);
 
     // Emit the stop of load balancing
     emit(stopBalance, simTime());
