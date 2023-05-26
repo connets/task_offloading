@@ -23,6 +23,8 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
     // Search the vehicle in the map
     auto found = helpers.find(responseMessage->getHostIndex());
 
+    // If the auto is found in the map and the partition id coincide with response message then
+    // handle the response otherwise get rid of it
     if (found != helpers.end() && helpers[responseMessage->getHostIndex()].getDataPartitionId() == responseMessage->getPartitionID()) {
         // Emit signal for having received response
         emit(stopResponseMessages, responseMessage->getHostIndex());
@@ -101,6 +103,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
             busState.setState(new Help);
         }
     } else if (tasks[0].getData() <= 0) {
+        // If data <= 0 and I receive a response then send ack to the vehicle
         helpers.erase(responseMessage->getHostIndex());
         helpersOrderedList.remove(responseMessage->getHostIndex());
 
