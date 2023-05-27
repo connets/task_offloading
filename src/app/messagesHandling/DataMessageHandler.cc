@@ -18,53 +18,65 @@
 
 using namespace task_offloading;
 
-void Worker::handleDataMessage(DataMessage* dataMsg)
+void Worker::handleDataMessage(DataMessage* dataMessage)
 {
-    if (findHost()->getIndex() == dataMsg->getHostIndex()) {
-        // Color the host that needs to process data
+    // Emit the signal for have received data message
+    emit(stopDataMessages, dataMessage->getHostIndex());
+
+    // Calculate time for computation
+    double CPI = dataMessage->getCpi();
+    double I = dataMessage->getLoadToProcess();
+    double CR = cpuFreq;
+
+    double timeToCompute = CPI * I * (1 / CR);
+
+    // Check if I'm the vehicle designated for computation and if the data is different
+    if (dataMessage->getHostIndex() == findHost()->getIndex()) {
+        // Color the vehicle in red when computing
         findHost()->getDisplayString().setTagArg("i", 1, "red");
 
-        EV << "Received " << dataMsg->getLoadToProcess() << " to load from BUS" << std::endl;
+        // Update the partition ID
+        currentDataPartitionId = dataMessage->getPartitionId();
 
-        // Send signal for data message statistics since I've received all data
-        emit(stopDataMessages, dataMsg->getHostIndex());
+        // Update if I'll be still available
+        stillAvailableProbability = par("stillAvailableProbability").doubleValue() > par("stillAvailableThreshold").doubleValue();
 
-        // Calculate time for computation
-        double CPI = par("vehicleCPI").intValue();
-        double I = dataMsg->getLoadToProcess();
-        double CR = hostCpuFreq;
+        // Prepare the response message
+        ResponseMessage* responseMessage = new ResponseMessage();
 
-        double timeToCompute = CPI * I * (1 / CR);
-
-        ResponseMessage* responseMsg = new ResponseMessage();
+        // Populate the response message
 
         // If useAcks is active then send the message with L2Address
         // otherwise send it without address to use the manual secure protocol
         if (par("useAcks").boolValue()) {
-            populateWSM(responseMsg, dataMsg->getSenderAddress());
+            populateWSM(responseMessage, dataMessage->getSenderAddress());
         } else {
-            populateWSM(responseMsg);
+            populateWSM(responseMessage);
         }
 
-        responseMsg->setHostIndex(dataMsg->getHostIndex());
+        // Populate other fields
+        responseMessage->setHostIndex(dataMessage->getHostIndex());
+        responseMessage->setStillAvailable(stillAvailableProbability);
+        responseMessage->setDataComputed(dataMessage->getLoadToProcess());
+        responseMessage->setTimeToCompute(timeToCompute);
+        responseMessage->setTaskID(dataMessage->getTaskId());
+        responseMessage->setPartitionID(dataMessage->getPartitionId());
+        responseMessage->addByteLength(dataMessage->getLoadToProcess());
 
-        // Calculate probability to be still available after computation
-        bool stillAvailable = par("stillAvailableProbability").doubleValue() > par("stillAvailableThreshold").doubleValue();
-
-        responseMsg->setStillAvailable(stillAvailable);
-        responseMsg->setDataComputed(dataMsg->getLoadToProcess());
-        scheduleAt(simTime() + timeToCompute, responseMsg);
+        // Schedule the response message
+        scheduleAt(simTime() + timeToCompute, responseMessage);
 
         // Generate ACK timer if parameter useAcks is false
-        // to achieve secure protocol manually
-        if (!(par("useAcks").boolValue())) {
-            AckTimerMessage* ackTimerMsg = new AckTimerMessage();
-            populateWSM(ackTimerMsg);
-            ackTimerMsg->setHostIndex(dataMsg->getHostIndex());
-            ackTimerMsg->setTaskComputationTime(timeToCompute);
-            scheduleAt(simTime() + timeToCompute + par("ackMessageThreshold").doubleValue(), ackTimerMsg);
-        }
+        // to achieve secure protocol manually and if I'm not still available
+        if (!(par("useAcks").boolValue()) && !(stillAvailableProbability)) {
+            AckTimerMessage* ackTimerMessage = new AckTimerMessage();
+            populateWSM(ackTimerMessage);
+            ackTimerMessage->setData(responseMessage);
 
-        EV << "Finished computation of: " << dataMsg->getLoadToProcess() << std::endl;
+            // Calculate time to file transmission
+            double transferTime = 10.0;
+
+            scheduleAt(simTime() + timeToCompute + transferTime + par("ackMessageThreshold").doubleValue(), ackTimerMessage);
+        }
     }
 }

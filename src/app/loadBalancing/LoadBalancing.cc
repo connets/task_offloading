@@ -18,100 +18,100 @@
 
 using namespace task_offloading;
 
-void TaskGenerator::balanceLoad(simtime_t previousSimulationTime)
+void TaskGenerator::balanceLoad()
 {
-    // Send signal for balance load
-    emit(startBalance, simTime());
+    // We have to do some work -> load balance!
 
-    // Send signal for stopping accepting help requests
-    emit(stopHelp, simTime());
+    // But first change the bus state to load balancing
+    busState.setState(new LoadBalancing);
 
-    int vehiclesCounter = helpers.size();
+    // Then order the map of helpers by sorting them with the chosen sorting algorithm
     helpersOrderedList = loadBalancingAlgorithm->sort(helpers);
 
-    // Send signal for stop balance load
-    emit(stopBalance, simTime());
+    // Store the data into a local variable so can be used
+    double localData = tasks[0].getData();
 
-    EV << "List ordered: ";
+    // Emit the start of load balancing
+    emit(startBalance, simTime());
 
+    // For each vehicle prepare the data message and send
     for (auto const &i: helpersOrderedList) {
-        EV << i << " ";
-    }
+        // Check if there's data to load
+        if (localData > 0) {
+            // Prepare the data message
+            DataMessage* dataMessage = new DataMessage();
 
-    EV << std::endl;
+            // Populate the data message
 
-    if (vehiclesCounter > 1) {
-        helpReceived = true;
-
-        // Check if there's data to process
-        double data = par("computationLoad").doubleValue();
-
-        for (auto const &i: helpersOrderedList) {
-            // Debug messages
-            EV << "Index of vehicle: " << i << std::endl;
-            EV << "Load remaining: " << data << std::endl;
-            EV << "Vehicle " << i << " time to complete " << helpers[i].getTotalComputationTime(3) << std::endl;
-            EV << "Vehicle " << i << " arrival time " << helpers[i].getCreatedAt() << std::endl;
-            EV << "Index vehicle " << i << " value " << helpers[i].getIndex() << std::endl;
-
-            // Check if the vehicle isn't the bus and if the response received are different from oks
-            if (i != busIndex) {
-                // Load of vehicle i
-                double vehicleLoad = helpers[i].getCurrentLoad();
-
-                // If there's data to load then send the messages
-                if (data > 0) {
-                    // Create Data Message
-                    DataMessage* dataMsg = new DataMessage();
-
-                    // Populate the message
-
-                    // If auto acks is active then populate wsm with the sender address
-                    // otherwise populate it without address
-                    if (par("useAcks").boolValue()) {
-                        populateWSM(dataMsg, helpers[i].getAddress());
-                    } else {
-                        populateWSM(dataMsg);
-                    }
-
-                    dataMsg->setSenderAddress(myId);
-                    dataMsg->setHostIndex(i);
-
-                    // If data - vehicleLoad >= 0 then set data to maximum vehicle load
-                    // otherwise send the remaining data
-                    if ((data - vehicleLoad) >= 0) {
-                        dataMsg->setLoadToProcess(vehicleLoad);
-                        data = data - vehicleLoad;
-                    } else {
-                        dataMsg->setLoadToProcess(data);
-                        data = 0;
-                    }
-
-                    // Schedule the data message
-                    scheduleAt(simTime(), dataMsg);
-
-                    // Create timer computation message for each host if auto ACKs are disabled
-                    if (!(par("useAcks").boolValue())) {
-                        ComputationTimerMessage* computationTimerMsg = new ComputationTimerMessage();
-                        populateWSM(computationTimerMsg);
-                        computationTimerMsg->setSimulationTime(simTime());
-                        computationTimerMsg->setIndexHost(i);
-                        computationTimerMsg->setLoadHost(helpers[i].getCurrentLoad());
-                        computationTimerMsg->setLoadBalancingID(loadBalancingID);
-
-                        // Calculate time for timer
-                        double CPI = par("vehicleCPI").intValue();
-                        double timeToCompute = helpers[i].getTotalComputationTime(CPI);
-
-                        computationTimerMsg->setTaskComputationTime(timeToCompute);
-
-                        scheduleAt(simTime() + timeToCompute + par("dataComputationThreshold").doubleValue(), computationTimerMsg);
-                    }
-                }
+            // If auto acks is active then populate wsm with the sender address
+            // otherwise populate it without address
+            if (par("useAcks").boolValue()) {
+                populateWSM(dataMessage, helpers[i].getAddress());
+            } else {
+                populateWSM(dataMessage);
             }
+
+            // Check if data is > 0 then update the local data variable
+            if ((localData - helpers[i].getCurrentLoad()) > 0) {
+                // Set the byte length
+                dataMessage->addByteLength(helpers[i].getCurrentLoad());
+
+                // Set the message load to process
+                dataMessage->setLoadToProcess(helpers[i].getCurrentLoad());
+                localData = localData - helpers[i].getCurrentLoad();
+            } else {
+                // Set the byte length
+                dataMessage->addByteLength(localData);
+
+                // Set the message load to process
+                dataMessage->setLoadToProcess(localData);
+                localData = 0;
+            }
+
+            // Populate the other fields
+            dataMessage->setSenderAddress(myId);
+            dataMessage->setHostIndex(i);
+            dataMessage->setTaskId(tasks[0].getId());
+            dataMessage->setPartitionId(tasks[0].getDataPartitionId());
+            dataMessage->setLoadBalancingId(tasks[0].getLoadBalancingId());
+            dataMessage->setCpi(tasks[0].getCpi());
+
+            // Calculate time for timer
+            double CPI = tasks[0].getCpi();
+            double timeToCompute = helpers[i].getTotalComputationTime(CPI);
+
+            dataMessage->setComputationTime(timeToCompute);
+
+            // Get the current data partition id
+            int currentPartitionId = tasks[0].getDataPartitionId();
+
+            // Save into the helper the data partition ID
+            helpers[i].setDataPartitionId(currentPartitionId);
+
+            // Schedule the data message
+            scheduleAt(simTime(), dataMessage);
+
+            // Create timer computation message for each host if auto ACKs are disabled
+            if (par("useAcks").boolValue() == false) {
+                ComputationTimerMessage* computationTimerMessage = new ComputationTimerMessage();
+                populateWSM(computationTimerMessage);
+                computationTimerMessage->setData(dataMessage);
+
+                // Calculate time to file transmission
+                double transferTime = 10.0;
+
+                scheduleAt(simTime() + timeToCompute + transferTime + par("dataComputationThreshold").doubleValue(), computationTimerMessage);
+            }
+
+            // Increment data partition ID
+            currentPartitionId++;
+            tasks[0].setDataPartitionId(currentPartitionId);
         }
-    } else {
-        sentHelpMessage = false;
-        newRandomTime = previousSimulationTime;
     }
+
+    // Change the bus state to data transfer
+    busState.setState(new DataTransfer);
+
+    // Emit the stop of load balancing
+    emit(stopBalance, simTime());
 }

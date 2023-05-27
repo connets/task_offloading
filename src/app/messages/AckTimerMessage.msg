@@ -16,10 +16,10 @@
 import veins.base.utils.Coord;
 import veins.modules.messages.BaseFrame1609_4;
 import veins.base.utils.SimpleAddress;
+import ResponseMessage;
 
 namespace task_offloading;
 
 packet AckTimerMessage extends veins::BaseFrame1609_4 {
-    int hostIndex;
-    double taskComputationTime;
+    ResponseMessage* data;
 }

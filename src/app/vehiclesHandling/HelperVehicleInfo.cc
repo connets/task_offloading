@@ -23,6 +23,7 @@ HelperVehicleInfo::HelperVehicleInfo() {
     this->hostCPUFreq = 0;
     this->createdAt = simTime();
     this->address = 0;
+    this->dataPartitionId = -1;
 }
 
 HelperVehicleInfo::HelperVehicleInfo(std::string index, double load, double freq, veins::LAddress::L2Type address) {
@@ -31,6 +32,7 @@ HelperVehicleInfo::HelperVehicleInfo(std::string index, double load, double freq
     this->hostCPUFreq = freq;
     this->createdAt = simTime();
     this->address = address;
+    this->dataPartitionId = -1;
 }
 
 HelperVehicleInfo::~HelperVehicleInfo() {
@@ -77,6 +79,27 @@ veins::LAddress::L2Type HelperVehicleInfo::getAddress() {
  */
 double HelperVehicleInfo::getVehicleAngle() {
     return this->vehicleAngle;
+}
+
+/**
+ * @returns The current data partition id of the vehicle computation
+ */
+int HelperVehicleInfo::getDataPartitionId() {
+    return this->dataPartitionId;
+}
+
+/**
+ * @returns The current task cpi -> useful when calculating total compute time
+ */
+int HelperVehicleInfo::getTaskCpi() {
+    return this->taskCpi;
+}
+
+/**
+ * @returns The speed of a vehicle in m/s
+ */
+double HelperVehicleInfo::getVehicleSpeed() {
+    return this->vehicleSpeed;
 }
 
 /**
@@ -131,6 +154,33 @@ void HelperVehicleInfo::setAddress(veins::LAddress::L2Type newAddress) {
  */
 void HelperVehicleInfo::setVehicleAngle(double newAngle) {
     this->vehicleAngle = newAngle;
+}
+
+/**
+ * Set the current data partition id of the vehicle computation
+ *
+ * @param newPartitionId The new id of a data partition
+ */
+void HelperVehicleInfo::setDataPartitionId(int newPartitionId) {
+    this->dataPartitionId = newPartitionId;
+}
+
+/**
+ * Set the current cpi of the task
+ *
+ * @param newCpi The new cpi of the task -> useful when calculating total compute time
+ */
+void HelperVehicleInfo::setTaskCpi(int newCpi) {
+    this->taskCpi = newCpi;
+}
+
+/**
+ * Set the current speed of a vehicle in m/s
+ *
+ * @param newSpeed The new current speed of a vehicle
+ */
+void HelperVehicleInfo::setVehicleSpeed(double newSpeed) {
+    this->vehicleSpeed = newSpeed;
 }
 
 /**

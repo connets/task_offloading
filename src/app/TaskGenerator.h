@@ -24,13 +24,14 @@
 
 #include "veins/veins.h"
 
+#include "app/Task.h"
 #include "app/messages/HelpMessage_m.h"
-#include "app/messages/OkMessage_m.h"
+#include "app/messages/AvailabilityMessage_m.h"
 #include "app/messages/DataMessage_m.h"
 #include "app/messages/ResponseMessage_m.h"
-#include "app/loadBalancing/LoadBalancingState.h"
 #include "app/vehiclesHandling/HelperVehicleInfo.h"
 #include "app/loadBalancing/sortingAlgorithm/BaseSorting.h"
+#include "loadBalancing/BusState.h"
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
 
 using namespace omnetpp;
@@ -64,35 +65,21 @@ private:
 
     // SECTION - Help requests collection
     simsignal_t startHelp;
-    simsignal_t stopHelp;
 
     // SECTION - Data messages statistics
     simsignal_t startDataMessages;
-    simsignal_t stopDataMessages;
 
     // SECTION - Response messages statistics
-    simsignal_t startResponseMessages;
     simsignal_t stopResponseMessages;
-
-    // SECTION - OK messages statistics
-    simsignal_t okMessageSent;
-    simsignal_t okMessageLoad;
 
 protected:
     simtime_t lastDroveAt;
-    bool sentHelpMessage;
-    bool helpReceived;
     std::map<int, HelperVehicleInfo> helpers;
+    std::map<int, Task> tasks;
     std::list<int> helpersOrderedList;
-    simtime_t newRandomTime;
     int busIndex;
-    LoadBalancingContext loadBalancingState;
-    bool ackReceived;
-    double hostCpuFreq;
+    BusContext busState;
     BaseSorting* loadBalancingAlgorithm;
-    int okReceived;
-    int responsesReceived;
-    int loadBalancingID;
 
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;
@@ -100,11 +87,10 @@ protected:
     void onWSA(veins::DemoServiceAdvertisment* wsa) override;
 
     void handleSelfMsg(cMessage* msg) override;
-    void handleOkMessage(OkMessage* okMsg);
+    void handleAvailabilityMessage(AvailabilityMessage* okMsg);
     void handleResponseMessage(ResponseMessage* responseMsg);
-    void sendAgainData(int index, double load, double taskComputationTime, int loadBalancingProgressiveNumber);
-    void sendAgainResponse(int index, double computationTime);
-    void balanceLoad(simtime_t previousRandomTime);
+    void sendAgainData(const DataMessage* data);
+    void balanceLoad();
     void vehicleHandler();
     void handlePositionUpdate(cObject* obj) override;
 };
