@@ -25,12 +25,12 @@
 #include "veins/veins.h"
 
 #include "app/messages/HelpMessage_m.h"
-#include "app/messages/OkMessage_m.h"
+#include "app/messages/AvailabilityMessage_m.h"
 #include "app/messages/DataMessage_m.h"
 #include "app/messages/ResponseMessage_m.h"
-#include "app/loadBalancing/LoadBalancingState.h"
 #include "app/vehiclesHandling/HelperVehicleInfo.h"
 #include "app/loadBalancing/sortingAlgorithm/BaseSorting.h"
+#include "loadBalancing/BusState.h"
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
 
 using namespace omnetpp;
@@ -54,45 +54,25 @@ public:
 
 private:
     // Simulations signals
-    // SECTION - Task
-    simsignal_t startTask;
-    simsignal_t stopTask;
-
-    // SECTION - BalanceLoad
-    simsignal_t startBalance;
-    simsignal_t stopBalance;
 
     // SECTION - Help requests collection
-    simsignal_t startHelp;
     simsignal_t stopHelp;
 
     // SECTION - Data messages statistics
-    simsignal_t startDataMessages;
     simsignal_t stopDataMessages;
 
     // SECTION - Response messages statistics
     simsignal_t startResponseMessages;
-    simsignal_t stopResponseMessages;
 
     // SECTION - OK messages statistics
-    simsignal_t okMessageSent;
-    simsignal_t okMessageLoad;
+    simsignal_t availableMessageSent;
+    simsignal_t availableMessageLoad;
 
 protected:
     simtime_t lastDroveAt;
-    bool sentHelpMessage;
-    bool helpReceived;
-    std::map<int, HelperVehicleInfo> helpers;
-    std::list<int> helpersOrderedList;
-    simtime_t newRandomTime;
-    int busIndex;
-    LoadBalancingContext loadBalancingState;
-    bool ackReceived;
-    double hostCpuFreq;
-    BaseSorting* loadBalancingAlgorithm;
-    int okReceived;
-    int responsesReceived;
-    int loadBalancingID;
+    double cpuFreq;
+    int currentDataPartitionId;
+    bool stillAvailableProbability;
 
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;
@@ -102,6 +82,7 @@ protected:
     void handleSelfMsg(cMessage* msg) override;
     void handleHelpMessage(HelpMessage* helpMsg);
     void handleDataMessage(DataMessage* dataMsg);
+    void sendAgainResponse(const ResponseMessage* data);
     void handlePositionUpdate(cObject* obj) override;
 };
 }

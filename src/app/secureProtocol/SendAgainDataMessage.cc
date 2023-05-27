@@ -18,23 +18,31 @@
 
 using namespace task_offloading;
 
-void TaskGenerator::sendAgainData(int index, double load, double taskComputationTime, int loadBalanceProgressiveNumber)
+void TaskGenerator::sendAgainData(const DataMessage* data)
 {
-    auto found = helpers.find(index);
-    if (found != helpers.end() && (loadBalancingID == loadBalanceProgressiveNumber)) {
-        // Prepare the new data message
-        DataMessage* dataMsg = new DataMessage();
-        populateWSM(dataMsg);
-        dataMsg->setHostIndex(index);
-        dataMsg->setLoadToProcess(load);
-        sendDown(dataMsg);
+    // Search the vehicle in the map
+    auto found = helpers.find(data->getHostIndex());
 
-        // Restart again the timer
-        ComputationTimerMessage* computationTimerMsg = new ComputationTimerMessage();
-        populateWSM(computationTimerMsg);
-        computationTimerMsg->setSimulationTime(simTime());
-        computationTimerMsg->setIndexHost(index);
-        computationTimerMsg->setLoadHost(load);
-        scheduleAt(simTime() + taskComputationTime + par("dataComputationThreshold").doubleValue(), computationTimerMsg);
+    // Check load balancing id
+    bool loadBalancingIdCheck = tasks[0].getLoadBalancingId() == data->getLoadBalancingId();
+
+    // If the vehicle is found check if I've received the data from it
+    if (found != helpers.end() && (loadBalancingIdCheck)) {
+        // Check the data partition id
+        bool checkDataPartitionId = helpers[data->getHostIndex()].getDataPartitionId() != -1;
+
+        if (checkDataPartitionId) {
+            // Send the duplicate data message
+            sendDown(data->dup());
+
+            // Restart again the timer
+            ComputationTimerMessage* computationTimerMessage = new ComputationTimerMessage();
+            populateWSM(computationTimerMessage);
+            computationTimerMessage->setData(data->dup());
+
+            double transferTime = 10.0;
+
+            scheduleAt(simTime() + transferTime + data->getComputationTime() + par("dataComputationThreshold").doubleValue(), computationTimerMessage);
+        }
     }
 }

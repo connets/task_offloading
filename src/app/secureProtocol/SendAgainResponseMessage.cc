@@ -13,23 +13,24 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "app/TaskGenerator.h"
+#include "app/Worker.h"
 #include "app/messages/AckTimerMessage_m.h"
 
 using namespace task_offloading;
 
-void TaskGenerator::sendAgainResponse(int index, double computationTime)
+void Worker::sendAgainResponse(const ResponseMessage* response)
 {
-    if (!ackReceived) {
-        ResponseMessage* responseMsg = new ResponseMessage();
-        populateWSM(responseMsg);
-        responseMsg->setHostIndex(index);
-        scheduleAt(simTime() + computationTime, responseMsg);
+    if (currentDataPartitionId == response->getPartitionID()) {
+        // Schedule the new duplicate response message
+        scheduleAt(simTime() + response->getTimeToCompute(), response->dup());
 
         // Restart the ACK timer
-        AckTimerMessage* ackTimerMsg = new AckTimerMessage();
-        populateWSM(ackTimerMsg);
-        ackTimerMsg->setHostIndex(index);
-        scheduleAt(simTime() + par("ackMessageThreshold").doubleValue(), ackTimerMsg);
+        AckTimerMessage* ackTimerMessage = new AckTimerMessage();
+        populateWSM(ackTimerMessage);
+        ackTimerMessage->setData(response->dup());
+
+        double transferTime = 10.0;
+
+        scheduleAt(simTime() + transferTime + response->getTimeToCompute() + par("ackMessageThreshold").doubleValue(), ackTimerMessage);
     }
 }

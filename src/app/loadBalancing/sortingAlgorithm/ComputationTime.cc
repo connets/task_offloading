@@ -29,7 +29,7 @@ ComputationTime::~ComputationTime() {
 }
 
 bool cmpComputationTime(std::pair<int, HelperVehicleInfo> &a, std::pair<int, HelperVehicleInfo> &b) {
-    return a.second.getTotalComputationTime(3) < b.second.getTotalComputationTime(3);
+    return a.second.getTotalComputationTime(a.second.getTaskCpi()) < b.second.getTotalComputationTime(b.second.getTaskCpi());
 }
 
 std::list<int> ComputationTime::sort(const std::map<int, HelperVehicleInfo> &map) {

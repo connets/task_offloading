@@ -18,79 +18,104 @@
 
 using namespace task_offloading;
 
-void TaskGenerator::handleResponseMessage(ResponseMessage* responseMsg)
+void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
 {
-    if (findHost()->getIndex() == busIndex) {
-        responsesReceived++;
-        EV << "Received data from host: " << responseMsg->getHostIndex() << std::endl;
+    // Search the vehicle in the map
+    auto found = helpers.find(responseMessage->getHostIndex());
 
-        // Update global parameter data
-        double data = par("computationLoad").doubleValue() - responseMsg->getDataComputed();
+    // If the auto is found in the map and the partition id coincide with response message then
+    // handle the response otherwise get rid of it
+    if (found != helpers.end() && helpers[responseMessage->getHostIndex()].getDataPartitionId() == responseMessage->getPartitionID()) {
+        // Emit signal for having received response
+        emit(stopResponseMessages, responseMessage->getHostIndex());
 
-        EV << "Computed: " << responseMsg->getDataComputed() << std::endl << "Remaining: " << data << std::endl;
+        // Update the data partiton id into the helpers map
+        helpers[responseMessage->getHostIndex()].setDataPartitionId(-1);
 
+        // Remove the data that the vehicle has computed
+        double localData = tasks[0].getData() - responseMessage->getDataComputed();
+        tasks[0].setData(localData);
+
+        // If there's no more data then emit signal for task finished
+        if (localData <= 0) {
+            emit(stopTask, simTime());
+        }
+
+        // Increment the task responses received
+        int responseReceived = tasks[0].getResponseReceivedCounter();
+        responseReceived++;
+        tasks[0].setResponseReceivedCounter(responseReceived);
+
+        // Get the availability received
+        int vehiclesAvailable = tasks[0].getAvailableReceivedCounter();
+
+        // Get the load balancing id
+        int loadBalanceId = tasks[0].getLoadBalancingId();
+
+        // If the vehicle is not available anymore erase it from the map
+        // and from the list
+        if (responseMessage->getStillAvailable() == false) {
+            helpers.erase(responseMessage->getHostIndex());
+            helpersOrderedList.remove(responseMessage->getHostIndex());
+
+            // Schedule the ack message
+            if (!(par("useAcks").boolValue())) {
+                // Send ACK message to the host
+                AckMessage* ackMessage = new AckMessage();
+                populateWSM(ackMessage);
+                ackMessage->setHostIndex(responseMessage->getHostIndex());
+                ackMessage->setTaskID(responseMessage->getTaskID());
+                ackMessage->setPartitionID(responseMessage->getPartitionID());
+                scheduleAt(simTime(), ackMessage);
+            }
+        }
+
+        // If there are more vehicles available and I've received all responses
+        // then restart load balancing
+        if (helpers.size() > 0 && localData > 0 && vehiclesAvailable == responseReceived) {
+            // Increment load balance id
+            loadBalanceId++;
+            tasks[0].setLoadBalancingId(loadBalanceId);
+
+            // Set the new availability
+            int newAvailability = helpers.size();
+            tasks[0].setAvailableReceivedCounter(newAvailability);
+
+            // Set the responses received to 0
+            tasks[0].setResponseReceivedCounter(0);
+
+            balanceLoad();
+        }
+
+        // If there are no more vehicles but still more data to compute then take the bus
+        // back in help status
+        if (helpers.size() == 0 && localData > 0 && vehiclesAvailable == responseReceived) {
+            // Color the bus in white when it has no more vehicles
+            findHost()->getDisplayString().setTagArg("i", 1, "white");
+
+            // Set the new availability
+            tasks[0].setAvailableReceivedCounter(0);
+
+            // Set the responses received to 0
+            tasks[0].setResponseReceivedCounter(0);
+
+            // Change it's status in help
+            busState.setState(new Help);
+        }
+    } else if (tasks[0].getData() <= 0) {
+        // If data <= 0 and I receive a response then send ack to the vehicle
+        helpers.erase(responseMessage->getHostIndex());
+        helpersOrderedList.remove(responseMessage->getHostIndex());
+
+        // Schedule the ack message
         if (!(par("useAcks").boolValue())) {
             // Send ACK message to the host
-            AckMessage* ackMsg = new AckMessage();
-            populateWSM(ackMsg);
-            ackMsg->setHostIndex(responseMsg->getHostIndex());
-            scheduleAt(simTime(), ackMsg);
-        }
-
-        if (!(responseMsg->getStillAvailable())) {
-            helpers.erase(responseMsg->getHostIndex());
-            helpersOrderedList.remove(responseMsg->getHostIndex());
-            EV << "Deleted host: " << responseMsg->getHostIndex() << std::endl <<"Host remaining: " << helpers.size() - 1 << std::endl;
-
-            // Check if there is more data to load at the end of the last response
-            // message, to send signal of task terminated
-            if(!(par("computationLoad").doubleValue() > 0)) {
-                emit(stopTask, simTime());
-            }
-
-            // Send signal for having received response message statistic
-            emit(stopResponseMessages, responseMsg->getHostIndex());
-
-            if (helpers.size() == 1) {
-                findHost()->getDisplayString().setTagArg("i", 1, "white");
-                helpReceived = false;
-                sentHelpMessage = false;
-                newRandomTime = simTime();
-
-                // Disable the load balancing mode
-                loadBalancingState.setState(new Disabled);
-            }
-        }
-
-        if (data > 0) {
-            par("computationLoad").setDoubleValue(data);
-        } else {
-            par("computationLoad").setDoubleValue(0);
-
-            // Reset ok and responses
-            responsesReceived = 0;
-            okReceived = 0;
-        }
-
-        // If the responses are equal to the total of vehicles update map and restart load balancing
-        if (responsesReceived == okReceived) {
-            EV << "Responses received: " << responsesReceived << std::endl;
-            EV << "Ok received: " << okReceived << std::endl;
-            responsesReceived = 0;
-
-            if (helpers.size() > 1 && data > 0) {
-                okReceived = helpers.size() - 1;
-
-                // Increment the ID of load balancing
-                loadBalancingID++;
-
-                // Restart load balancing
-                balanceLoad(simTime());
-            } else {
-                okReceived = 0;
-            }
-
-            EV << "Total data remaining: " << par("computationLoad").doubleValue() << std::endl;
+            AckMessage* ackMessage = new AckMessage();
+            populateWSM(ackMessage);
+            ackMessage->setHostIndex(responseMessage->getHostIndex());
+            ackMessage->setTaskID(responseMessage->getTaskID());
+            ackMessage->setPartitionID(responseMessage->getPartitionID());
+            scheduleAt(simTime(), ackMessage);
         }
     }
 }

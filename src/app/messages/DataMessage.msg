@@ -21,6 +21,11 @@ namespace task_offloading;
 
 packet DataMessage extends veins::BaseFrame1609_4 {
     double loadToProcess;
+    double computationTime;
     int hostIndex;
+    int partitionId;
+    int taskId;
+    int loadBalancingId;
+    int cpi;
     veins::LAddress::L2Type senderAddress = -1;
 }
