@@ -1,0 +1,672 @@
+file 5404823 1685308071                                         
+version 3
+run Default-0-20230528-23:06:59-1689
+attr configname Default
+attr datetime 20230528-23:06:59
+attr datetimef 20230528-230659
+attr experiment Default
+attr inifile omnetpp.ini
+attr iterationvars "$useAcks=false, $0=false"
+attr iterationvarsd useAcks=false/false
+attr iterationvarsf useAcks=false,false-
+attr measurement "$useAcks=false, $0=false"
+attr network task_offloading
+attr processid 1689
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 100
+itervar useAcks false
+config image-path ../../../inet4.5/images:../../../veins-5.2/veins-veins-5.2/images
+config cmdenv-express-mode true
+config cmdenv-autoflush true
+config cmdenv-status-frequency 1s
+config **.cmdenv-log-level info
+config **.result-recording-modes all
+config seed-set 100
+config image-path ../../images
+config network task_offloading
+config debug-on-errors true
+config print-undisposed true
+config **.scalar-recording true
+config **.vector-recording true
+config *.playgroundSizeX 3500m
+config *.playgroundSizeY 3500m
+config *.playgroundSizeZ 50m
+config *.annotations.draw true
+config *.obstacles.obstacles "xmldoc(\"config.xml\", \"//AnalogueModel[@type='SimpleObstacleShadowing']/obstacles\")"
+config *.manager.updateInterval 0.1s
+config *.manager.host "\"localhost\""
+config *.manager.port 9999
+config *.manager.autoShutdown true
+config *.manager.launchConfig "xmldoc(\"task_offloading.launchd.xml\")"
+config *.connectionManager.sendDirect true
+config *.connectionManager.maxInterfDist 2600m
+config *.connectionManager.drawMaxIntfDist false
+config *.**.nic.mac1609_4.useServiceChannel false
+config *.**.nic.mac1609_4.txPower 20mW
+config *.**.nic.mac1609_4.bitrate 6Mbps
+config *.**.nic.phy80211p.minPowerLevel -110dBm
+config *.**.nic.phy80211p.useNoiseFloor true
+config *.**.nic.phy80211p.noiseFloor -98dBm
+config *.**.nic.phy80211p.decider "xmldoc(\"config.xml\")"
+config *.**.nic.phy80211p.analogueModels "xmldoc(\"config.xml\")"
+config *.**.nic.phy80211p.usePropagationDelay true
+config *.**.nic.phy80211p.antenna "xmldoc(\"antenna.xml\", \"/root/Antenna[@id='monopole']\")"
+config *.**[*].nic.phy80211p.antennaOffsetY "0 m"
+config *.**[*].nic.phy80211p.antennaOffsetZ "1.895 m"
+config *.**.nic.mac1609_4.useAcks false
+config *.veinsApp.useAcks false
+config *.manager.moduleDisplayString "\"BUS='i=veins/node/car_vs' CAR='i=veins/node/car_vs'\""
+config *.manager.moduleType "\"BUS=org.car2x.veins.nodes.Car CAR=org.car2x.veins.nodes.Car\""
+config *.manager.moduleName "\"BUS=bus CAR=car\""
+config *.bus[*].applType "\"TaskGenerator\""
+config *.car[*].applType "\"Worker\""
+config *.**[*].appl.headerLength "80 bit"
+config *.**[*].appl.sendBeacons false
+config *.**[*].appl.dataOnSch false
+config *.**[*].appl.beaconInterval 1s
+config *.**[*].veinsmobility.x 0
+config *.**[*].veinsmobility.y 0
+config *.**[*].veinsmobility.z 0
+config *.**[*].veinsmobility.setHostSpeed false
+config *.bus[*].appl.randomTimeFirstHelpMessage "uniform(30s, 40s)"
+config *.bus[*].appl.randomTimeHelpRequest "uniform(1s, 2s)"
+config *.bus[*].appl.busWaitingTimeForAvailability "uniform(100ms, 200ms)"
+config *.bus[*].appl.dataComputationThreshold "uniform(500ms, 600ms)"
+config *.bus[*].appl.computationLoad 15MB
+config *.bus[*].appl.busVehicleLoad 4MB
+config *.bus[*].appl.minimumVehicleLoadRequested 700kB
+config *.loadBalancingAlgorithm.typename ComputationTime
+config *.car[*].appl.stillAvailableProbability "uniform(0, 1)"
+config *.car[*].appl.stillAvailableThreshold 0.5
+config *.car[*].appl.commonVehicleLoad 1MB
+config *.car[*].appl.vehicleAvailabilityMessageTime "uniform(0ms, 100ms)"
+config *.car[*].appl.ackMessageThreshold "uniform(300ms, 400ms)"
+config *.car[*].appl.randomVehicleFreeLoadPercentage "uniform(0, 1)"
+config *.car[*].appl.randomVehicleCpuFreq "uniform(1.20GHz, 2.70GHz)"
+
+vector 0 task_offloading.car[0].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 1 task_offloading.car[0].veinsmobility posx ETV
+vector 2 task_offloading.car[0].veinsmobility posy ETV
+vector 3 task_offloading.bus[1].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 4 task_offloading.bus[1].veinsmobility posx ETV
+vector 5 task_offloading.bus[1].veinsmobility posy ETV
+vector 6 task_offloading.car[2].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 7 task_offloading.car[2].veinsmobility posx ETV
+vector 8 task_offloading.car[2].veinsmobility posy ETV
+vector 9 task_offloading.car[3].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 10 task_offloading.car[3].veinsmobility posx ETV
+vector 11 task_offloading.car[3].veinsmobility posy ETV
+vector 12 task_offloading.car[0].veinsmobility speed ETV
+vector 13 task_offloading.bus[1].veinsmobility speed ETV
+vector 14 task_offloading.car[2].veinsmobility speed ETV
+vector 15 task_offloading.car[3].veinsmobility speed ETV
+vector 16 task_offloading.car[0].veinsmobility acceleration ETV
+vector 17 task_offloading.car[0].veinsmobility co2emission ETV
+vector 18 task_offloading.bus[1].veinsmobility acceleration ETV
+vector 19 task_offloading.bus[1].veinsmobility co2emission ETV
+vector 20 task_offloading.car[2].veinsmobility acceleration ETV
+vector 21 task_offloading.car[2].veinsmobility co2emission ETV
+vector 22 task_offloading.car[3].veinsmobility acceleration ETV
+vector 23 task_offloading.car[3].veinsmobility co2emission ETV
+vector 24 task_offloading.car[4].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 25 task_offloading.car[4].veinsmobility posx ETV
+vector 26 task_offloading.car[4].veinsmobility posy ETV
+vector 27 task_offloading.car[5].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 28 task_offloading.car[5].veinsmobility posx ETV
+vector 29 task_offloading.car[5].veinsmobility posy ETV
+vector 30 task_offloading.car[4].veinsmobility speed ETV
+vector 31 task_offloading.car[5].veinsmobility speed ETV
+vector 32 task_offloading.car[4].veinsmobility acceleration ETV
+vector 33 task_offloading.car[4].veinsmobility co2emission ETV
+vector 34 task_offloading.car[5].veinsmobility acceleration ETV
+vector 35 task_offloading.car[5].veinsmobility co2emission ETV
+vector 36 task_offloading.bus[6].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 37 task_offloading.bus[6].veinsmobility posx ETV
+vector 38 task_offloading.bus[6].veinsmobility posy ETV
+vector 39 task_offloading.bus[6].veinsmobility speed ETV
+vector 40 task_offloading.car[7].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 41 task_offloading.car[7].veinsmobility posx ETV
+vector 42 task_offloading.car[7].veinsmobility posy ETV
+vector 43 task_offloading.bus[6].veinsmobility acceleration ETV
+vector 44 task_offloading.bus[6].veinsmobility co2emission ETV
+vector 45 task_offloading.car[7].veinsmobility speed ETV
+vector 46 task_offloading.car[7].veinsmobility acceleration ETV
+vector 47 task_offloading.car[7].veinsmobility co2emission ETV
+vector 48 task_offloading.car[8].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 49 task_offloading.car[8].veinsmobility posx ETV
+vector 50 task_offloading.car[8].veinsmobility posy ETV
+vector 51 task_offloading.car[9].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 52 task_offloading.car[9].veinsmobility posx ETV
+vector 53 task_offloading.car[9].veinsmobility posy ETV
+vector 54 task_offloading.car[8].veinsmobility speed ETV
+vector 55 task_offloading.car[9].veinsmobility speed ETV
+vector 56 task_offloading.car[8].veinsmobility acceleration ETV
+vector 57 task_offloading.car[8].veinsmobility co2emission ETV
+vector 58 task_offloading.car[9].veinsmobility acceleration ETV
+vector 59 task_offloading.car[9].veinsmobility co2emission ETV
+vector 60 task_offloading.car[10].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 61 task_offloading.car[10].veinsmobility posx ETV
+vector 62 task_offloading.car[10].veinsmobility posy ETV
+vector 63 task_offloading.car[10].veinsmobility speed ETV
+vector 64 task_offloading.car[10].veinsmobility acceleration ETV
+vector 65 task_offloading.car[10].veinsmobility co2emission ETV
+vector 66 task_offloading.car[11].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 67 task_offloading.car[11].veinsmobility posx ETV
+vector 68 task_offloading.car[11].veinsmobility posy ETV
+vector 69 task_offloading.car[11].veinsmobility speed ETV
+vector 70 task_offloading.car[11].veinsmobility acceleration ETV
+vector 71 task_offloading.car[11].veinsmobility co2emission ETV
+vector 72 task_offloading.car[12].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 73 task_offloading.car[12].veinsmobility posx ETV
+vector 74 task_offloading.car[12].veinsmobility posy ETV
+vector 75 task_offloading.car[12].veinsmobility speed ETV
+vector 76 task_offloading.car[12].veinsmobility acceleration ETV
+vector 77 task_offloading.car[12].veinsmobility co2emission ETV
+vector 78 task_offloading.car[13].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 79 task_offloading.car[13].veinsmobility posx ETV
+vector 80 task_offloading.car[13].veinsmobility posy ETV
+vector 81 task_offloading.car[13].veinsmobility speed ETV
+vector 82 task_offloading.car[13].veinsmobility acceleration ETV
+vector 83 task_offloading.car[13].veinsmobility co2emission ETV
+vector 84 task_offloading.bus[6].appl startHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_bus_help_rq
+vector 85 task_offloading.bus[6].appl startTimeTask:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source task_started
+vector 86 task_offloading.bus[6].nic.mac1609_4 sentPackets:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigSentPacket
+vector 87 task_offloading.car[11].appl stopHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_bus_help_rq
+vector 88 task_offloading.car[11].appl availableMessageLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_load
+vector 89 task_offloading.car[13].appl stopHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_bus_help_rq
+vector 90 task_offloading.car[13].appl availableMessageLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_load
+vector 91 task_offloading.car[0].appl stopHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_bus_help_rq
+vector 92 task_offloading.car[0].appl availableMessageLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_load
+vector 93 task_offloading.bus[1].appl startHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_bus_help_rq
+vector 94 task_offloading.bus[1].appl startTimeTask:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source task_started
+vector 95 task_offloading.bus[1].nic.mac1609_4 sentPackets:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigSentPacket
+vector 96 task_offloading.car[7].appl stopHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_bus_help_rq
+vector 97 task_offloading.car[7].appl availableMessageLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_load
+vector 98 task_offloading.car[10].appl stopHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_bus_help_rq
+vector 99 task_offloading.car[10].appl availableMessageLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_load
+vector 100 task_offloading.car[12].appl stopHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_bus_help_rq
+vector 101 task_offloading.car[12].appl availableMessageLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_load
+vector 102 task_offloading.car[0].appl availableMessageSent:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_sent
+vector 103 task_offloading.car[0].nic.mac1609_4 sentPackets:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigSentPacket
+vector 104 task_offloading.bus[6].appl startBalanceLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_balance_loading
+vector 105 task_offloading.bus[6].appl stopBalanceLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_balance_loading
+vector 106 task_offloading.bus[6].appl startDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_sending_data
+vector 107 task_offloading.car[10].appl availableMessageSent:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_sent
+vector 108 task_offloading.car[10].nic.mac1609_4 sentPackets:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigSentPacket
+vector 109 task_offloading.car[11].appl stopDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_sending_data
+vector 110 task_offloading.car[13].appl stopDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_sending_data
+vector 111 task_offloading.car[0].appl stopDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_sending_data
+vector 112 task_offloading.car[0].appl startResponseMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_getting_response
+vector 113 task_offloading.bus[1].appl startBalanceLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_balance_loading
+vector 114 task_offloading.bus[1].appl stopBalanceLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_balance_loading
+vector 115 task_offloading.bus[1].appl startDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_sending_data
+vector 116 task_offloading.bus[6].appl stopResponseMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_getting_response
+vector 117 task_offloading.car[7].appl stopDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_sending_data
+vector 118 task_offloading.car[10].appl stopDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_sending_data
+vector 119 task_offloading.car[12].appl stopDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_sending_data
+vector 120 task_offloading.car[10].appl startResponseMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_getting_response
+vector 121 task_offloading.bus[1].appl stopResponseMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_getting_response
+vector 122 task_offloading.car[12].appl availableMessageSent:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_sent
+vector 123 task_offloading.car[12].nic.mac1609_4 sentPackets:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigSentPacket
+vector 124 task_offloading.car[12].appl startResponseMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_getting_response
+vector 125 task_offloading.car[13].appl availableMessageSent:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_sent
+vector 126 task_offloading.car[13].nic.mac1609_4 sentPackets:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigSentPacket
+vector 127 task_offloading.car[13].appl startResponseMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_getting_response
+0	16860 822 2 2119 0.1 41.651852942313 34 0 1 17 17
+1	17682 11164 2 2217 0.1 42.3 423 1163.166668468 1189.7594437692 499108.99943337 588943318.9446
+2	28846 11158 2 2217 0.1 42.3 423 333.10841207299 701.6263137171 215046.4545252 114548415.43774
+3	40004 1072 2 2304 0.1 42.356191775166 47 0 1 23 23
+4	41076 11169 2 2217 0.1 42.3 423 1062.4970891532 1297.3527552885 510411.47229991 619396629.51385
+5	52245 11166 2 2217 0.1 42.3 423 1397.6488829013 1585.035242917 643883.52735648 981005766.17221
+6	63411 60 2 2163 0.1 42.235197903885 3 0 1 1 1
+7	63471 11154 2 2217 0.1 42.3 423 2055.6369631296 2413.5228035762 949303.90319102 2135735005.179
+8	74625 11169 2 2217 0.1 42.3 423 1578.9478335427 1908.3389322907 734062.85182384 1278472354.4115
+9	85794 10 2 2 0.1 0.1 1 0 0 0 0
+10	85804 11573 2 2217 0.1 42.3 423 155.43256643612 487.53986966494 143686.81630788 53188012.279088
+11	97377 11572 2 2217 0.1 42.3 423 1177.3967855852 1332.7991863918 527091.09924193 657636314.12475
+12	108949 11563 3 2217 0.2 42.3 422 0.25433206626587 9.2985213386324 3700.316179621 33519.026026435
+13	120512 11552 3 2217 0.2 42.3 422 0.11944135029288 13.889955020389 4375.9677029271 51950.190773572
+14	132064 11562 3 2217 0.2 42.3 422 0.24839281809283 13.131409608084 4959.8465016103 61777.433142193
+15	143626 11569 3 2217 0.2 42.3 422 0.2489653699901 23.473379769084 5287.7084417692 76946.536881791
+16	155195 12132 4 2217 0.3 42.3 421 -1.2323458068073 2.5900239454906 90.210612117146 287.50035623709
+17	167327 10205 4 2217 0.3 42.3 421 0.973 6.6771654996239 858.08672060424 2269.8549432491
+18	177532 11648 4 2217 0.3 42.3 421 -4 1.2 110.48140158221 643.89367379361
+19	189180 11040 4 2217 0.3 42.3 421 0.973 5.7556955538642 1152.2077753368 3795.4541520233
+20	200220 11854 4 2217 0.3 42.3 421 -4.5 2.6 89.614953913865 735.05800097601
+21	212074 10374 4 2217 0.3 42.3 421 0.973 8.9362237148397 1148.5823080507 4429.9476002207
+22	222448 10362 4 2217 0.3 42.3 421 -4.5 2.6 127.16631701305 3438.5536927571
+23	232810 10429 4 2217 0.3 42.3 421 0.94585729124839 17.692028821983 2489.7803406758 21723.819118731
+24	243239 12 28 28 2.7 2.7 1 0 0 0 0
+25	243251 10926 28 2217 2.7 42.3 397 2132.3922038728 2413.5228035762 906020.36003322 2070588576.1027
+26	254177 10942 28 2217 2.7 42.3 397 1578.9478335427 1840.0148280412 674788.28983755 1149426277.3159
+27	265119 166 28 2050 2.7 41.259148620736 7 0 1 3 3
+28	265285 10919 28 2217 2.7 42.3 397 155.43256643612 460.22772858187 129901.68557498 46238724.052269
+29	276204 10911 28 2217 2.7 42.3 397 1177.3967855852 1332.7969332486 495609.64868965 619567591.25414
+30	287115 10907 29 2217 2.8 42.3 396 0.25797700371896 10.617335243247 3907.3871415824 40200.455668428
+31	298022 10902 29 2217 2.8 42.3 396 0.24720221750531 21.948633830522 4916.7035984588 69370.40954236
+32	308924 11439 30 2217 2.9 42.3 395 -1.1798995667836 2.5225474330364 102.91462765648 304.73437756069
+33	320363 9687 30 2217 2.9 42.3 395 0.973 7.45168100282 894.67894179258 2703.5183969866
+34	330050 10321 30 2217 2.9 42.3 395 -4.5 2.6 91.859156497631 2694.7596616412
+35	340371 9660 30 2217 2.9 42.3 395 0.973 16.229359756374 2040.4984107938 16476.581737882
+36	350031 835 39 2117 3.8 41.651852679096 34 0 1 17 17
+37	350866 10635 39 2217 3.8 42.3 386 1170.6116887305 1189.7501868817 456790.19574617 540577037.82962
+38	361501 10648 39 2217 3.8 42.3 386 340.10623256583 622.41262648907 179962.71640535 86888983.928229
+39	372149 10628 40 2217 3.9 42.3 385 0.11952212717431 8.3299075558782 2834.6738044952 22474.951204886
+40	382777 1185 41 2300 4 42.356191682068 47 0 1 23 23
+41	383962 10580 41 2217 4 42.3 384 1056.0772855108 1297.3512744909 463280.71102637 561986435.02551
+42	394542 10603 41 2217 4 42.3 384 1425.5347428853 1585.0479758559 587213.81894991 898604156.45332
+43	405145 11189 41 2217 4 42.3 384 -0.57965016346424 1.1999258494936 81.976956793382 94.947998917564
+44	416334 9874 41 2217 4 42.3 384 0.973 3.9001601388943 666.32080925122 1292.9644521936
+45	426208 10563 42 2217 4.1 42.3 383 0.25484053724282 13.833854631147 4166.3853895666 49431.135837301
+46	436771 10824 43 2217 4.2 42.3 382 -4.5 2.6 117.58074355447 705.96024448634
+47	447595 9685 43 2217 4.2 42.3 382 0.973 7.6499026871512 1133.2233601822 4412.3387547677
+48	457280 12 54 54 5.3 5.3 1 0 0 0 0
+49	457292 10258 54 2217 5.3 42.3 371 2145.564727232 2413.5228035762 848505.36622859 1943073130.5173
+50	467550 10256 54 2217 5.3 42.3 371 1578.9478335427 1827.4146122858 628873.52808424 1068097335.7193
+51	477806 116 54 2264 5.3 42.300080059144 5 0 1 2 2
+52	477922 10264 54 2217 5.3 42.3 371 155.43256643612 443.45855612669 117235.19480158 40233745.167806
+53	488186 10267 54 2217 5.3 42.3 371 1177.3967855852 1332.8057545274 462995.63262365 578668956.74341
+54	498453 10246 55 2217 5.4 42.3 370 0.25029536069301 12.783334540771 3725.0981473966 39397.925724357
+55	508699 10233 55 2217 5.4 42.3 370 0.25096793531254 20.955216736306 4395.2237545005 59540.537140194
+56	518932 10670 56 2217 5.5 42.3 369 -1.9625829373357 2.5988917756127 102.86449620151 421.6984162308
+57	529602 8949 56 2217 5.5 42.3 369 0.973 9.6038613806923 925.89119215258 3448.1655894493
+58	538551 9810 56 2217 5.5 42.3 369 -4.5 2.6 127.59445575747 2175.0135192941
+59	548361 9100 56 2217 5.5 42.3 369 0.973 14.685576110699 1784.9507114748 13112.50196069
+60	557461 1185 68 2296 6.7 42.356191552578 47 0 1 23 23
+61	558646 9894 68 2217 6.7 42.3 357 1056.0772855108 1297.3494955859 429546.37484178 519549259.96278
+62	568540 9883 68 2217 6.7 42.3 357 1464.3502674028 1585.0418543341 548417.92655472 842874533.78528
+63	578423 9867 69 2217 6.8 42.3 356 0.25498779020854 12.265407484747 3778.3087048456 42667.167512984
+64	588290 10085 70 2217 6.9 42.3 355 -4.5 2.6 120.09763996544 659.86136771757
+65	598375 8813 70 2217 6.9 42.3 355 0.973 8.4582796081234 993.77934077703 4024.303549681
+66	607188 853 78 2115 7.7 41.651852602452 34 0 1 17 17
+67	608041 9635 78 2217 7.7 42.3 347 1172.6256382309 1189.7569644515 410916.82204544 486616849.74556
+68	617676 9626 78 2217 7.7 42.3 347 333.10841207299 599.50817371998 158880.80057279 75021470.985762
+69	627302 9608 79 2217 7.8 42.3 346 0.24776448706281 8.389199007494 2674.7424760072 21470.41635688
+70	636910 10072 80 2217 7.9 42.3 345 -1.475051454847 2.5667837712448 81.012893405393 230.24200966043
+71	646982 8516 80 2217 7.9 42.3 345 0.973 4.9884235771039 671.03508315451 1610.1930732185
+72	655498 1183 94 2292 9.3 42.356191482067 47 0 1 23 23
+73	656681 9232 94 2217 9.3 42.3 331 1056.0772855108 1297.3510789011 397109.80176273 478923574.49234
+74	665913 9217 94 2217 9.3 42.3 331 1485.4886678653 1585.0493316902 509798.48058468 785514776.91401
+75	675130 9217 95 2217 9.4 42.3 330 0.25395693201036 14.741916964826 3566.9948097885 41806.940798514
+76	684347 9389 96 2217 9.5 42.3 329 -4.5 2.6 122.86097362641 814.46718374084
+77	693736 8130 96 2217 9.5 42.3 329 0.973 10.924395977438 1067.7235950283 5342.5561360907
+78	701866 850 105 2111 10.4 41.65185154913 34 0 1 17 17
+79	702716 8940 105 2217 10.4 42.3 320 1174.0259100861 1189.7453576233 379125.42959758 449182612.48246
+80	711656 8925 105 2217 10.4 42.3 320 333.10841207299 583.58301742189 144539.44790276 67145721.650544
+81	720581 8915 106 2217 10.5 42.3 319 0.24741222256026 8.5792916590449 2514.8743324225 20638.233477024
+82	729496 9316 107 2217 10.6 42.3 318 -1.2360373390081 2.5966426531551 80.854363780908 274.53312226723
+83	738812 7868 107 2217 10.6 42.3 318 0.973 6.791038888229 643.25877455343 1719.9034500151
+84	746680 70 312 1537 31.1 37.9 4 31.1 37.9 138 4804.6
+85	746750 17 312 312 31.1 31.1 1 31.1 31.1 31.1 967.21
+86	746767 244 314 2001 31.100006 40.459781419111 10 1 1 10 10
+87	747011 154 340 1565 31.10007107679 37.900076975754 4 31.10007107679 37.900076975754 138.0002831051 4804.6195545381
+88	747165 156 340 1565 31.10007107679 37.900076975754 4 150431.61483482 379887.68541254 988318.23188812 271881112521.16
+89	747321 158 344 1569 31.100071130234 37.900077029108 4 31.100071130234 37.900077029108 138.00028331865 4804.6195692719
+90	747479 158 344 1569 31.100071130234 37.900077029108 4 106513.76191527 892488.04561794 1765466.3939029 1120720472337.9
+91	747637 156 348 1573 31.100071230433 37.900077150827 4 31.100071230433 37.900077150827 138.00028376253 4804.6196001757
+92	747793 156 348 1573 31.100071230433 37.900077150827 4 94895.48066631 766000.05151704 1836129.1938927 1099912076047.7
+93	747949 139 359 2217 31.2 42.3 8 31.2 42.3 276.4 9677
+94	748088 17 359 359 31.2 31.2 1 31.2 31.2 31.2 973.44
+95	748105 349 361 2219 31.20001 42.300012188968 15 1 1 15 15
+96	748454 313 387 2247 31.20007508695 42.300077282118 8 31.20007508695 42.300077282118 276.40059391841 9677.0411439914
+97	748767 313 387 2247 31.20007508695 42.300077282118 8 68486.554548144 672002.68781744 2210700.1570985 990018368098.31
+98	749080 313 391 2251 31.200075135081 42.300077411574 8 31.200075135081 42.300077411574 276.40059460684 9677.0411931144
+99	749393 313 391 2251 31.200075135081 42.300077411574 8 364007.67741725 733964.94961344 4105008.6100586 2263398388173.6
+100	749706 319 395 2255 31.200075157478 42.300077482067 8 31.200075157478 42.300077482067 276.40059490747 9677.041215386
+101	750025 320 395 2255 31.200075157478 42.300077482067 8 127673.58263955 995265.40818624 4129720.0755216 2702928940371.9
+102	750345 40 454 454 31.354409724956 31.354409724956 1 31.354409724956 31.354409724956 31.354409724956 983.09900920042
+103	750385 106 456 1338 31.354415231091 36.589623651771 4 1 1 4 4
+104	750491 199 503 1984 31.47760053128 40.459723419111 5 31.47760053128 40.459723419111 179.10349281768 6466.4373205077
+105	750690 199 503 1984 31.47760053128 40.459723419111 5 31.47760053128 40.459723419111 179.10349281768 6466.4373205077
+106	750889 133 504 1985 31.47760053128 40.459723419111 5 0 13 26 338
+107	751022 81 726 1898 32.425478610288 40.125477979765 2 32.425478610288 40.125477979765 72.550956590053 2661.4656462109
+108	751103 106 728 2058 32.425485170305 41.260529968703 4 1 1 4 4
+109	751209 136 781 2090 32.499002538963 41.649830495748 5 0 13 26 338
+110	751345 135 785 2094 32.499002592435 41.64983054913 5 0 13 26 338
+111	751480 136 789 2098 32.499002693594 41.649830678557 5 0 13 26 338
+112	751616 80 801 1336 32.500635174676 36.589612132853 3 0 0 0 0
+113	751696 163 822 1947 32.584477613494 40.284477613494 4 32.584477613494 40.284477613494 145.09452560171 5296.3826279349
+114	751859 163 822 1947 32.584477613494 40.284477613494 4 32.584477613494 40.284477613494 145.09452560171 5296.3826279349
+115	752022 111 823 1948 32.584477613494 40.284477613494 4 10 12 44 488
+116	752133 108 861 1984 33.522039928462 40.459723419111 4 0 13 13 169
+117	752241 111 908 2035 33.563162428067 41.259145848195 4 10 12 44 488
+118	752352 111 912 2039 33.563162512225 41.259145968703 4 10 12 44 488
+119	752463 110 916 2043 33.563162527932 41.259146042223 4 10 12 44 488
+120	752573 55 927 2056 33.564658770567 41.260518132423 2 10 10 20 200
+121	752628 110 974 2153 34.54334469061 42.235195188968 4 10 12 44 488
+122	752738 82 1127 2268 34.656120420115 42.356121948139 2 34.656120420115 42.356121948139 77.012242368254 2995.0877490591
+123	752820 107 1129 2270 34.656124954043 42.356126482067 4 1 1 4 4
+124	752927 56 1284 1687 36.114001507666 38.770672067057 2 12 12 24 288
+125	752983 41 1584 1584 37.970522783161 37.970522783161 1 37.970522783161 37.970522783161 37.970522783161 1441.7606004265
+126	753024 80 1586 2111 37.970530029108 41.65185154913 3 1 1 3 3
+127	753104 56 1740 2109 39.269661639766 41.651838899792 2 13 13 26 338
+vector 128 task_offloading.car[11].appl availableMessageSent:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_sent
+vector 129 task_offloading.car[11].nic.mac1609_4 sentPackets:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigSentPacket
+vector 130 task_offloading.car[11].appl startResponseMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_getting_response
+vector 131 task_offloading.car[7].appl availableMessageSent:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_sent
+vector 132 task_offloading.car[7].nic.mac1609_4 sentPackets:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigSentPacket
+vector 133 task_offloading.car[7].appl startResponseMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_getting_response
+vector 134 task_offloading.bus[1].appl stopTimeTask:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source task_stopped
+vector 135 task_offloading.car[3].appl stopDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_sending_data
+vector 136 task_offloading.car[5].appl stopDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_sending_data
+vector 137 task_offloading.bus[6].appl stopTimeTask:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source task_stopped
+135	754693 55 7385 7493 98.095830654606 99.817646319648 2 0 11 11 121
+9	754748 851 2851 7608 45.417199225692 100.31246142279 34 0 1 17 17
+23	755599 23214 2316 7915 42.4 128.7 864 0.43310030454771 15.336902195834 3441.6597842241 21806.209977467
+22	778813 25559 2316 7915 42.4 128.7 864 -9 2.6 46.038111780892 2429.9764773983
+15	804372 25061 2316 7915 42.4 128.7 864 6.411590261305 21.135037284526 15536.136102108 288849.60815098
+11	829433 25080 2316 7915 42.4 128.7 864 650.79540466797 1372.8297871072 1009734.4835002 1220048515.9143
+10	854513 25072 2316 7915 42.4 128.7 864 488.72415328096 1400.6436173244 980536.12306183 1184034341.0889
+136	879585 55 7389 7501 98.095831139168 99.817646820039 2 0 11 11 121
+27	879640 417 2856 7616 45.417199422195 100.312461928399 16 0 1 8 8
+35	880057 25971 2316 8027 42.4 139.9 976 0.71544046884331 13.773912631215 3166.6915331545 15757.179675487
+34	906028 29250 2316 8027 42.4 139.9 976 -4.5 2.6 61.143553926315 1374.4111980396
+31	935278 28394 2316 8027 42.4 139.9 976 6.2831178672684 18.760973733233 15897.793993719 265671.81458842
+29	963672 28405 2316 8027 42.4 139.9 976 651.72988923732 1372.8273089975 1144093.649078 1385325843.6064
+28	992077 28399 2316 8027 42.4 139.9 976 460.51659941836 1400.6191382016 1077529.9299137 1283321631.8976
+51	1020476 210 2337 7620 42.484485644354 100.312462333993 8 0 1 4 4
+59	1020686 31064 2316 8233 42.4 160.5 1182 0.973 10.477202840978 3148.9829993902 12327.175573511
+58	1051750 35813 2316 8233 42.4 160.5 1182 -4.5 2.6 0.99613922063729 1364.2267889632
+55	1087563 34510 2316 8233 42.4 160.5 1182 6.1792581954637 15.754262008963 16428.434083009 232297.33560739
+53	1122073 34525 2316 8233 42.4 160.5 1182 650.81407109834 1372.8282752829 1386080.516814 1678114178.1166
+52	1156598 34521 2316 8233 42.4 160.5 1182 443.87910711975 1400.6431283512 1283756.9339219 1518125113.148
+6	1191119 50 2632 2723 43.462420953061 44.439204953061 2 0 1 1 1
+21	1191169 60087 2316 9364 42.4 273.6 2313 0.973 9.4515154039042 4923.2627100331 15256.741040558
+20	1251256 70714 2316 9364 42.4 273.6 2313 -4.5 2.6 38.450354318304 2155.8863084131
+14	1321970 68115 2316 9364 42.4 273.6 2313 6.1254294417691 13.131314092468 22517.118866273 233884.15751269
+8	1390085 65763 2316 9364 42.4 273.6 2313 710.22942647897 1904.5048505906 2530612.1776356 3052665345.4913
+7	1455848 65780 2316 9364 42.4 273.6 2313 1475.2530190755 2234.0991654019 4501397.4552397 8850898460.41
+121	1521628 414 2715 6962 44.439202346927 84.362373309993 15 7 12 154 1648
+115	1522042 416 2318 6782 42.484477613494 82.745196439766 15 7 12 154 1648
+93	1522458 126 3748 6034 52.3 69.9 7 52.3 69.9 433.3 27058.73
+114	1522584 533 2317 6781 42.484477613494 82.745196439766 13 42.484477613494 82.745196439766 738.4012456768 43522.05318789
+113	1523117 533 2317 6781 42.484477613494 82.745196439766 13 42.484477613494 82.745196439766 738.4012456768 43522.05318789
+134	1523650 41 6962 6962 84.362373309993 84.362373309993 1 84.362373309993 84.362373309993 84.362373309993 7117.0100304946
+95	1523691 774 2320 6796 42.484481775166 82.745254439766 30 1 1 30 30
+3	1524465 2630 2320 6961 42.484481775166 84.362373309993 106 0 1 53 53
+19	1527095 63515 2316 9370 42.4 274.2 2319 0.973 5.8652109751957 4761.7223633209 12008.65301502
+18	1590610 70879 2316 9370 42.4 274.2 2319 -4 1.2 27.117166780962 1668.0629221124
+13	1661489 68275 2316 9370 42.4 274.2 2319 5.7881026979579 13.889996190174 23801.81753637 262543.90998777
+5	1729764 65940 2316 9370 42.4 274.2 2319 356.21122310963 1396.5792780034 2113658.6884695 2044151651.127
+4	1795704 65956 2316 9370 42.4 274.2 2319 1296.7760366558 1887.2303292352 3870559.2396484 6519763720.9668
+97	1861660 280 3777 6062 52.300071334181 69.900074974415 7 188077.96412148 956846.57013044 3614776.3314657 2304001542466.6
+131	1861940 82 4426 6081 57.417652691813 69.917657105243 2 57.417652691813 69.917657105243 127.33530979706 8185.265615724
+133	1862022 108 4582 6261 58.861643017314 71.097426249811 4 7 7 28 196
+117	1862130 470 2596 6825 43.461266867991 83.024447535222 17 7 12 178 1936
+96	1862600 280 3777 6062 52.300071334181 69.900074974415 7 52.300071334181 69.900074974415 433.30049431669 27058.791182875
+132	1862880 161 4428 6301 57.417665560985 72.15479169749 6 1 1 6 6
+40	1863041 2750 2324 6957 42.484482867991 84.362373214814 106 0 1 53 53
+47	1865791 60691 2316 9391 42.4 276.3 2340 0.973 10.596965462256 5307.766509497 17436.77705204
+46	1926482 71521 2316 9391 42.4 276.3 2340 -4.5 2.6 20.2895482299 2477.9025440807
+45	1998003 68918 2316 9391 42.4 276.3 2340 6.1368368044656 14.089622106517 24089.267352683 265785.4201548
+42	2066921 68921 2316 9391 42.4 276.3 2340 355.3646510914 1424.363348634 2145407.3545414 2090108787.5939
+41	2135842 68869 2316 9391 42.4 276.3 2340 1295.2075473035 1887.2305569886 3900063.3086555 6562822156.2886
+92	2204711 79 2454 4989 42.900074946364 62.600075668467 2 657977.4802085 919158.05311874 1577135.5333272 1277785891074.6
+102	2204790 41 5047 5047 62.654416162332 62.654416162332 1 62.654416162332 62.654416162332 62.654416162332 3925.5758646427
+112	2204831 54 7010 7398 85.112890094752 98.097717359215 2 0 0 0 0
+111	2204885 221 2662 7497 44.021505206741 99.817646508616 8 0 13 74 918
+91	2205106 80 2454 4989 42.900074946364 62.600075668467 2 42.900074946364 62.600075668467 105.50015061483 5759.1859041014
+103	2205186 81 5049 7400 62.654427845143 98.097721534179 3 1 1 3 3
+0	2205267 2220 2361 7612 42.841900942313 100.312461667819 89 0 1 44 44
+17	2207487 65512 2316 9460 42.4 283.2 2409 -0.79613439292814 20.816357416529 9198.3745954799 59798.761919486
+16	2272999 72110 2316 9460 42.4 283.2 2409 -4.5 2.6 183.77940074358 5042.6774179877
+12	2345109 70972 2316 9460 42.4 283.2 2409 6.1534774363877 27.699956833255 40498.16664954 821366.46519558
+2	2416081 68507 2316 9460 42.4 283.2 2409 702.54640371539 2997.1758734817 3303735.7890552 5332896606.9489
+1	2484588 68514 2316 9460 42.4 283.2 2409 1160.5610059178 2504.1636024062 4057954.2132452 7155676037.2387
+99	2553102 280 3781 6066 52.300071440116 69.900075173599 7 8714.6167643368 875420.30843906 3776284.9528808 2493618171879.3
+107	2553382 82 3796 5566 52.325472880099 65.725467851252 2 52.325472880099 65.725467851252 118.05094073135 7057.7922363919
+120	2553464 82 3955 5836 53.6527860659 67.883933290298 3 10 10 30 300
+118	2553546 471 2600 6829 43.461266997287 83.024447804977 17 7 12 178 1936
+98	2554017 280 3781 6066 52.300071440116 69.900075173599 7 52.300071440116 69.900075173599 433.30049521957 27058.791295838
+108	2554297 134 3798 5929 52.325479440116 68.908743589883 5 1 1 5 5
+60	2554431 2746 2326 6953 42.484482997287 84.362372937769 106 0 1 53 53
+65	2557177 66891 2316 9634 42.4 300.6 2583 0.973 9.2701559907892 5271.4557747911 15160.914718124
+64	2624068 79349 2316 9634 42.4 300.6 2583 -4.5 2.6 -0.8281074642205 2126.3507339952
+63	2703417 76099 2316 9634 42.4 300.6 2583 6.0269482846417 12.266191483699 24475.11815278 246841.01192995
+62	2779516 76125 2316 9634 42.4 300.6 2583 355.58719268907 1463.1319692954 2383247.3403146 2340633295.8373
+61	2855641 76104 2316 9634 42.4 300.6 2583 1294.544180396 1887.2365835735 4295389.5843937 7214149338.6644
+101	2931745 287 3785 6070 52.300071517228 69.900075240456 7 114875.86284056 793885.26175171 3325428.8146272 2019402689580
+122	2932032 82 5619 6128 65.756110921025 69.956119706528 2 65.756110921025 69.956119706528 135.71223062755 9217.7248078522
+124	2932114 305 2617 6863 43.462405225288 83.02484184228 11 12 12 132 1584
+119	2932419 469 2604 6833 43.46126706763 83.024447871332 17 7 12 178 1936
+100	2932888 287 3785 6070 52.300071517228 69.900075240456 7 52.300071517228 69.900075240456 433.30049566066 27058.791349568
+123	2933175 348 2619 6924 43.46241706763 84.083179871332 13 1 1 13 13
+72	2933523 2740 2328 6949 42.48448306763 84.362372871332 106 0 1 53 53
+77	2936263 66519 2316 9648 42.4 302 2597 0.973 10.786523069523 5735.6374090741 19346.233492277
+76	3002782 79492 2316 9648 42.4 302 2597 -4.5 2.6 23.086663383046 2755.9513848237
+75	3082274 76519 2316 9648 42.4 302 2597 6.1148009233622 14.848720632956 24677.440025573 250140.83707037
+74	3158793 76554 2316 9648 42.4 302 2597 356.48620559648 1484.2262031781 2408432.7559051 2379775802.1694
+73	3235347 76513 2316 9648 42.4 302 2597 1294.4202181988 1887.2292897612 4313631.8304273 7238515593.0444
+116	3311860 391 2356 7549 42.841900679096 100.312338162768 14 0 13 148 1836
+106	3312251 357 2561 7438 43.07760053128 99.323331006032 13 0 13 135 1667
+84	3312608 54 2418 4953 42.9 62.6 3 42.9 62.6 153.1 8024.93
+105	3312662 404 2560 7437 43.07760053128 99.323331006032 10 43.07760053128 99.323331006032 615.16608838599 40680.669748869
+104	3313066 404 2560 7437 43.07760053128 99.323331006032 10 43.07760053128 99.323331006032 615.16608838599 40680.669748869
+137	3313470 42 7549 7549 100.312338162768 100.312338162768 1 100.31233816277 100.31233816277 100.31233816277 10062.565187682
+86	3313512 624 2373 7572 42.841958679096 100.312396162768 24 1 1 24 24
+36	3314136 2207 2355 7596 42.841900679096 100.312461162768 85 0 1 42 42
+44	3316343 78413 2316 9839 42.4 321.1 2788 0.71559964220307 11.648802652711 8690.4619042489 37381.623222507
+43	3394756 84182 2316 9839 42.4 321.1 2788 -4 1.2 193.58334502159 2889.2266468519
+39	3478938 82185 2316 9839 42.4 321.1 2788 5.7447566825557 27.699990541581 41286.454478786 779095.88190611
+38	3561123 82192 2316 9839 42.4 321.1 2788 623.23994033504 2996.4494549399 3672788.2319592 5715590315.3024
+37	3643315 82185 2316 9839 42.4 321.1 2788 1160.5762374314 2504.0524417551 4593329.219303 7930698325.7238
+88	3725500 119 2446 4981 42.900074755783 62.600075213371 3 173295.4105828 976471.37497552 1889330.9007399 1530482725939.9
+128	3725619 82 2465 5000 42.929841463557 62.629841921145 2 42.929841463557 62.629841921145 105.5596833847 5765.4683871537
+130	3725701 111 2807 7510 45.32574529342 99.818077940246 4 11 11 44 484
+109	3725812 415 2654 7485 44.021505015836 99.817646090945 15 0 13 135 1667
+87	3726227 120 2446 4981 42.900074755783 62.600075213371 3 42.900074755783 62.600075213371 153.10022739818 8024.9532020204
+129	3726347 162 2467 7512 42.929850755783 99.818081090945 6 1 1 6 6
+66	3726509 2157 2351 7600 42.841900602452 100.312461227023 83 0 1 41 41
+71	3728666 75320 2316 9845 42.4 321.7 2794 -0.77499167611671 20.551631057429 9379.5511073537 53909.284134585
+70	3803986 85030 2316 9845 42.4 321.7 2794 -4.5 2.6 193.1089993962 4105.4336774052
+69	3889016 82381 2316 9845 42.4 321.7 2794 6.0736351549865 27.699882881155 41535.129579186 788599.44425224
+68	3971397 82359 2316 9845 42.4 321.7 2794 600.33843206149 2997.7607813627 3661495.3664935 5688270842.5174
+67	4053756 82374 2316 9845 42.4 321.7 2794 1160.5678523938 2507.5995842955 4596127.7878744 7930821529.9263
+90	4136130 119 2450 4985 42.90007480913 62.600075292514 3 84186.071064323 924096.64625302 1716161.7630627 1362134649582.7
+125	4136249 82 2512 3205 42.970520563183 47.670523236395 2 42.970520563183 47.670523236395 90.641043799578 4118.9444231026
+127	4136331 193 2693 4798 44.02313956124 61.338840317887 7 13 13 91 1183
+110	4136524 441 2658 7489 44.021505069177 99.817646160804 16 0 13 135 1667
+89	4136965 118 2450 4985 42.90007480913 62.600075292514 3 42.90007480913 62.600075292514 153.10022758399 8024.9532215823
+126	4137083 242 2514 4800 42.970520809129 61.338840966652 9 1 1 9 9
+78	4137325 2152 2347 7604 42.84190054913 100.312461285832 83 0 1 41 41
+83	4139477 74555 2316 9857 42.4 322.9 2806 -0.78284704537842 20.674074943888 9676.3267474566 58584.70534428
+82	4214032 85342 2316 9857 42.4 322.9 2806 -4.5 2.6 193.24540437699 4585.9231157967
+81	4299374 82723 2316 9857 42.4 322.9 2806 6.0718494083353 27.699963126301 41673.700884356 792036.74014701
+80	4382097 82745 2316 9857 42.4 322.9 2806 584.41673643328 2996.1972850738 3663013.2021251 5680956387.7891
+79	4464842 82760 2316 9857 42.4 322.9 2806 1160.5661633124 2504.0138533039 4606151.6780547 7932572564.3985
+33	4547602 76248 2316 10000 42.4 337.2 2949 0.973 7.742970506165 5324.179579532 12744.297945945
+32	4623850 90690 2316 10000 42.4 337.2 2949 -4.5 2.6 0.07436638432543 1609.4139471688
+30	4714540 86960 2316 10000 42.4 337.2 2949 6.1465642503408 10.617949675174 23580.92906509 201010.11374686
+26	4801500 86973 2316 10000 42.4 337.2 2949 710.23205857538 1908.3633193895 3303540.5885735 4110499124.6924
+25	4888473 86945 2316 10000 42.4 337.2 2949 1474.1183373877 2234.0970841227 5752655.5524876 11335863154.536
+57	4975418 75600 2316 10015 42.4 338.7 2964 0.973 9.6964558326924 5742.5203728727 15920.787917698
+56	5051018 91434 2316 10015 42.4 338.7 2964 -4.5 2.6 29.594820989171 2197.830798118
+54	5142452 87446 2316 10015 42.4 338.7 2964 6.0529863173479 13.496227079761 23761.147937801 203288.086763
+50	5229898 87453 2316 10015 42.4 338.7 2964 710.24104999937 1908.3683278309 3336282.9626811 4173472440.5113
+49	5317351 87471 2316 10015 42.4 338.7 2964 1474.3252761852 2234.0996214012 5789366.6394854 11421912935.359
+
