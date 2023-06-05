@@ -15,17 +15,27 @@
 
 #include "app/TaskGenerator.h"
 #include "app/messages/LoadBalanceTimerMessage_m.h"
+#include "veins/modules/mobility/traci/TraCIMobility.h"
 
 using namespace task_offloading;
+using namespace veins;
 
 void TaskGenerator::vehicleHandler()
 {
+    //Info on bus
+   int busIndex = findHost()->getIndex();
+   double vehicleAngle = traciVehicle->getAngle();
+   double vehicleSpeed = traciVehicle->getSpeed();
+   TraCIMobility* mobilityMod = check_and_cast<TraCIMobility*>(getModuleByPath("^.veinsmobility"));
+   double vehiclePositionX = mobilityMod->getPositionAt(simTime()).x;
+   double vehiclePositionY = mobilityMod->getPositionAt(simTime()).y;
+
     // Get the timer for the first help message
     bool timerForFirstHelpMessage = simTime() > par("randomTimeFirstHelpMessage").doubleValue();
     // Check the bus state
     int currentBusState = busState.getCurrentState();
     // Check if there's more data
-    bool moreDataToLoad = tasks[0].getData() > 0;
+    bool moreDataToLoad = tasks[0].getTotalData() > 0;
     // Check if it's the second (or more) help message
     bool isFirstHelpMessage = tasks[0].getHelpReceivedCounter() ==  0;
 
@@ -78,7 +88,7 @@ void TaskGenerator::vehicleHandler()
 
         // Schedule the message -> simTime + availability msgs threshold
         scheduleAt(simTimeActual + par("busWaitingTimeForAvailability").doubleValue(), timerForLoadBalancing);
-    } else if (tasks[0].getData() <= 0) {
+    } else if (tasks[0].getTotalData() <= 0) {
         // Color the bus in white when computation ends
         findHost()->getDisplayString().setTagArg("i", 1, "white");
     }

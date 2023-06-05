@@ -82,6 +82,20 @@ double HelperVehicleInfo::getVehicleAngle() {
 }
 
 /**
+ * @returns The position of the named vehicle within the last step [X,m].
+ */
+double HelperVehicleInfo::getVehiclePositionX(){
+    return this->vehiclePositionX;
+}
+
+/**
+ * @returns The position of the named vehicle within the last step [m,Y].
+ */
+double HelperVehicleInfo::getVehiclePositionY(){
+    return this->vehiclePositionY;
+}
+
+/**
  * @returns The current data partition id of the vehicle computation
  */
 int HelperVehicleInfo::getDataPartitionId() {
@@ -150,10 +164,26 @@ void HelperVehicleInfo::setAddress(veins::LAddress::L2Type newAddress) {
 /**
  * Set the current angle of a vehicle in degrees
  *
- * @param newAddress The new angle in degrees of a vehicle
+ * @param newAngle The new angle in degrees of a vehicle
  */
 void HelperVehicleInfo::setVehicleAngle(double newAngle) {
     this->vehicleAngle = newAngle;
+}
+
+/** Set the position of the named vehicle within the last step [X,m].
+ *
+ *  @param newPosition The new position of the vehicle
+ */
+void HelperVehicleInfo::setVehiclePositionX(double newPositionX) {
+    this->vehiclePositionX = newPositionX;
+}
+
+/** Set the position of the named vehicle within the last step [m,Y].
+ *
+ *  @param newPosition The new position of the vehicle
+ */
+void HelperVehicleInfo::setVehiclePositionY(double newPositionY) {
+    this->vehiclePositionY = newPositionY;
 }
 
 /**

@@ -23,4 +23,8 @@ packet HelpMessage extends veins::BaseFrame1609_4 {
     int vehicleIndex;
     int id;
     double minimumLoadRequested;
+    double vehicleAngle;
+    double vehicleSpeed;
+    double vehiclePositionX;
+    double vehiclePositionY;
 }

@@ -29,6 +29,7 @@
 #include "app/messages/DataMessage_m.h"
 #include "app/messages/ResponseMessage_m.h"
 #include "app/vehiclesHandling/HelperVehicleInfo.h"
+#include "app/vehiclesHandling/BusVehicleInfo.h"
 #include "app/loadBalancing/sortingAlgorithm/BaseSorting.h"
 #include "loadBalancing/BusState.h"
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
@@ -70,6 +71,7 @@ private:
 
 protected:
     simtime_t lastDroveAt;
+    std::map<int, BusVehicleInfo> buses;
     double cpuFreq;
     int currentDataPartitionId;
     bool stillAvailableProbability;

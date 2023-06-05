@@ -29,7 +29,7 @@ void TaskGenerator::balanceLoad()
     helpersOrderedList = loadBalancingAlgorithm->sort(helpers);
 
     // Store the data into a local variable so can be used
-    double localData = tasks[0].getData();
+    double localData = tasks[0].getTotalData();
 
     // Emit the start of load balancing
     emit(startBalance, simTime());
@@ -73,7 +73,7 @@ void TaskGenerator::balanceLoad()
             dataMessage->setHostIndex(i);
             dataMessage->setTaskId(tasks[0].getId());
             dataMessage->setPartitionId(tasks[0].getDataPartitionId());
-            dataMessage->setLoadBalancingId(tasks[0].getLoadBalancingId());
+            dataMessage->setLoadBalancingId(tasks[0].getLoadBalancingCounter());
             dataMessage->setCpi(tasks[0].getCpi());
 
             // Calculate time for timer

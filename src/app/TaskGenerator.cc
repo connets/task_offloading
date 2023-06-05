@@ -31,6 +31,11 @@
 #include "app/messages/LoadBalanceTimerMessage_m.h"
 #include "app/messages/ComputationTimerMessage_m.h"
 #include "app/messages/UpdateAvailabilityMessage_m.h"
+#include "app/vehiclesHandling/BusVehicleInfo.h"
+#include <iostream>
+#include "veins/modules/mobility/traci/TraCIConnection.h"
+#include "veins/modules/mobility/traci/TraCIConstants.h"
+
 
 using namespace task_offloading;
 

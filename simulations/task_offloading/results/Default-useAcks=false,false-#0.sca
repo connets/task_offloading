@@ -1,8 +1,8 @@
 version 3
-run Default-0-20230528-23:06:59-1689
+run Default-0-20230602-18:36:29-415
 attr configname Default
-attr datetime 20230528-23:06:59
-attr datetimef 20230528-230659
+attr datetime 20230602-18:36:29
+attr datetimef 20230602-183629
 attr experiment Default
 attr inifile omnetpp.ini
 attr iterationvars "$useAcks=false, $0=false"
@@ -10,7 +10,7 @@ attr iterationvarsd useAcks=false/false
 attr iterationvarsf useAcks=false,false-
 attr measurement "$useAcks=false, $0=false"
 attr network task_offloading
-attr processid 1689
+attr processid 415
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -74,7 +74,7 @@ config *.bus[*].appl.randomTimeFirstHelpMessage "uniform(30s, 40s)"
 config *.bus[*].appl.randomTimeHelpRequest "uniform(1s, 2s)"
 config *.bus[*].appl.busWaitingTimeForAvailability "uniform(100ms, 200ms)"
 config *.bus[*].appl.dataComputationThreshold "uniform(500ms, 600ms)"
-config *.bus[*].appl.computationLoad 15MB
+config *.bus[*].appl.computationLoad 18MB
 config *.bus[*].appl.busVehicleLoad 4MB
 config *.bus[*].appl.minimumVehicleLoadRequested 700kB
 config *.loadBalancingAlgorithm.typename ComputationTime
@@ -118,19 +118,19 @@ attr unit s
 par task_offloading.car[3].appl ackMessageThreshold "uniform(300ms, 400ms)"
 attr unit s
 scalar task_offloading.car[3].appl generatedWSMs 0
-scalar task_offloading.car[3].appl receivedWSMs 5
+scalar task_offloading.car[3].appl receivedWSMs 20
 scalar task_offloading.car[3].appl generatedBSMs 0
 scalar task_offloading.car[3].appl receivedBSMs 0
 scalar task_offloading.car[3].appl generatedWSAs 0
 scalar task_offloading.car[3].appl receivedWSAs 0
 statistic task_offloading.car[3].appl availableMessageLoad:stats
-field count 0
-field mean -nan
+field count 1
+field mean 527984.44754444
 field stddev -nan
-field min -nan
-field max -nan
-field sum 0
-field sqrsum 0
+field min 527984.44754444
+field max 527984.44754444
+field sum 527984.44754444
+field sqrsum 278767576848.81
 attr interpolationmode none
 attr recordingmode stats
 attr source available_message_load
@@ -157,24 +157,24 @@ attr interpolationmode none
 attr recordingmode stats
 attr source start_getting_response
 statistic task_offloading.car[3].appl stopDataMessages:stats
-field count 2
-field mean 5.5
-field stddev 7.778174593052
-field min 0
+field count 6
+field mean 10
+field stddev 2.4494897427832
+field min 5
 field max 11
-field sum 11
-field sqrsum 121
+field sum 60
+field sqrsum 630
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_sending_data
 statistic task_offloading.car[3].appl stopHelpRequests:stats
-field count 0
-field mean -nan
+field count 1
+field mean 96.300068462855
 field stddev -nan
-field min -nan
-field max -nan
-field sum 0
-field sqrsum 0
+field min 96.300068462855
+field max 96.300068462855
+field sum 96.300068462855
+field sqrsum 9273.7031859506
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_bus_help_rq
@@ -218,7 +218,7 @@ par task_offloading.car[3].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par task_offloading.car[3].nic.phy80211p collectCollisionStatistics false
 par task_offloading.car[3].nic.phy80211p allowTxDuringRx false
-scalar task_offloading.car[3].nic.phy80211p busyTime 0.11672099456099
+scalar task_offloading.car[3].nic.phy80211p busyTime 0.18841075369075
 par task_offloading.car[3].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par task_offloading.car[3].nic.mac1609_4 notAffectedByHostState false
 par task_offloading.car[3].nic.mac1609_4 headerLength 0bit
@@ -243,7 +243,7 @@ par task_offloading.car[3].nic.mac1609_4 useAcks false
 par task_offloading.car[3].nic.mac1609_4 frameErrorRate 0
 par task_offloading.car[3].nic.mac1609_4 ackErrorRate 0
 scalar task_offloading.car[3].nic.mac1609_4 ReceivedUnicastPackets 0
-scalar task_offloading.car[3].nic.mac1609_4 ReceivedBroadcasts 5
+scalar task_offloading.car[3].nic.mac1609_4 ReceivedBroadcasts 20
 scalar task_offloading.car[3].nic.mac1609_4 SentPackets 0
 scalar task_offloading.car[3].nic.mac1609_4 SentAcknowledgements 0
 scalar task_offloading.car[3].nic.mac1609_4 RetriesExceeded 0
@@ -255,7 +255,7 @@ scalar task_offloading.car[3].nic.mac1609_4 TooLittleTime 0
 scalar task_offloading.car[3].nic.mac1609_4 TimesIntoBackoff 0
 scalar task_offloading.car[3].nic.mac1609_4 SlotsBackoff 0
 scalar task_offloading.car[3].nic.mac1609_4 NumInternalContention 0
-scalar task_offloading.car[3].nic.mac1609_4 totalBusyTime 15.021992
+scalar task_offloading.car[3].nic.mac1609_4 totalBusyTime 24.248464
 scalar task_offloading.car[3].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
@@ -268,7 +268,7 @@ attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar task_offloading.car[3].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar task_offloading.car[3].nic.mac1609_4 channelBusy:timeavg 0.11672099456099
+scalar task_offloading.car[3].nic.mac1609_4 channelBusy:timeavg 0.18841075369075
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par task_offloading.car[3].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
@@ -333,64 +333,64 @@ par task_offloading.car[5].appl vehicleAvailabilityMessageTime 0.0795663s
 attr unit s
 par task_offloading.car[5].appl ackMessageThreshold "uniform(300ms, 400ms)"
 attr unit s
-scalar task_offloading.car[5].appl generatedWSMs 0
-scalar task_offloading.car[5].appl receivedWSMs 4
+scalar task_offloading.car[5].appl generatedWSMs 2
+scalar task_offloading.car[5].appl receivedWSMs 9
 scalar task_offloading.car[5].appl generatedBSMs 0
 scalar task_offloading.car[5].appl receivedBSMs 0
 scalar task_offloading.car[5].appl generatedWSAs 0
 scalar task_offloading.car[5].appl receivedWSAs 0
 statistic task_offloading.car[5].appl availableMessageLoad:stats
-field count 0
-field mean -nan
+field count 1
+field mean 744498.03470634
 field stddev -nan
-field min -nan
-field max -nan
-field sum 0
-field sqrsum 0
+field min 744498.03470634
+field max 744498.03470634
+field sum 744498.03470634
+field sqrsum 554277323681.6
 attr interpolationmode none
 attr recordingmode stats
 attr source available_message_load
 statistic task_offloading.car[5].appl availableMessageSent:stats
-field count 0
-field mean -nan
+field count 1
+field mean 96.379635195748
 field stddev -nan
-field min -nan
-field max -nan
-field sum 0
-field sqrsum 0
+field min 96.379635195748
+field max 96.379635195748
+field sum 96.379635195748
+field sqrsum 9289.0340804655
 attr interpolationmode none
 attr recordingmode stats
 attr source available_message_sent
 statistic task_offloading.car[5].appl startResponseMessages:stats
-field count 0
-field mean -nan
+field count 1
+field mean 5
 field stddev -nan
-field min -nan
-field max -nan
-field sum 0
-field sqrsum 0
+field min 5
+field max 5
+field sum 5
+field sqrsum 25
 attr interpolationmode none
 attr recordingmode stats
 attr source start_getting_response
 statistic task_offloading.car[5].appl stopDataMessages:stats
-field count 2
-field mean 5.5
-field stddev 7.778174593052
-field min 0
+field count 3
+field mean 9
+field stddev 3.4641016151378
+field min 5
 field max 11
-field sum 11
-field sqrsum 121
+field sum 27
+field sqrsum 267
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_sending_data
 statistic task_offloading.car[5].appl stopHelpRequests:stats
-field count 0
-field mean -nan
+field count 1
+field mean 96.300068944308
 field stddev -nan
-field min -nan
-field max -nan
-field sum 0
-field sqrsum 0
+field min 96.300068944308
+field max 96.300068944308
+field sum 96.300068944308
+field sqrsum 9273.7032786785
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_bus_help_rq
@@ -434,7 +434,7 @@ par task_offloading.car[5].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par task_offloading.car[5].nic.phy80211p collectCollisionStatistics false
 par task_offloading.car[5].nic.phy80211p allowTxDuringRx false
-scalar task_offloading.car[5].nic.phy80211p busyTime 0.051683262927895
+scalar task_offloading.car[5].nic.phy80211p busyTime 0.097286059723234
 par task_offloading.car[5].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par task_offloading.car[5].nic.mac1609_4 notAffectedByHostState false
 par task_offloading.car[5].nic.mac1609_4 headerLength 0bit
@@ -459,32 +459,32 @@ par task_offloading.car[5].nic.mac1609_4 useAcks false
 par task_offloading.car[5].nic.mac1609_4 frameErrorRate 0
 par task_offloading.car[5].nic.mac1609_4 ackErrorRate 0
 scalar task_offloading.car[5].nic.mac1609_4 ReceivedUnicastPackets 0
-scalar task_offloading.car[5].nic.mac1609_4 ReceivedBroadcasts 4
-scalar task_offloading.car[5].nic.mac1609_4 SentPackets 0
+scalar task_offloading.car[5].nic.mac1609_4 ReceivedBroadcasts 9
+scalar task_offloading.car[5].nic.mac1609_4 SentPackets 2
 scalar task_offloading.car[5].nic.mac1609_4 SentAcknowledgements 0
 scalar task_offloading.car[5].nic.mac1609_4 RetriesExceeded 0
-scalar task_offloading.car[5].nic.mac1609_4 SNIRLostPackets 7
+scalar task_offloading.car[5].nic.mac1609_4 SNIRLostPackets 11
 scalar task_offloading.car[5].nic.mac1609_4 RXTXLostPackets 0
-scalar task_offloading.car[5].nic.mac1609_4 TotalLostPackets 7
+scalar task_offloading.car[5].nic.mac1609_4 TotalLostPackets 11
 scalar task_offloading.car[5].nic.mac1609_4 DroppedPacketsInMac 0
 scalar task_offloading.car[5].nic.mac1609_4 TooLittleTime 0
-scalar task_offloading.car[5].nic.mac1609_4 TimesIntoBackoff 0
-scalar task_offloading.car[5].nic.mac1609_4 SlotsBackoff 0
+scalar task_offloading.car[5].nic.mac1609_4 TimesIntoBackoff 3
+scalar task_offloading.car[5].nic.mac1609_4 SlotsBackoff 3
 scalar task_offloading.car[5].nic.mac1609_4 NumInternalContention 0
-scalar task_offloading.car[5].nic.mac1609_4 totalBusyTime 7.096112
+scalar task_offloading.car[5].nic.mac1609_4 totalBusyTime 14.35017
 scalar task_offloading.car[5].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
 scalar task_offloading.car[5].nic.mac1609_4 sentAcks:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigSentAck
-scalar task_offloading.car[5].nic.mac1609_4 sentPackets:count 0
+scalar task_offloading.car[5].nic.mac1609_4 sentPackets:count 2
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar task_offloading.car[5].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar task_offloading.car[5].nic.mac1609_4 channelBusy:timeavg 0.051683262927895
+scalar task_offloading.car[5].nic.mac1609_4 channelBusy:timeavg 0.10451689730517
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par task_offloading.car[5].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
@@ -550,7 +550,7 @@ attr unit s
 par task_offloading.car[9].appl ackMessageThreshold "uniform(300ms, 400ms)"
 attr unit s
 scalar task_offloading.car[9].appl generatedWSMs 0
-scalar task_offloading.car[9].appl receivedWSMs 1
+scalar task_offloading.car[9].appl receivedWSMs 2
 scalar task_offloading.car[9].appl generatedBSMs 0
 scalar task_offloading.car[9].appl receivedBSMs 0
 scalar task_offloading.car[9].appl generatedWSAs 0
@@ -650,7 +650,7 @@ par task_offloading.car[9].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par task_offloading.car[9].nic.phy80211p collectCollisionStatistics false
 par task_offloading.car[9].nic.phy80211p allowTxDuringRx false
-scalar task_offloading.car[9].nic.phy80211p busyTime 0.018870212491951
+scalar task_offloading.car[9].nic.phy80211p busyTime 0.025262537025113
 par task_offloading.car[9].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par task_offloading.car[9].nic.mac1609_4 notAffectedByHostState false
 par task_offloading.car[9].nic.mac1609_4 headerLength 0bit
@@ -675,7 +675,7 @@ par task_offloading.car[9].nic.mac1609_4 useAcks false
 par task_offloading.car[9].nic.mac1609_4 frameErrorRate 0
 par task_offloading.car[9].nic.mac1609_4 ackErrorRate 0
 scalar task_offloading.car[9].nic.mac1609_4 ReceivedUnicastPackets 0
-scalar task_offloading.car[9].nic.mac1609_4 ReceivedBroadcasts 1
+scalar task_offloading.car[9].nic.mac1609_4 ReceivedBroadcasts 2
 scalar task_offloading.car[9].nic.mac1609_4 SentPackets 0
 scalar task_offloading.car[9].nic.mac1609_4 SentAcknowledgements 0
 scalar task_offloading.car[9].nic.mac1609_4 RetriesExceeded 0
@@ -687,7 +687,7 @@ scalar task_offloading.car[9].nic.mac1609_4 TooLittleTime 0
 scalar task_offloading.car[9].nic.mac1609_4 TimesIntoBackoff 0
 scalar task_offloading.car[9].nic.mac1609_4 SlotsBackoff 0
 scalar task_offloading.car[9].nic.mac1609_4 NumInternalContention 0
-scalar task_offloading.car[9].nic.mac1609_4 totalBusyTime 2.930544
+scalar task_offloading.car[9].nic.mac1609_4 totalBusyTime 3.923272
 scalar task_offloading.car[9].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
@@ -700,7 +700,7 @@ attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar task_offloading.car[9].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar task_offloading.car[9].nic.mac1609_4 channelBusy:timeavg 0.018870212491951
+scalar task_offloading.car[9].nic.mac1609_4 channelBusy:timeavg 0.025262537025113
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par task_offloading.car[9].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
@@ -977,7 +977,7 @@ par task_offloading.bus[1].appl minimumVehicleLoadRequested 700000byte
 attr unit byte
 par task_offloading.bus[1].appl busVehicleLoad 4e+06byte
 attr unit byte
-par task_offloading.bus[1].appl computationLoad 1.5e+07byte
+par task_offloading.bus[1].appl computationLoad 1.8e+07byte
 attr mutable ""
 attr unit byte
 par task_offloading.bus[1].appl useAcks false
@@ -986,75 +986,75 @@ attr unit s
 par task_offloading.bus[1].appl dataComputationThreshold "uniform(500ms, 600ms)"
 attr unit s
 par task_offloading.bus[1].appl sortingAlgorithm "\"FIFO\""
-scalar task_offloading.bus[1].appl generatedWSMs 45
-scalar task_offloading.bus[1].appl receivedWSMs 31
+scalar task_offloading.bus[1].appl generatedWSMs 53
+scalar task_offloading.bus[1].appl receivedWSMs 36
 scalar task_offloading.bus[1].appl generatedBSMs 0
 scalar task_offloading.bus[1].appl receivedBSMs 0
 scalar task_offloading.bus[1].appl generatedWSAs 0
 scalar task_offloading.bus[1].appl receivedWSAs 0
 statistic task_offloading.bus[1].appl stopResponseMessages:stats
-field count 19
-field mean 10.421052631579
-field stddev 2.008752777048
+field count 22
+field mean 10.318181818182
+field stddev 2.0327406701384
 field min 7
 field max 12
-field sum 198
-field sqrsum 2136
+field sum 227
+field sqrsum 2429
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_getting_response
 statistic task_offloading.bus[1].appl startDataMessages:stats
-field count 19
-field mean 10.421052631579
-field stddev 2.008752777048
+field count 22
+field mean 10.318181818182
+field stddev 2.0327406701384
 field min 7
 field max 12
-field sum 198
-field sqrsum 2136
+field sum 227
+field sqrsum 2429
 attr interpolationmode none
 attr recordingmode stats
 attr source start_sending_data
 statistic task_offloading.bus[1].appl startHelpRequests:stats
-field count 15
-field mean 47.313333333333
-field stddev 15.017745059318
+field count 17
+field mean 52.241176470588
+field stddev 19.773785007666
 field min 31.2
-field max 69.9
-field sum 709.7
-field sqrsum 36735.73
+field max 90.3
+field sum 888.1
+field sqrsum 52651.43
 attr interpolationmode none
 attr recordingmode stats
 attr source start_bus_help_rq
 statistic task_offloading.bus[1].appl stopBalanceLoad:stats
-field count 17
-field mean 51.970339486971
-field stddev 13.469550491704
+field count 20
+field mean 57.409294040994
+field stddev 18.160004355015
 field min 32.584477613494
-field max 82.745196439766
-field sum 883.49577127851
-field sqrsum 48818.435815825
+field max 90.484477613494
+field sum 1148.1858808199
+field sqrsum 72182.470251016
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_balance_loading
 statistic task_offloading.bus[1].appl startBalanceLoad:stats
-field count 17
-field mean 51.970339486971
-field stddev 13.469550491704
+field count 20
+field mean 57.409294040994
+field stddev 18.160004355015
 field min 32.584477613494
-field max 82.745196439766
-field sum 883.49577127851
-field sqrsum 48818.435815825
+field max 90.484477613494
+field sum 1148.1858808199
+field sqrsum 72182.470251016
 attr interpolationmode none
 attr recordingmode stats
 attr source start_balance_loading
 statistic task_offloading.bus[1].appl stopTimeTask:stats
 field count 1
-field mean 84.362373309993
+field mean 92.842756239457
 field stddev -nan
-field min 84.362373309993
-field max 84.362373309993
-field sum 84.362373309993
-field sqrsum 7117.0100304946
+field min 92.842756239457
+field max 92.842756239457
+field sum 92.842756239457
+field sqrsum 8619.7773861392
 attr interpolationmode none
 attr recordingmode stats
 attr source task_stopped
@@ -1109,7 +1109,7 @@ par task_offloading.bus[1].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par task_offloading.bus[1].nic.phy80211p collectCollisionStatistics false
 par task_offloading.bus[1].nic.phy80211p allowTxDuringRx false
-scalar task_offloading.bus[1].nic.phy80211p busyTime 0.080547279358133
+scalar task_offloading.bus[1].nic.phy80211p busyTime 0.095136309263311
 par task_offloading.bus[1].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par task_offloading.bus[1].nic.mac1609_4 notAffectedByHostState false
 par task_offloading.bus[1].nic.mac1609_4 headerLength 0bit
@@ -1134,8 +1134,8 @@ par task_offloading.bus[1].nic.mac1609_4 useAcks false
 par task_offloading.bus[1].nic.mac1609_4 frameErrorRate 0
 par task_offloading.bus[1].nic.mac1609_4 ackErrorRate 0
 scalar task_offloading.bus[1].nic.mac1609_4 ReceivedUnicastPackets 0
-scalar task_offloading.bus[1].nic.mac1609_4 ReceivedBroadcasts 31
-scalar task_offloading.bus[1].nic.mac1609_4 SentPackets 45
+scalar task_offloading.bus[1].nic.mac1609_4 ReceivedBroadcasts 36
+scalar task_offloading.bus[1].nic.mac1609_4 SentPackets 53
 scalar task_offloading.bus[1].nic.mac1609_4 SentAcknowledgements 0
 scalar task_offloading.bus[1].nic.mac1609_4 RetriesExceeded 0
 scalar task_offloading.bus[1].nic.mac1609_4 SNIRLostPackets 1
@@ -1143,23 +1143,23 @@ scalar task_offloading.bus[1].nic.mac1609_4 RXTXLostPackets 1
 scalar task_offloading.bus[1].nic.mac1609_4 TotalLostPackets 2
 scalar task_offloading.bus[1].nic.mac1609_4 DroppedPacketsInMac 0
 scalar task_offloading.bus[1].nic.mac1609_4 TooLittleTime 0
-scalar task_offloading.bus[1].nic.mac1609_4 TimesIntoBackoff 45
-scalar task_offloading.bus[1].nic.mac1609_4 SlotsBackoff 67
+scalar task_offloading.bus[1].nic.mac1609_4 TimesIntoBackoff 53
+scalar task_offloading.bus[1].nic.mac1609_4 SlotsBackoff 79
 scalar task_offloading.bus[1].nic.mac1609_4 NumInternalContention 0
-scalar task_offloading.bus[1].nic.mac1609_4 totalBusyTime 44.172941
+scalar task_offloading.bus[1].nic.mac1609_4 totalBusyTime 52.173765
 scalar task_offloading.bus[1].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
 scalar task_offloading.bus[1].nic.mac1609_4 sentAcks:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigSentAck
-scalar task_offloading.bus[1].nic.mac1609_4 sentPackets:count 45
+scalar task_offloading.bus[1].nic.mac1609_4 sentPackets:count 53
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar task_offloading.bus[1].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar task_offloading.bus[1].nic.mac1609_4 channelBusy:timeavg 0.16109752370532
+scalar task_offloading.bus[1].nic.mac1609_4 channelBusy:timeavg 0.19027631291028
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par task_offloading.bus[1].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
@@ -1224,64 +1224,64 @@ par task_offloading.car[7].appl vehicleAvailabilityMessageTime 0.0175821s
 attr unit s
 par task_offloading.car[7].appl ackMessageThreshold "uniform(300ms, 400ms)"
 attr unit s
-scalar task_offloading.car[7].appl generatedWSMs 6
-scalar task_offloading.car[7].appl receivedWSMs 70
+scalar task_offloading.car[7].appl generatedWSMs 8
+scalar task_offloading.car[7].appl receivedWSMs 81
 scalar task_offloading.car[7].appl generatedBSMs 0
 scalar task_offloading.car[7].appl receivedBSMs 0
 scalar task_offloading.car[7].appl generatedWSAs 0
 scalar task_offloading.car[7].appl receivedWSAs 0
 statistic task_offloading.car[7].appl availableMessageLoad:stats
-field count 15
-field mean 388365.09923761
-field stddev 271452.19994599
+field count 17
+field mean 414639.30650121
+field stddev 268264.54515522
 field min 68486.554548144
 field max 956846.57013044
-field sum 5825476.4885642
-field sqrsum 3294019910564.9
+field sum 7048868.2105206
+field sqrsum 4074191685426.1
 attr interpolationmode none
 attr recordingmode stats
 attr source available_message_load
 statistic task_offloading.car[7].appl availableMessageSent:stats
-field count 2
-field mean 63.667654898528
-field stddev 8.838837885598
+field count 3
+field mean 71.817654080652
+field stddev 15.437939875184
 field min 57.417652691813
-field max 69.917657105243
-field sum 127.33530979706
-field sqrsum 8185.265615724
+field max 88.117652444899
+field sum 215.45296224195
+field sqrsum 15949.986288124
 attr interpolationmode none
 attr recordingmode stats
 attr source available_message_sent
 statistic task_offloading.car[7].appl startResponseMessages:stats
-field count 4
+field count 5
 field mean 7
 field stddev 0
 field min 7
 field max 7
-field sum 28
-field sqrsum 196
+field sum 35
+field sqrsum 245
 attr interpolationmode none
 attr recordingmode stats
 attr source start_getting_response
 statistic task_offloading.car[7].appl stopDataMessages:stats
-field count 21
-field mean 10.571428571429
-field stddev 1.9639610121239
+field count 24
+field mean 10.458333333333
+field stddev 1.9995470501584
 field min 7
 field max 12
-field sum 222
-field sqrsum 2424
+field sum 251
+field sqrsum 2717
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_sending_data
 statistic task_offloading.car[7].appl stopHelpRequests:stats
-field count 15
-field mean 47.31340588234
-field stddev 15.017743515257
+field count 17
+field mean 52.241248896776
+field stddev 19.773783745949
 field min 31.20007508695
-field max 69.900074974415
-field sum 709.7010882351
-field sqrsum 36735.832326866
+field max 90.300072696031
+field sum 888.1012312452
+field sqrsum 52651.557845119
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_bus_help_rq
@@ -1325,7 +1325,7 @@ par task_offloading.car[7].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par task_offloading.car[7].nic.phy80211p collectCollisionStatistics false
 par task_offloading.car[7].nic.phy80211p allowTxDuringRx false
-scalar task_offloading.car[7].nic.phy80211p busyTime 0.14828273127753
+scalar task_offloading.car[7].nic.phy80211p busyTime 0.17404226138032
 par task_offloading.car[7].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par task_offloading.car[7].nic.mac1609_4 notAffectedByHostState false
 par task_offloading.car[7].nic.mac1609_4 headerLength 0bit
@@ -1350,8 +1350,8 @@ par task_offloading.car[7].nic.mac1609_4 useAcks false
 par task_offloading.car[7].nic.mac1609_4 frameErrorRate 0
 par task_offloading.car[7].nic.mac1609_4 ackErrorRate 0
 scalar task_offloading.car[7].nic.mac1609_4 ReceivedUnicastPackets 0
-scalar task_offloading.car[7].nic.mac1609_4 ReceivedBroadcasts 70
-scalar task_offloading.car[7].nic.mac1609_4 SentPackets 6
+scalar task_offloading.car[7].nic.mac1609_4 ReceivedBroadcasts 81
+scalar task_offloading.car[7].nic.mac1609_4 SentPackets 8
 scalar task_offloading.car[7].nic.mac1609_4 SentAcknowledgements 0
 scalar task_offloading.car[7].nic.mac1609_4 RetriesExceeded 0
 scalar task_offloading.car[7].nic.mac1609_4 SNIRLostPackets 1
@@ -1359,23 +1359,23 @@ scalar task_offloading.car[7].nic.mac1609_4 RXTXLostPackets 1
 scalar task_offloading.car[7].nic.mac1609_4 TotalLostPackets 2
 scalar task_offloading.car[7].nic.mac1609_4 DroppedPacketsInMac 0
 scalar task_offloading.car[7].nic.mac1609_4 TooLittleTime 0
-scalar task_offloading.car[7].nic.mac1609_4 TimesIntoBackoff 7
-scalar task_offloading.car[7].nic.mac1609_4 SlotsBackoff 10
+scalar task_offloading.car[7].nic.mac1609_4 TimesIntoBackoff 9
+scalar task_offloading.car[7].nic.mac1609_4 SlotsBackoff 13
 scalar task_offloading.car[7].nic.mac1609_4 NumInternalContention 0
-scalar task_offloading.car[7].nic.mac1609_4 totalBusyTime 44.172902
+scalar task_offloading.car[7].nic.mac1609_4 totalBusyTime 52.17372
 scalar task_offloading.car[7].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
 scalar task_offloading.car[7].nic.mac1609_4 sentAcks:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigSentAck
-scalar task_offloading.car[7].nic.mac1609_4 sentPackets:count 6
+scalar task_offloading.car[7].nic.mac1609_4 sentPackets:count 8
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar task_offloading.car[7].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar task_offloading.car[7].nic.mac1609_4 channelBusy:timeavg 0.16216190161527
+scalar task_offloading.car[7].nic.mac1609_4 channelBusy:timeavg 0.19153348017621
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par task_offloading.car[7].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
@@ -1440,8 +1440,8 @@ par task_offloading.car[0].appl vehicleAvailabilityMessageTime 0.0543405s
 attr unit s
 par task_offloading.car[0].appl ackMessageThreshold "uniform(300ms, 400ms)"
 attr unit s
-scalar task_offloading.car[0].appl generatedWSMs 7
-scalar task_offloading.car[0].appl receivedWSMs 40
+scalar task_offloading.car[0].appl generatedWSMs 8
+scalar task_offloading.car[0].appl receivedWSMs 39
 scalar task_offloading.car[0].appl generatedBSMs 0
 scalar task_offloading.car[0].appl receivedBSMs 0
 scalar task_offloading.car[0].appl generatedWSAs 0
@@ -1469,7 +1469,7 @@ attr interpolationmode none
 attr recordingmode stats
 attr source available_message_sent
 statistic task_offloading.car[0].appl startResponseMessages:stats
-field count 5
+field count 6
 field mean 0
 field stddev 0
 field min 0
@@ -1480,9 +1480,9 @@ attr interpolationmode none
 attr recordingmode stats
 attr source start_getting_response
 statistic task_offloading.car[0].appl stopDataMessages:stats
-field count 13
-field mean 7.6923076923077
-field stddev 6.368995412473
+field count 12
+field mean 8.3333333333333
+field stddev 6.198729097504
 field min 0
 field max 13
 field sum 100
@@ -1541,7 +1541,7 @@ par task_offloading.car[0].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par task_offloading.car[0].nic.phy80211p collectCollisionStatistics false
 par task_offloading.car[0].nic.phy80211p allowTxDuringRx false
-scalar task_offloading.car[0].nic.phy80211p busyTime 0.15062723163842
+scalar task_offloading.car[0].nic.phy80211p busyTime 0.16043488700565
 par task_offloading.car[0].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par task_offloading.car[0].nic.mac1609_4 notAffectedByHostState false
 par task_offloading.car[0].nic.mac1609_4 headerLength 0bit
@@ -1566,32 +1566,32 @@ par task_offloading.car[0].nic.mac1609_4 useAcks false
 par task_offloading.car[0].nic.mac1609_4 frameErrorRate 0
 par task_offloading.car[0].nic.mac1609_4 ackErrorRate 0
 scalar task_offloading.car[0].nic.mac1609_4 ReceivedUnicastPackets 0
-scalar task_offloading.car[0].nic.mac1609_4 ReceivedBroadcasts 40
-scalar task_offloading.car[0].nic.mac1609_4 SentPackets 7
+scalar task_offloading.car[0].nic.mac1609_4 ReceivedBroadcasts 39
+scalar task_offloading.car[0].nic.mac1609_4 SentPackets 8
 scalar task_offloading.car[0].nic.mac1609_4 SentAcknowledgements 0
 scalar task_offloading.car[0].nic.mac1609_4 RetriesExceeded 0
-scalar task_offloading.car[0].nic.mac1609_4 SNIRLostPackets 20
-scalar task_offloading.car[0].nic.mac1609_4 RXTXLostPackets 0
-scalar task_offloading.car[0].nic.mac1609_4 TotalLostPackets 20
+scalar task_offloading.car[0].nic.mac1609_4 SNIRLostPackets 25
+scalar task_offloading.car[0].nic.mac1609_4 RXTXLostPackets 3
+scalar task_offloading.car[0].nic.mac1609_4 TotalLostPackets 28
 scalar task_offloading.car[0].nic.mac1609_4 DroppedPacketsInMac 0
 scalar task_offloading.car[0].nic.mac1609_4 TooLittleTime 0
-scalar task_offloading.car[0].nic.mac1609_4 TimesIntoBackoff 7
-scalar task_offloading.car[0].nic.mac1609_4 SlotsBackoff 13
+scalar task_offloading.car[0].nic.mac1609_4 TimesIntoBackoff 8
+scalar task_offloading.car[0].nic.mac1609_4 SlotsBackoff 9
 scalar task_offloading.car[0].nic.mac1609_4 NumInternalContention 0
-scalar task_offloading.car[0].nic.mac1609_4 totalBusyTime 42.194607
+scalar task_offloading.car[0].nic.mac1609_4 totalBusyTime 46.476936
 scalar task_offloading.car[0].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
 scalar task_offloading.car[0].nic.mac1609_4 sentAcks:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigSentAck
-scalar task_offloading.car[0].nic.mac1609_4 sentPackets:count 7
+scalar task_offloading.car[0].nic.mac1609_4 sentPackets:count 8
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar task_offloading.car[0].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar task_offloading.car[0].nic.mac1609_4 channelBusy:timeavg 0.14899225635593
+scalar task_offloading.car[0].nic.mac1609_4 channelBusy:timeavg 0.16411347457627
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par task_offloading.car[0].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
@@ -1656,64 +1656,64 @@ par task_offloading.car[10].appl vehicleAvailabilityMessageTime 0.0254014s
 attr unit s
 par task_offloading.car[10].appl ackMessageThreshold "uniform(300ms, 400ms)"
 attr unit s
-scalar task_offloading.car[10].appl generatedWSMs 9
-scalar task_offloading.car[10].appl receivedWSMs 67
+scalar task_offloading.car[10].appl generatedWSMs 11
+scalar task_offloading.car[10].appl receivedWSMs 78
 scalar task_offloading.car[10].appl generatedBSMs 0
 scalar task_offloading.car[10].appl receivedBSMs 0
 scalar task_offloading.car[10].appl generatedWSAs 0
 scalar task_offloading.car[10].appl receivedWSAs 0
 statistic task_offloading.car[10].appl availableMessageLoad:stats
-field count 15
-field mean 525419.57086263
-field stddev 209766.99290451
+field count 17
+field mean 531801.09457496
+field stddev 237254.22724625
 field min 8714.6167643368
-field max 875420.30843906
-field sum 7881293.5629394
-field sqrsum 4757016560052.8
+field max 953433.92645009
+field sum 9040618.6077744
+field sqrsum 5708443964788.6
 attr interpolationmode none
 attr recordingmode stats
 attr source available_message_load
 statistic task_offloading.car[10].appl availableMessageSent:stats
-field count 4
-field mean 47.650474330351
-field stddev 14.571514071103
+field count 5
+field mean 56.185474353941
+field stddev 22.879639283798
 field min 32.425478610288
-field max 65.725467851252
-field sum 190.6018973214
-field sqrsum 9719.2578826028
+field max 90.325474448303
+field sum 280.92737176971
+field sqrsum 17877.949216914
 attr interpolationmode none
 attr recordingmode stats
 attr source available_message_sent
 statistic task_offloading.car[10].appl startResponseMessages:stats
-field count 5
+field count 6
 field mean 10
 field stddev 0
 field min 10
 field max 10
-field sum 50
-field sqrsum 500
+field sum 60
+field sqrsum 600
 attr interpolationmode none
 attr recordingmode stats
 attr source start_getting_response
 statistic task_offloading.car[10].appl stopDataMessages:stats
-field count 21
-field mean 10.571428571429
-field stddev 1.9639610121239
+field count 24
+field mean 10.458333333333
+field stddev 1.9995470501584
 field min 7
 field max 12
-field sum 222
-field sqrsum 2424
+field sum 251
+field sqrsum 2717
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_sending_data
 statistic task_offloading.car[10].appl stopHelpRequests:stats
-field count 15
-field mean 47.313405988427
-field stddev 15.017743542619
+field count 17
+field mean 52.241249026395
+field stddev 19.773783810905
 field min 31.200075135081
-field max 69.900075173599
-field sum 709.70108982641
-field sqrsum 36735.832488952
+field max 90.30007300832
+field sum 888.10123344871
+field sqrsum 52651.558116448
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_bus_help_rq
@@ -1757,7 +1757,7 @@ par task_offloading.car[10].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par task_offloading.car[10].nic.phy80211p collectCollisionStatistics false
 par task_offloading.car[10].nic.phy80211p allowTxDuringRx false
-scalar task_offloading.car[10].nic.phy80211p busyTime 0.13595488435374
+scalar task_offloading.car[10].nic.phy80211p busyTime 0.15916027210884
 par task_offloading.car[10].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par task_offloading.car[10].nic.mac1609_4 notAffectedByHostState false
 par task_offloading.car[10].nic.mac1609_4 headerLength 0bit
@@ -1782,8 +1782,8 @@ par task_offloading.car[10].nic.mac1609_4 useAcks false
 par task_offloading.car[10].nic.mac1609_4 frameErrorRate 0
 par task_offloading.car[10].nic.mac1609_4 ackErrorRate 0
 scalar task_offloading.car[10].nic.mac1609_4 ReceivedUnicastPackets 0
-scalar task_offloading.car[10].nic.mac1609_4 ReceivedBroadcasts 67
-scalar task_offloading.car[10].nic.mac1609_4 SentPackets 9
+scalar task_offloading.car[10].nic.mac1609_4 ReceivedBroadcasts 78
+scalar task_offloading.car[10].nic.mac1609_4 SentPackets 11
 scalar task_offloading.car[10].nic.mac1609_4 SentAcknowledgements 0
 scalar task_offloading.car[10].nic.mac1609_4 RetriesExceeded 0
 scalar task_offloading.car[10].nic.mac1609_4 SNIRLostPackets 2
@@ -1791,23 +1791,23 @@ scalar task_offloading.car[10].nic.mac1609_4 RXTXLostPackets 0
 scalar task_offloading.car[10].nic.mac1609_4 TotalLostPackets 2
 scalar task_offloading.car[10].nic.mac1609_4 DroppedPacketsInMac 0
 scalar task_offloading.car[10].nic.mac1609_4 TooLittleTime 0
-scalar task_offloading.car[10].nic.mac1609_4 TimesIntoBackoff 10
-scalar task_offloading.car[10].nic.mac1609_4 SlotsBackoff 23
+scalar task_offloading.car[10].nic.mac1609_4 TimesIntoBackoff 12
+scalar task_offloading.car[10].nic.mac1609_4 SlotsBackoff 26
 scalar task_offloading.car[10].nic.mac1609_4 NumInternalContention 0
-scalar task_offloading.car[10].nic.mac1609_4 totalBusyTime 45.231417
+scalar task_offloading.car[10].nic.mac1609_4 totalBusyTime 53.232235
 scalar task_offloading.car[10].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
 scalar task_offloading.car[10].nic.mac1609_4 sentAcks:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigSentAck
-scalar task_offloading.car[10].nic.mac1609_4 sentPackets:count 9
+scalar task_offloading.car[10].nic.mac1609_4 sentPackets:count 11
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar task_offloading.car[10].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar task_offloading.car[10].nic.mac1609_4 channelBusy:timeavg 0.15384835714286
+scalar task_offloading.car[10].nic.mac1609_4 channelBusy:timeavg 0.18106202380952
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par task_offloading.car[10].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
@@ -1872,20 +1872,20 @@ par task_offloading.car[12].appl vehicleAvailabilityMessageTime 0.0560445s
 attr unit s
 par task_offloading.car[12].appl ackMessageThreshold "uniform(300ms, 400ms)"
 attr unit s
-scalar task_offloading.car[12].appl generatedWSMs 17
-scalar task_offloading.car[12].appl receivedWSMs 59
+scalar task_offloading.car[12].appl generatedWSMs 18
+scalar task_offloading.car[12].appl receivedWSMs 71
 scalar task_offloading.car[12].appl generatedBSMs 0
 scalar task_offloading.car[12].appl receivedBSMs 0
 scalar task_offloading.car[12].appl generatedWSAs 0
 scalar task_offloading.car[12].appl receivedWSAs 0
 statistic task_offloading.car[12].appl availableMessageLoad:stats
-field count 15
-field mean 497009.92600992
-field stddev 269529.8329189
+field count 17
+field mean 502623.25441958
+field stddev 256741.43585716
 field min 114875.86284056
 field max 995265.40818624
-field sum 7455148.8901488
-field sqrsum 4722331629951.9
+field sum 8544595.3251328
+field sqrsum 5349370948192.5
 attr interpolationmode none
 attr recordingmode stats
 attr source available_message_load
@@ -1901,35 +1901,35 @@ attr interpolationmode none
 attr recordingmode stats
 attr source available_message_sent
 statistic task_offloading.car[12].appl startResponseMessages:stats
-field count 13
+field count 14
 field mean 12
 field stddev 0
 field min 12
 field max 12
-field sum 156
-field sqrsum 1872
+field sum 168
+field sqrsum 2016
 attr interpolationmode none
 attr recordingmode stats
 attr source start_getting_response
 statistic task_offloading.car[12].appl stopDataMessages:stats
-field count 21
-field mean 10.571428571429
-field stddev 1.9639610121239
+field count 24
+field mean 10.458333333333
+field stddev 1.9995470501584
 field min 7
 field max 12
-field sum 222
-field sqrsum 2424
+field sum 251
+field sqrsum 2717
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_sending_data
 statistic task_offloading.car[12].appl stopHelpRequests:stats
-field count 15
-field mean 47.313406037875
-field stddev 15.017743556448
+field count 17
+field mean 52.241249077836
+field stddev 19.773783824055
 field min 31.200075157478
-field max 69.900075240456
-field sum 709.70109056813
-field sqrsum 36735.832564954
+field max 90.300073074845
+field sum 888.10123432322
+field sqrsum 52651.55821614
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_bus_help_rq
@@ -1973,7 +1973,7 @@ par task_offloading.car[12].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par task_offloading.car[12].nic.phy80211p collectCollisionStatistics false
 par task_offloading.car[12].nic.phy80211p allowTxDuringRx false
-scalar task_offloading.car[12].nic.phy80211p busyTime 0.1099281147541
+scalar task_offloading.car[12].nic.phy80211p busyTime 0.13097612021858
 par task_offloading.car[12].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par task_offloading.car[12].nic.mac1609_4 notAffectedByHostState false
 par task_offloading.car[12].nic.mac1609_4 headerLength 0bit
@@ -1998,8 +1998,8 @@ par task_offloading.car[12].nic.mac1609_4 useAcks false
 par task_offloading.car[12].nic.mac1609_4 frameErrorRate 0
 par task_offloading.car[12].nic.mac1609_4 ackErrorRate 0
 scalar task_offloading.car[12].nic.mac1609_4 ReceivedUnicastPackets 0
-scalar task_offloading.car[12].nic.mac1609_4 ReceivedBroadcasts 59
-scalar task_offloading.car[12].nic.mac1609_4 SentPackets 17
+scalar task_offloading.car[12].nic.mac1609_4 ReceivedBroadcasts 71
+scalar task_offloading.car[12].nic.mac1609_4 SentPackets 18
 scalar task_offloading.car[12].nic.mac1609_4 SentAcknowledgements 0
 scalar task_offloading.car[12].nic.mac1609_4 RetriesExceeded 0
 scalar task_offloading.car[12].nic.mac1609_4 SNIRLostPackets 1
@@ -2007,23 +2007,23 @@ scalar task_offloading.car[12].nic.mac1609_4 RXTXLostPackets 1
 scalar task_offloading.car[12].nic.mac1609_4 TotalLostPackets 2
 scalar task_offloading.car[12].nic.mac1609_4 DroppedPacketsInMac 0
 scalar task_offloading.car[12].nic.mac1609_4 TooLittleTime 0
-scalar task_offloading.car[12].nic.mac1609_4 TimesIntoBackoff 19
-scalar task_offloading.car[12].nic.mac1609_4 SlotsBackoff 33
+scalar task_offloading.car[12].nic.mac1609_4 TimesIntoBackoff 20
+scalar task_offloading.car[12].nic.mac1609_4 SlotsBackoff 36
 scalar task_offloading.car[12].nic.mac1609_4 NumInternalContention 0
-scalar task_offloading.car[12].nic.mac1609_4 totalBusyTime 45.231425
+scalar task_offloading.car[12].nic.mac1609_4 totalBusyTime 53.232242
 scalar task_offloading.car[12].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
 scalar task_offloading.car[12].nic.mac1609_4 sentAcks:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigSentAck
-scalar task_offloading.car[12].nic.mac1609_4 sentPackets:count 17
+scalar task_offloading.car[12].nic.mac1609_4 sentPackets:count 18
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar task_offloading.car[12].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar task_offloading.car[12].nic.mac1609_4 channelBusy:timeavg 0.15447891051913
+scalar task_offloading.car[12].nic.mac1609_4 channelBusy:timeavg 0.18180410519126
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par task_offloading.car[12].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
@@ -2084,7 +2084,7 @@ par task_offloading.bus[6].appl minimumVehicleLoadRequested 700000byte
 attr unit byte
 par task_offloading.bus[6].appl busVehicleLoad 4e+06byte
 attr unit byte
-par task_offloading.bus[6].appl computationLoad 1.5e+07byte
+par task_offloading.bus[6].appl computationLoad 1.8e+07byte
 attr mutable ""
 attr unit byte
 par task_offloading.bus[6].appl useAcks false
@@ -2093,75 +2093,75 @@ attr unit s
 par task_offloading.bus[6].appl dataComputationThreshold "uniform(500ms, 600ms)"
 attr unit s
 par task_offloading.bus[6].appl sortingAlgorithm "\"FIFO\""
-scalar task_offloading.bus[6].appl generatedWSMs 34
-scalar task_offloading.bus[6].appl receivedWSMs 25
+scalar task_offloading.bus[6].appl generatedWSMs 41
+scalar task_offloading.bus[6].appl receivedWSMs 32
 scalar task_offloading.bus[6].appl generatedBSMs 0
 scalar task_offloading.bus[6].appl receivedBSMs 0
 scalar task_offloading.bus[6].appl generatedWSAs 0
 scalar task_offloading.bus[6].appl receivedWSAs 0
 statistic task_offloading.bus[6].appl stopResponseMessages:stats
-field count 18
-field mean 8.9444444444444
-field stddev 5.7647225556648
+field count 22
+field mean 9.5454545454545
+field stddev 4.9254177751476
 field min 0
 field max 13
-field sum 161
-field sqrsum 2005
+field sum 210
+field sqrsum 2514
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_getting_response
 statistic task_offloading.bus[6].appl startDataMessages:stats
-field count 18
-field mean 8.9444444444444
-field stddev 5.7647225556648
+field count 22
+field mean 9.5454545454545
+field stddev 4.9254177751476
 field min 0
 field max 13
-field sum 161
-field sqrsum 2005
+field sum 210
+field sqrsum 2514
 attr interpolationmode none
 attr recordingmode stats
 attr source start_sending_data
 statistic task_offloading.bus[6].appl startHelpRequests:stats
-field count 7
-field mean 41.585714285714
-field stddev 10.98429614972
+field count 8
+field mean 48.425
+field stddev 21.854633376014
 field min 31.1
-field max 62.6
-field sum 291.1
-field sqrsum 12829.53
+field max 96.3
+field sum 387.4
+field sqrsum 22103.22
 attr interpolationmode none
 attr recordingmode stats
 attr source start_bus_help_rq
 statistic task_offloading.bus[6].appl stopBalanceLoad:stats
-field count 15
-field mean 52.951305413578
-field stddev 19.066604863602
+field count 19
+field mean 60.868978118237
+field stddev 23.016710746826
 field min 31.47760053128
-field max 99.323331006032
-field sum 794.26958120367
-field sqrsum 47147.107069377
+field max 96.47760053128
+field sum 1156.5105842465
+field sqrsum 79931.458970864
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_balance_loading
 statistic task_offloading.bus[6].appl startBalanceLoad:stats
-field count 15
-field mean 52.951305413578
-field stddev 19.066604863602
+field count 19
+field mean 60.868978118237
+field stddev 23.016710746826
 field min 31.47760053128
-field max 99.323331006032
-field sum 794.26958120367
-field sqrsum 47147.107069377
+field max 96.47760053128
+field sum 1156.5105842465
+field sqrsum 79931.458970864
 attr interpolationmode none
 attr recordingmode stats
 attr source start_balance_loading
 statistic task_offloading.bus[6].appl stopTimeTask:stats
 field count 1
-field mean 100.31233816277
+field mean 100.02902728748
 field stddev -nan
-field min 100.31233816277
-field max 100.31233816277
-field sum 100.31233816277
-field sqrsum 10062.565187682
+field min 100.02902728748
+field max 100.02902728748
+field sum 100.02902728748
+field sqrsum 10005.806300079
 attr interpolationmode none
 attr recordingmode stats
 attr source task_stopped
@@ -2216,7 +2216,7 @@ par task_offloading.bus[6].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par task_offloading.bus[6].nic.phy80211p collectCollisionStatistics false
 par task_offloading.bus[6].nic.phy80211p allowTxDuringRx false
-scalar task_offloading.bus[6].nic.phy80211p busyTime 0.063016862003781
+scalar task_offloading.bus[6].nic.phy80211p busyTime 0.079481814744801
 par task_offloading.bus[6].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par task_offloading.bus[6].nic.mac1609_4 notAffectedByHostState false
 par task_offloading.bus[6].nic.mac1609_4 headerLength 0bit
@@ -2241,8 +2241,8 @@ par task_offloading.bus[6].nic.mac1609_4 useAcks false
 par task_offloading.bus[6].nic.mac1609_4 frameErrorRate 0
 par task_offloading.bus[6].nic.mac1609_4 ackErrorRate 0
 scalar task_offloading.bus[6].nic.mac1609_4 ReceivedUnicastPackets 0
-scalar task_offloading.bus[6].nic.mac1609_4 ReceivedBroadcasts 25
-scalar task_offloading.bus[6].nic.mac1609_4 SentPackets 34
+scalar task_offloading.bus[6].nic.mac1609_4 ReceivedBroadcasts 32
+scalar task_offloading.bus[6].nic.mac1609_4 SentPackets 41
 scalar task_offloading.bus[6].nic.mac1609_4 SentAcknowledgements 0
 scalar task_offloading.bus[6].nic.mac1609_4 RetriesExceeded 0
 scalar task_offloading.bus[6].nic.mac1609_4 SNIRLostPackets 0
@@ -2250,23 +2250,23 @@ scalar task_offloading.bus[6].nic.mac1609_4 RXTXLostPackets 0
 scalar task_offloading.bus[6].nic.mac1609_4 TotalLostPackets 0
 scalar task_offloading.bus[6].nic.mac1609_4 DroppedPacketsInMac 0
 scalar task_offloading.bus[6].nic.mac1609_4 TooLittleTime 0
-scalar task_offloading.bus[6].nic.mac1609_4 TimesIntoBackoff 34
-scalar task_offloading.bus[6].nic.mac1609_4 SlotsBackoff 45
+scalar task_offloading.bus[6].nic.mac1609_4 TimesIntoBackoff 41
+scalar task_offloading.bus[6].nic.mac1609_4 SlotsBackoff 56
 scalar task_offloading.bus[6].nic.mac1609_4 NumInternalContention 0
-scalar task_offloading.bus[6].nic.mac1609_4 totalBusyTime 43.680346
+scalar task_offloading.bus[6].nic.mac1609_4 totalBusyTime 51.681217
 scalar task_offloading.bus[6].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
 scalar task_offloading.bus[6].nic.mac1609_4 sentAcks:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigSentAck
-scalar task_offloading.bus[6].nic.mac1609_4 sentPackets:count 34
+scalar task_offloading.bus[6].nic.mac1609_4 sentPackets:count 41
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar task_offloading.bus[6].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar task_offloading.bus[6].nic.mac1609_4 channelBusy:timeavg 0.13761923755514
+scalar task_offloading.bus[6].nic.mac1609_4 channelBusy:timeavg 0.16282677063642
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par task_offloading.bus[6].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
@@ -2331,64 +2331,64 @@ par task_offloading.car[11].appl vehicleAvailabilityMessageTime 0.0297667s
 attr unit s
 par task_offloading.car[11].appl ackMessageThreshold "uniform(300ms, 400ms)"
 attr unit s
-scalar task_offloading.car[11].appl generatedWSMs 6
-scalar task_offloading.car[11].appl receivedWSMs 51
+scalar task_offloading.car[11].appl generatedWSMs 11
+scalar task_offloading.car[11].appl receivedWSMs 61
 scalar task_offloading.car[11].appl generatedBSMs 0
 scalar task_offloading.car[11].appl receivedBSMs 0
 scalar task_offloading.car[11].appl generatedWSAs 0
 scalar task_offloading.car[11].appl receivedWSAs 0
 statistic task_offloading.car[11].appl availableMessageLoad:stats
-field count 7
-field mean 411092.73323257
-field stddev 321295.08535631
+field count 8
+field mean 448853.43321948
+field stddev 316054.23069937
 field min 150431.61483482
 field max 976471.37497552
-field sum 2877649.132628
-field sqrsum 1802363838461.1
+field sum 3590827.4657559
+field sqrsum 2310987173304.1
 attr interpolationmode none
 attr recordingmode stats
 attr source available_message_load
 statistic task_offloading.car[11].appl availableMessageSent:stats
-field count 2
-field mean 52.779841692351
-field stddev 13.930003912939
+field count 3
+field mean 67.296506013779
+field stddev 27.004131787011
 field min 42.929841463557
-field max 62.629841921145
-field sum 105.5596833847
-field sqrsum 5765.4683871537
+field max 96.329834656634
+field sum 201.88951804134
+field sqrsum 15044.905432128
 attr interpolationmode none
 attr recordingmode stats
 attr source available_message_sent
 statistic task_offloading.car[11].appl startResponseMessages:stats
-field count 4
+field count 8
 field mean 11
 field stddev 0
 field min 11
 field max 11
-field sum 44
-field sqrsum 484
+field sum 88
+field sqrsum 968
 attr interpolationmode none
 attr recordingmode stats
 attr source start_getting_response
 statistic task_offloading.car[11].appl stopDataMessages:stats
-field count 20
-field mean 8.05
-field stddev 6.1084497128762
+field count 23
+field mean 9.1304347826087
+field stddev 5.2075500069705
 field min 0
 field max 13
-field sum 161
-field sqrsum 2005
+field sum 210
+field sqrsum 2514
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_sending_data
 statistic task_offloading.car[11].appl stopHelpRequests:stats
-field count 7
-field mean 41.585787214754
-field stddev 10.984298404717
+field count 8
+field mean 48.425072306517
+field stddev 21.854632788961
 field min 31.10007107679
-field max 62.600075213371
-field sum 291.10051050328
-field sqrsum 12829.572756559
+field max 96.30006794886
+field sum 387.40057845214
+field sqrsum 22103.275843514
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_bus_help_rq
@@ -2432,7 +2432,7 @@ par task_offloading.car[11].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par task_offloading.car[11].nic.phy80211p collectCollisionStatistics false
 par task_offloading.car[11].nic.phy80211p allowTxDuringRx false
-scalar task_offloading.car[11].nic.phy80211p busyTime 0.12653481056988
+scalar task_offloading.car[11].nic.phy80211p busyTime 0.14243193887297
 par task_offloading.car[11].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par task_offloading.car[11].nic.mac1609_4 notAffectedByHostState false
 par task_offloading.car[11].nic.mac1609_4 headerLength 0bit
@@ -2457,8 +2457,8 @@ par task_offloading.car[11].nic.mac1609_4 useAcks false
 par task_offloading.car[11].nic.mac1609_4 frameErrorRate 0
 par task_offloading.car[11].nic.mac1609_4 ackErrorRate 0
 scalar task_offloading.car[11].nic.mac1609_4 ReceivedUnicastPackets 0
-scalar task_offloading.car[11].nic.mac1609_4 ReceivedBroadcasts 51
-scalar task_offloading.car[11].nic.mac1609_4 SentPackets 6
+scalar task_offloading.car[11].nic.mac1609_4 ReceivedBroadcasts 61
+scalar task_offloading.car[11].nic.mac1609_4 SentPackets 11
 scalar task_offloading.car[11].nic.mac1609_4 SentAcknowledgements 0
 scalar task_offloading.car[11].nic.mac1609_4 RetriesExceeded 0
 scalar task_offloading.car[11].nic.mac1609_4 SNIRLostPackets 2
@@ -2466,23 +2466,23 @@ scalar task_offloading.car[11].nic.mac1609_4 RXTXLostPackets 0
 scalar task_offloading.car[11].nic.mac1609_4 TotalLostPackets 2
 scalar task_offloading.car[11].nic.mac1609_4 DroppedPacketsInMac 0
 scalar task_offloading.car[11].nic.mac1609_4 TooLittleTime 0
-scalar task_offloading.car[11].nic.mac1609_4 TimesIntoBackoff 9
-scalar task_offloading.car[11].nic.mac1609_4 SlotsBackoff 11
+scalar task_offloading.car[11].nic.mac1609_4 TimesIntoBackoff 14
+scalar task_offloading.car[11].nic.mac1609_4 SlotsBackoff 22
 scalar task_offloading.car[11].nic.mac1609_4 NumInternalContention 0
-scalar task_offloading.car[11].nic.mac1609_4 totalBusyTime 42.287678
+scalar task_offloading.car[11].nic.mac1609_4 totalBusyTime 51.514155
 scalar task_offloading.car[11].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
 scalar task_offloading.car[11].nic.mac1609_4 sentAcks:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigSentAck
-scalar task_offloading.car[11].nic.mac1609_4 sentPackets:count 6
+scalar task_offloading.car[11].nic.mac1609_4 sentPackets:count 11
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar task_offloading.car[11].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar task_offloading.car[11].nic.mac1609_4 channelBusy:timeavg 0.13463125756129
+scalar task_offloading.car[11].nic.mac1609_4 channelBusy:timeavg 0.16400558739255
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par task_offloading.car[11].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
@@ -2548,19 +2548,19 @@ attr unit s
 par task_offloading.car[13].appl ackMessageThreshold "uniform(300ms, 400ms)"
 attr unit s
 scalar task_offloading.car[13].appl generatedWSMs 12
-scalar task_offloading.car[13].appl receivedWSMs 46
+scalar task_offloading.car[13].appl receivedWSMs 61
 scalar task_offloading.car[13].appl generatedBSMs 0
 scalar task_offloading.car[13].appl receivedBSMs 0
 scalar task_offloading.car[13].appl generatedWSAs 0
 scalar task_offloading.car[13].appl receivedWSAs 0
 statistic task_offloading.car[13].appl availableMessageLoad:stats
-field count 7
-field mean 497375.45099509
-field stddev 353831.11488218
+field count 8
+field mean 459312.46009422
+field stddev 344821.08375762
 field min 84186.071064323
 field max 924096.64625302
-field sum 3481628.1569656
-field sqrsum 2482855121920.5
+field sum 3674499.6807538
+field sqrsum 2520054546608.9
 attr interpolationmode none
 attr recordingmode stats
 attr source available_message_load
@@ -2587,24 +2587,24 @@ attr interpolationmode none
 attr recordingmode stats
 attr source start_getting_response
 statistic task_offloading.car[13].appl stopDataMessages:stats
-field count 21
-field mean 7.6666666666667
-field stddev 6.2075223183919
+field count 24
+field mean 8.75
+field stddev 5.4233793411729
 field min 0
 field max 13
-field sum 161
-field sqrsum 2005
+field sum 210
+field sqrsum 2514
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_sending_data
 statistic task_offloading.car[13].appl stopHelpRequests:stats
-field count 7
-field mean 41.585787271805
-field stddev 10.984298412912
+field count 8
+field mean 48.425072365506
+field stddev 21.854632797342
 field min 31.100071130234
-field max 62.600075292514
-field sum 291.10051090264
-field sqrsum 12829.572790854
+field max 96.30006802141
+field sum 387.40057892405
+field sqrsum 22103.275891782
 attr interpolationmode none
 attr recordingmode stats
 attr source stop_bus_help_rq
@@ -2648,7 +2648,7 @@ par task_offloading.car[13].nic.phy80211p ccaThreshold -65dBm
 attr unit dBm
 par task_offloading.car[13].nic.phy80211p collectCollisionStatistics false
 par task_offloading.car[13].nic.phy80211p allowTxDuringRx false
-scalar task_offloading.car[13].nic.phy80211p busyTime 0.10152708893154
+scalar task_offloading.car[13].nic.phy80211p busyTime 0.13104235444658
 par task_offloading.car[13].nic.mac1609_4 typename "\"org.car2x.veins.modules.mac.ieee80211p.Mac1609_4\""
 par task_offloading.car[13].nic.mac1609_4 notAffectedByHostState false
 par task_offloading.car[13].nic.mac1609_4 headerLength 0bit
@@ -2673,7 +2673,7 @@ par task_offloading.car[13].nic.mac1609_4 useAcks false
 par task_offloading.car[13].nic.mac1609_4 frameErrorRate 0
 par task_offloading.car[13].nic.mac1609_4 ackErrorRate 0
 scalar task_offloading.car[13].nic.mac1609_4 ReceivedUnicastPackets 0
-scalar task_offloading.car[13].nic.mac1609_4 ReceivedBroadcasts 46
+scalar task_offloading.car[13].nic.mac1609_4 ReceivedBroadcasts 61
 scalar task_offloading.car[13].nic.mac1609_4 SentPackets 12
 scalar task_offloading.car[13].nic.mac1609_4 SentAcknowledgements 0
 scalar task_offloading.car[13].nic.mac1609_4 RetriesExceeded 0
@@ -2685,7 +2685,7 @@ scalar task_offloading.car[13].nic.mac1609_4 TooLittleTime 0
 scalar task_offloading.car[13].nic.mac1609_4 TimesIntoBackoff 13
 scalar task_offloading.car[13].nic.mac1609_4 SlotsBackoff 23
 scalar task_offloading.car[13].nic.mac1609_4 NumInternalContention 0
-scalar task_offloading.car[13].nic.mac1609_4 totalBusyTime 42.454716
+scalar task_offloading.car[13].nic.mac1609_4 totalBusyTime 51.681188
 scalar task_offloading.car[13].nic.mac1609_4 retriesExceeded:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigRetriesExceeded
@@ -2698,7 +2698,7 @@ attr source org_car2x_veins_modules_mac_sigSentPacket
 scalar task_offloading.car[13].nic.mac1609_4 collisions:count 0
 attr recordingmode count
 attr source org_car2x_veins_modules_mac_sigCollision
-scalar task_offloading.car[13].nic.mac1609_4 channelBusy:timeavg 0.13581163147793
+scalar task_offloading.car[13].nic.mac1609_4 channelBusy:timeavg 0.16532689699296
 attr recordingmode timeavg
 attr source org_car2x_veins_modules_mac_sigChannelBusy
 par task_offloading.car[13].nic typename "\"org.car2x.veins.modules.nic.Nic80211p\""
