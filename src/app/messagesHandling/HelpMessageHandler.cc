@@ -14,8 +14,8 @@
 // 
 
 #include "app/Worker.h"
-using namespace task_offloading;
 
+using namespace task_offloading;
 
 void Worker::handleHelpMessage(HelpMessage* helpMessage)
 {
@@ -29,13 +29,6 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
 
     // Check my current load
     double currentVehicleLoad = par("randomVehicleFreeLoadPercentage").doubleValue() * par("commonVehicleLoad").doubleValue();
-
-
-    buses[findHost()->getIndex()] = std::to_string(helpMessage->getId());
-    buses[findHost()->getIndex()].setVehicleAngle(helpMessage->getVehicleAngle());
-    buses[findHost()->getIndex()].setVehicleSpeed(helpMessage->getVehicleSpeed());
-    buses[findHost()->getIndex()].setVehiclePositionX(helpMessage->getVehiclePositionX());
-    buses[findHost()->getIndex()].setVehiclePositionY(helpMessage->getVehiclePositionY());
 
     // Emit the signal for my current load
     emit(availableMessageLoad, currentVehicleLoad);

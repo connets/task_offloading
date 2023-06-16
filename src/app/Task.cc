@@ -23,25 +23,25 @@ using namespace task_offloading;
 
 Task::Task() {
     this->id = 0;
-    this->totalData = 10e6;
+    this->data = 10e6;
     this->helpReceivedCounter = 0;
     this->dataPartitionId = 0;
-    this->loadBalancingCounter = 0;
+    this->loadBalancingId = 0;
     this->availableReceivedCounter = 0;
     this->responseReceivedCounter = 0;
-    this->computingDensity = 1.0;
+    this->cpi = 1;
 }
 
-Task::Task(int id, double totalData, double loadRequested, double computingDensity) {
+Task::Task(int id, double data, double loadRequested, int cpi) {
     this->id = id;
-    this->totalData = totalData;
+    this->data = data;
     this->minimumLoadRequested = loadRequested;
     this->helpReceivedCounter = 0;
     this->dataPartitionId = 0;
-    this->loadBalancingCounter = 0;
+    this->loadBalancingId = 0;
     this->availableReceivedCounter = 0;
     this->responseReceivedCounter = 0;
-    this->computingDensity = computingDensity;
+    this->cpi = cpi;
 }
 
 Task::~Task() {
@@ -65,8 +65,8 @@ int Task::getId() {
  *
  * @return double
  */
-double Task::getTotalData() {
-    return this->totalData;
+double Task::getData() {
+    return this->data;
 }
 
 /**
@@ -93,8 +93,8 @@ int Task::getDataPartitionId() {
  *
  * @return int
  */
-int Task::getLoadBalancingCounter() {
-    return this->loadBalancingCounter;
+int Task::getLoadBalancingId() {
+    return this->loadBalancingId;
 }
 
 /**
@@ -127,10 +127,10 @@ double Task::getMinimumLoadRequested() {
 /**
  * Get the CPI for the task, it's a constant that represent the difficulty of it
  *
- * @return double
+ * @return int
  */
-double Task::getCpi() {
-    return this->computingDensity;
+int Task::getCpi() {
+    return this->cpi;
 }
 
 /**
@@ -151,8 +151,8 @@ void Task::setId(int newId) {
  *
  * @return void
  */
-void Task::setTotalData(double newTotalData) {
-    this->totalData = newTotalData;
+void Task::setData(double newData) {
+    this->data = newData;
 }
 
 /**
@@ -178,8 +178,8 @@ void Task::setDataPartitionId(int newDataPartitionId) {
  *
  * @return void
  */
-void Task::setLoadBalancingCounter(int newLoadBalancingCounter) {
-    this->loadBalancingCounter = newLoadBalancingCounter;
+void Task::setLoadBalancingId(int newLoadBalancingId) {
+    this->loadBalancingId = newLoadBalancingId;
 }
 
 /**
@@ -214,6 +214,6 @@ void Task::setMinimumLoadRequested(double newMinimumLoad) {
  *
  * @return void
  */
-void Task::setComputingDensity(double newComputingDensity) {
-    this->computingDensity = newComputingDensity;
+void Task::setCpi(int newCpi) {
+    this->cpi = newCpi;
 }

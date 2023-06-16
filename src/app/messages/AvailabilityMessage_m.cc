@@ -184,8 +184,6 @@ void AvailabilityMessage::copy(const AvailabilityMessage& other)
     this->senderAddress = other.senderAddress;
     this->vehicleAngle = other.vehicleAngle;
     this->vehicleSpeed = other.vehicleSpeed;
-    this->vehiclePositionX = other.vehiclePositionX;
-    this->vehiclePositionY = other.vehiclePositionY;
 }
 
 void AvailabilityMessage::parsimPack(omnetpp::cCommBuffer *b) const
@@ -198,8 +196,6 @@ void AvailabilityMessage::parsimPack(omnetpp::cCommBuffer *b) const
     doParsimPacking(b,this->senderAddress);
     doParsimPacking(b,this->vehicleAngle);
     doParsimPacking(b,this->vehicleSpeed);
-    doParsimPacking(b,this->vehiclePositionX);
-    doParsimPacking(b,this->vehiclePositionY);
 }
 
 void AvailabilityMessage::parsimUnpack(omnetpp::cCommBuffer *b)
@@ -212,8 +208,6 @@ void AvailabilityMessage::parsimUnpack(omnetpp::cCommBuffer *b)
     doParsimUnpacking(b,this->senderAddress);
     doParsimUnpacking(b,this->vehicleAngle);
     doParsimUnpacking(b,this->vehicleSpeed);
-    doParsimUnpacking(b,this->vehiclePositionX);
-    doParsimUnpacking(b,this->vehiclePositionY);
 }
 
 int AvailabilityMessage::getHostID() const
@@ -286,26 +280,6 @@ void AvailabilityMessage::setVehicleSpeed(double vehicleSpeed)
     this->vehicleSpeed = vehicleSpeed;
 }
 
-double AvailabilityMessage::getVehiclePositionX() const
-{
-    return this->vehiclePositionX;
-}
-
-void AvailabilityMessage::setVehiclePositionX(double vehiclePositionX)
-{
-    this->vehiclePositionX = vehiclePositionX;
-}
-
-double AvailabilityMessage::getVehiclePositionY() const
-{
-    return this->vehiclePositionY;
-}
-
-void AvailabilityMessage::setVehiclePositionY(double vehiclePositionY)
-{
-    this->vehiclePositionY = vehiclePositionY;
-}
-
 class AvailabilityMessageDescriptor : public omnetpp::cClassDescriptor
 {
   private:
@@ -318,8 +292,6 @@ class AvailabilityMessageDescriptor : public omnetpp::cClassDescriptor
         FIELD_senderAddress,
         FIELD_vehicleAngle,
         FIELD_vehicleSpeed,
-        FIELD_vehiclePositionX,
-        FIELD_vehiclePositionY,
     };
   public:
     AvailabilityMessageDescriptor();
@@ -386,7 +358,7 @@ const char *AvailabilityMessageDescriptor::getProperty(const char *propertyName)
 int AvailabilityMessageDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 9+base->getFieldCount() : 9;
+    return base ? 7+base->getFieldCount() : 7;
 }
 
 unsigned int AvailabilityMessageDescriptor::getFieldTypeFlags(int field) const
@@ -405,10 +377,8 @@ unsigned int AvailabilityMessageDescriptor::getFieldTypeFlags(int field) const
         0,    // FIELD_senderAddress
         FD_ISEDITABLE,    // FIELD_vehicleAngle
         FD_ISEDITABLE,    // FIELD_vehicleSpeed
-        FD_ISEDITABLE,    // FIELD_vehiclePositionX
-        FD_ISEDITABLE,    // FIELD_vehiclePositionY
     };
-    return (field >= 0 && field < 9) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 7) ? fieldTypeFlags[field] : 0;
 }
 
 const char *AvailabilityMessageDescriptor::getFieldName(int field) const
@@ -427,10 +397,8 @@ const char *AvailabilityMessageDescriptor::getFieldName(int field) const
         "senderAddress",
         "vehicleAngle",
         "vehicleSpeed",
-        "vehiclePositionX",
-        "vehiclePositionY",
     };
-    return (field >= 0 && field < 9) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 7) ? fieldNames[field] : nullptr;
 }
 
 int AvailabilityMessageDescriptor::findField(const char *fieldName) const
@@ -444,8 +412,6 @@ int AvailabilityMessageDescriptor::findField(const char *fieldName) const
     if (strcmp(fieldName, "senderAddress") == 0) return baseIndex + 4;
     if (strcmp(fieldName, "vehicleAngle") == 0) return baseIndex + 5;
     if (strcmp(fieldName, "vehicleSpeed") == 0) return baseIndex + 6;
-    if (strcmp(fieldName, "vehiclePositionX") == 0) return baseIndex + 7;
-    if (strcmp(fieldName, "vehiclePositionY") == 0) return baseIndex + 8;
     return base ? base->findField(fieldName) : -1;
 }
 
@@ -465,10 +431,8 @@ const char *AvailabilityMessageDescriptor::getFieldTypeString(int field) const
         "veins::LAddress::L2Type",    // FIELD_senderAddress
         "double",    // FIELD_vehicleAngle
         "double",    // FIELD_vehicleSpeed
-        "double",    // FIELD_vehiclePositionX
-        "double",    // FIELD_vehiclePositionY
     };
-    return (field >= 0 && field < 9) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 7) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **AvailabilityMessageDescriptor::getFieldPropertyNames(int field) const
@@ -558,8 +522,6 @@ std::string AvailabilityMessageDescriptor::getFieldValueAsString(omnetpp::any_pt
         case FIELD_senderAddress: return "";
         case FIELD_vehicleAngle: return double2string(pp->getVehicleAngle());
         case FIELD_vehicleSpeed: return double2string(pp->getVehicleSpeed());
-        case FIELD_vehiclePositionX: return double2string(pp->getVehiclePositionX());
-        case FIELD_vehiclePositionY: return double2string(pp->getVehiclePositionY());
         default: return "";
     }
 }
@@ -582,8 +544,6 @@ void AvailabilityMessageDescriptor::setFieldValueAsString(omnetpp::any_ptr objec
         case FIELD_cpuFreq: pp->setCpuFreq(string2double(value)); break;
         case FIELD_vehicleAngle: pp->setVehicleAngle(string2double(value)); break;
         case FIELD_vehicleSpeed: pp->setVehicleSpeed(string2double(value)); break;
-        case FIELD_vehiclePositionX: pp->setVehiclePositionX(string2double(value)); break;
-        case FIELD_vehiclePositionY: pp->setVehiclePositionY(string2double(value)); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'AvailabilityMessage'", field);
     }
 }
@@ -605,8 +565,6 @@ omnetpp::cValue AvailabilityMessageDescriptor::getFieldValue(omnetpp::any_ptr ob
         case FIELD_senderAddress: return omnetpp::toAnyPtr(&pp->getSenderAddress()); break;
         case FIELD_vehicleAngle: return pp->getVehicleAngle();
         case FIELD_vehicleSpeed: return pp->getVehicleSpeed();
-        case FIELD_vehiclePositionX: return pp->getVehiclePositionX();
-        case FIELD_vehiclePositionY: return pp->getVehiclePositionY();
         default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'AvailabilityMessage' as cValue -- field index out of range?", field);
     }
 }
@@ -629,8 +587,6 @@ void AvailabilityMessageDescriptor::setFieldValue(omnetpp::any_ptr object, int f
         case FIELD_cpuFreq: pp->setCpuFreq(value.doubleValue()); break;
         case FIELD_vehicleAngle: pp->setVehicleAngle(value.doubleValue()); break;
         case FIELD_vehicleSpeed: pp->setVehicleSpeed(value.doubleValue()); break;
-        case FIELD_vehiclePositionX: pp->setVehiclePositionX(value.doubleValue()); break;
-        case FIELD_vehiclePositionY: pp->setVehiclePositionY(value.doubleValue()); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'AvailabilityMessage'", field);
     }
 }

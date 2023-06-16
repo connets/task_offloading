@@ -16,6 +16,7 @@
 import veins.base.utils.Coord;
 import veins.modules.messages.BaseFrame1609_4;
 import veins.base.utils.SimpleAddress;
+
 namespace task_offloading;
 
 packet AvailabilityMessage extends veins::BaseFrame1609_4 {
@@ -26,6 +27,4 @@ packet AvailabilityMessage extends veins::BaseFrame1609_4 {
 	veins::LAddress::L2Type senderAddress = -1;
 	double vehicleAngle;
 	double vehicleSpeed;
-	double vehiclePositionX;
-	double vehiclePositionY;
 }

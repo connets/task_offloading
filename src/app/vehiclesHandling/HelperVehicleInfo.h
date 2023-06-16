@@ -29,8 +29,6 @@ namespace task_offloading {
         veins::LAddress::L2Type address;
         double vehicleSpeed;
         double vehicleAngle;
-        double vehiclePositionX;
-        double vehiclePositionY;
         int dataPartitionId;
         int taskCpi;
 
@@ -38,27 +36,21 @@ namespace task_offloading {
         HelperVehicleInfo();
         HelperVehicleInfo(std::string index, double load, double freq, veins::LAddress::L2Type address);
         virtual ~HelperVehicleInfo();
-
         std::string getIndex();
         double getCurrentLoad();
         double getCPUFreq();
         simtime_t getCreatedAt();
         veins::LAddress::L2Type getAddress();
         double getVehicleAngle();
-        double getVehiclePositionX();
-        double getVehiclePositionY();
         int getDataPartitionId();
         int getTaskCpi();
         double getVehicleSpeed();
-
         void setIndex(std::string index);
         void setCurrentLoad(double newLoad);
         void setCPUFreq(double newFreq);
         void setCreatedAt(simtime_t newTime);
         void setAddress(veins::LAddress::L2Type newAddress);
         void setVehicleAngle(double newAngle);
-        void setVehiclePositionX(double newPositionX);
-        void setVehiclePositionY(double newPositionY);
         void setDataPartitionId(int newPartitionId);
         void setTaskCpi(int newCpi);
         void setVehicleSpeed(double newSpeed);

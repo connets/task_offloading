@@ -24,7 +24,7 @@ void TaskGenerator::sendAgainData(const DataMessage* data)
     auto found = helpers.find(data->getHostIndex());
 
     // Check load balancing id
-    bool loadBalancingIdCheck = tasks[0].getLoadBalancingCounter() == data->getLoadBalancingId();
+    bool loadBalancingIdCheck = tasks[0].getLoadBalancingId() == data->getLoadBalancingId();
 
     // If the vehicle is found check if I've received the data from it
     if (found != helpers.end() && (loadBalancingIdCheck)) {

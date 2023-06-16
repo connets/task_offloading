@@ -40,10 +40,6 @@ namespace task_offloading {
  *     int vehicleIndex;
  *     int id;
  *     double minimumLoadRequested;
- *     double vehicleAngle;
- *     double vehicleSpeed;
- *     double vehiclePositionX;
- *     double vehiclePositionY;
  * }
  * </pre>
  */
@@ -53,10 +49,6 @@ class HelpMessage : public ::veins::BaseFrame1609_4
     int vehicleIndex = 0;
     int id = 0;
     double minimumLoadRequested = 0;
-    double vehicleAngle = 0;
-    double vehicleSpeed = 0;
-    double vehiclePositionX = 0;
-    double vehiclePositionY = 0;
 
   private:
     void copy(const HelpMessage& other);
@@ -81,18 +73,6 @@ class HelpMessage : public ::veins::BaseFrame1609_4
 
     virtual double getMinimumLoadRequested() const;
     virtual void setMinimumLoadRequested(double minimumLoadRequested);
-
-    virtual double getVehicleAngle() const;
-    virtual void setVehicleAngle(double vehicleAngle);
-
-    virtual double getVehicleSpeed() const;
-    virtual void setVehicleSpeed(double vehicleSpeed);
-
-    virtual double getVehiclePositionX() const;
-    virtual void setVehiclePositionX(double vehiclePositionX);
-
-    virtual double getVehiclePositionY() const;
-    virtual void setVehiclePositionY(double vehiclePositionY);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const HelpMessage& obj) {obj.parsimPack(b);}

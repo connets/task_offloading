@@ -180,10 +180,6 @@ void HelpMessage::copy(const HelpMessage& other)
     this->vehicleIndex = other.vehicleIndex;
     this->id = other.id;
     this->minimumLoadRequested = other.minimumLoadRequested;
-    this->vehicleAngle = other.vehicleAngle;
-    this->vehicleSpeed = other.vehicleSpeed;
-    this->vehiclePositionX = other.vehiclePositionX;
-    this->vehiclePositionY = other.vehiclePositionY;
 }
 
 void HelpMessage::parsimPack(omnetpp::cCommBuffer *b) const
@@ -192,10 +188,6 @@ void HelpMessage::parsimPack(omnetpp::cCommBuffer *b) const
     doParsimPacking(b,this->vehicleIndex);
     doParsimPacking(b,this->id);
     doParsimPacking(b,this->minimumLoadRequested);
-    doParsimPacking(b,this->vehicleAngle);
-    doParsimPacking(b,this->vehicleSpeed);
-    doParsimPacking(b,this->vehiclePositionX);
-    doParsimPacking(b,this->vehiclePositionY);
 }
 
 void HelpMessage::parsimUnpack(omnetpp::cCommBuffer *b)
@@ -204,10 +196,6 @@ void HelpMessage::parsimUnpack(omnetpp::cCommBuffer *b)
     doParsimUnpacking(b,this->vehicleIndex);
     doParsimUnpacking(b,this->id);
     doParsimUnpacking(b,this->minimumLoadRequested);
-    doParsimUnpacking(b,this->vehicleAngle);
-    doParsimUnpacking(b,this->vehicleSpeed);
-    doParsimUnpacking(b,this->vehiclePositionX);
-    doParsimUnpacking(b,this->vehiclePositionY);
 }
 
 int HelpMessage::getVehicleIndex() const
@@ -240,46 +228,6 @@ void HelpMessage::setMinimumLoadRequested(double minimumLoadRequested)
     this->minimumLoadRequested = minimumLoadRequested;
 }
 
-double HelpMessage::getVehicleAngle() const
-{
-    return this->vehicleAngle;
-}
-
-void HelpMessage::setVehicleAngle(double vehicleAngle)
-{
-    this->vehicleAngle = vehicleAngle;
-}
-
-double HelpMessage::getVehicleSpeed() const
-{
-    return this->vehicleSpeed;
-}
-
-void HelpMessage::setVehicleSpeed(double vehicleSpeed)
-{
-    this->vehicleSpeed = vehicleSpeed;
-}
-
-double HelpMessage::getVehiclePositionX() const
-{
-    return this->vehiclePositionX;
-}
-
-void HelpMessage::setVehiclePositionX(double vehiclePositionX)
-{
-    this->vehiclePositionX = vehiclePositionX;
-}
-
-double HelpMessage::getVehiclePositionY() const
-{
-    return this->vehiclePositionY;
-}
-
-void HelpMessage::setVehiclePositionY(double vehiclePositionY)
-{
-    this->vehiclePositionY = vehiclePositionY;
-}
-
 class HelpMessageDescriptor : public omnetpp::cClassDescriptor
 {
   private:
@@ -288,10 +236,6 @@ class HelpMessageDescriptor : public omnetpp::cClassDescriptor
         FIELD_vehicleIndex,
         FIELD_id,
         FIELD_minimumLoadRequested,
-        FIELD_vehicleAngle,
-        FIELD_vehicleSpeed,
-        FIELD_vehiclePositionX,
-        FIELD_vehiclePositionY,
     };
   public:
     HelpMessageDescriptor();
@@ -358,7 +302,7 @@ const char *HelpMessageDescriptor::getProperty(const char *propertyName) const
 int HelpMessageDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 7+base->getFieldCount() : 7;
+    return base ? 3+base->getFieldCount() : 3;
 }
 
 unsigned int HelpMessageDescriptor::getFieldTypeFlags(int field) const
@@ -373,12 +317,8 @@ unsigned int HelpMessageDescriptor::getFieldTypeFlags(int field) const
         FD_ISEDITABLE,    // FIELD_vehicleIndex
         FD_ISEDITABLE,    // FIELD_id
         FD_ISEDITABLE,    // FIELD_minimumLoadRequested
-        FD_ISEDITABLE,    // FIELD_vehicleAngle
-        FD_ISEDITABLE,    // FIELD_vehicleSpeed
-        FD_ISEDITABLE,    // FIELD_vehiclePositionX
-        FD_ISEDITABLE,    // FIELD_vehiclePositionY
     };
-    return (field >= 0 && field < 7) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 3) ? fieldTypeFlags[field] : 0;
 }
 
 const char *HelpMessageDescriptor::getFieldName(int field) const
@@ -393,12 +333,8 @@ const char *HelpMessageDescriptor::getFieldName(int field) const
         "vehicleIndex",
         "id",
         "minimumLoadRequested",
-        "vehicleAngle",
-        "vehicleSpeed",
-        "vehiclePositionX",
-        "vehiclePositionY",
     };
-    return (field >= 0 && field < 7) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 3) ? fieldNames[field] : nullptr;
 }
 
 int HelpMessageDescriptor::findField(const char *fieldName) const
@@ -408,10 +344,6 @@ int HelpMessageDescriptor::findField(const char *fieldName) const
     if (strcmp(fieldName, "vehicleIndex") == 0) return baseIndex + 0;
     if (strcmp(fieldName, "id") == 0) return baseIndex + 1;
     if (strcmp(fieldName, "minimumLoadRequested") == 0) return baseIndex + 2;
-    if (strcmp(fieldName, "vehicleAngle") == 0) return baseIndex + 3;
-    if (strcmp(fieldName, "vehicleSpeed") == 0) return baseIndex + 4;
-    if (strcmp(fieldName, "vehiclePositionX") == 0) return baseIndex + 5;
-    if (strcmp(fieldName, "vehiclePositionY") == 0) return baseIndex + 6;
     return base ? base->findField(fieldName) : -1;
 }
 
@@ -427,12 +359,8 @@ const char *HelpMessageDescriptor::getFieldTypeString(int field) const
         "int",    // FIELD_vehicleIndex
         "int",    // FIELD_id
         "double",    // FIELD_minimumLoadRequested
-        "double",    // FIELD_vehicleAngle
-        "double",    // FIELD_vehicleSpeed
-        "double",    // FIELD_vehiclePositionX
-        "double",    // FIELD_vehiclePositionY
     };
-    return (field >= 0 && field < 7) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 3) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **HelpMessageDescriptor::getFieldPropertyNames(int field) const
@@ -518,10 +446,6 @@ std::string HelpMessageDescriptor::getFieldValueAsString(omnetpp::any_ptr object
         case FIELD_vehicleIndex: return long2string(pp->getVehicleIndex());
         case FIELD_id: return long2string(pp->getId());
         case FIELD_minimumLoadRequested: return double2string(pp->getMinimumLoadRequested());
-        case FIELD_vehicleAngle: return double2string(pp->getVehicleAngle());
-        case FIELD_vehicleSpeed: return double2string(pp->getVehicleSpeed());
-        case FIELD_vehiclePositionX: return double2string(pp->getVehiclePositionX());
-        case FIELD_vehiclePositionY: return double2string(pp->getVehiclePositionY());
         default: return "";
     }
 }
@@ -541,10 +465,6 @@ void HelpMessageDescriptor::setFieldValueAsString(omnetpp::any_ptr object, int f
         case FIELD_vehicleIndex: pp->setVehicleIndex(string2long(value)); break;
         case FIELD_id: pp->setId(string2long(value)); break;
         case FIELD_minimumLoadRequested: pp->setMinimumLoadRequested(string2double(value)); break;
-        case FIELD_vehicleAngle: pp->setVehicleAngle(string2double(value)); break;
-        case FIELD_vehicleSpeed: pp->setVehicleSpeed(string2double(value)); break;
-        case FIELD_vehiclePositionX: pp->setVehiclePositionX(string2double(value)); break;
-        case FIELD_vehiclePositionY: pp->setVehiclePositionY(string2double(value)); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'HelpMessage'", field);
     }
 }
@@ -562,10 +482,6 @@ omnetpp::cValue HelpMessageDescriptor::getFieldValue(omnetpp::any_ptr object, in
         case FIELD_vehicleIndex: return pp->getVehicleIndex();
         case FIELD_id: return pp->getId();
         case FIELD_minimumLoadRequested: return pp->getMinimumLoadRequested();
-        case FIELD_vehicleAngle: return pp->getVehicleAngle();
-        case FIELD_vehicleSpeed: return pp->getVehicleSpeed();
-        case FIELD_vehiclePositionX: return pp->getVehiclePositionX();
-        case FIELD_vehiclePositionY: return pp->getVehiclePositionY();
         default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'HelpMessage' as cValue -- field index out of range?", field);
     }
 }
@@ -585,10 +501,6 @@ void HelpMessageDescriptor::setFieldValue(omnetpp::any_ptr object, int field, in
         case FIELD_vehicleIndex: pp->setVehicleIndex(omnetpp::checked_int_cast<int>(value.intValue())); break;
         case FIELD_id: pp->setId(omnetpp::checked_int_cast<int>(value.intValue())); break;
         case FIELD_minimumLoadRequested: pp->setMinimumLoadRequested(value.doubleValue()); break;
-        case FIELD_vehicleAngle: pp->setVehicleAngle(value.doubleValue()); break;
-        case FIELD_vehicleSpeed: pp->setVehicleSpeed(value.doubleValue()); break;
-        case FIELD_vehiclePositionX: pp->setVehiclePositionX(value.doubleValue()); break;
-        case FIELD_vehiclePositionY: pp->setVehiclePositionY(value.doubleValue()); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'HelpMessage'", field);
     }
 }

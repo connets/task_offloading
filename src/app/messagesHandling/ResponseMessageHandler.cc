@@ -33,8 +33,8 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         helpers[responseMessage->getHostIndex()].setDataPartitionId(-1);
 
         // Remove the data that the vehicle has computed
-        double localData = tasks[0].getTotalData() - responseMessage->getDataComputed();
-        tasks[0].setTotalData(localData);
+        double localData = tasks[0].getData() - responseMessage->getDataComputed();
+        tasks[0].setData(localData);
 
         // If there's no more data then emit signal for task finished
         if (localData <= 0) {
@@ -50,7 +50,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         int vehiclesAvailable = tasks[0].getAvailableReceivedCounter();
 
         // Get the load balancing id
-        int loadBalanceCounter = tasks[0].getLoadBalancingCounter();
+        int loadBalanceId = tasks[0].getLoadBalancingId();
 
         // If the vehicle is not available anymore erase it from the map
         // and from the list
@@ -74,8 +74,8 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         // then restart load balancing
         if (helpers.size() > 0 && localData > 0 && vehiclesAvailable == responseReceived) {
             // Increment load balance id
-            loadBalanceCounter++;
-            tasks[0].setLoadBalancingCounter(loadBalanceCounter);
+            loadBalanceId++;
+            tasks[0].setLoadBalancingId(loadBalanceId);
 
             // Set the new availability
             int newAvailability = helpers.size();
@@ -102,7 +102,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
             // Change it's status in help
             busState.setState(new Help);
         }
-    } else if (tasks[0].getTotalData() <= 0) {
+    } else if (tasks[0].getData() <= 0) {
         // If data <= 0 and I receive a response then send ack to the vehicle
         helpers.erase(responseMessage->getHostIndex());
         helpersOrderedList.remove(responseMessage->getHostIndex());

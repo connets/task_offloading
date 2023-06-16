@@ -23,81 +23,37 @@ namespace task_offloading {
     class Task {
         public:
             Task();
-            Task(int id, double totalData, double loadRequested, double computingDensity);
+            Task(int id, double data, double loadRequested, int cpi);
             int getId();
-            double getTotalData();
+            double getData();
             int getHelpReceivedCounter();
             int getDataPartitionId();
-            int getLoadBalancingCounter();
+            int getLoadBalancingId();
             int getAvailableReceivedCounter();
             int getResponseReceivedCounter();
             double getMinimumLoadRequested();
-            double getCpi();
+            int getCpi();
             void setId(int newId);
-            void setTotalData(double newTotalData);
+            void setData(double newData);
             void setHelpReceivedCounter(int newCounter);
             void setDataPartitionId(int newDataPartitionId);
-            void setLoadBalancingCounter(int newLoadBalancingId);
+            void setLoadBalancingId(int newLoadBalancingId);
             void setAvailableReceivedCounter(int newCounter);
             void setResponseReceivedCounter(int newCounter);
             void setMinimumLoadRequested(double newMinimumLoad);
-            void setComputingDensity(double newCpi);
+            void setCpi(int newCpi);
             virtual ~Task();
 
         private:
             int id;
-            double totalData;
+            double data;
             double minimumLoadRequested;
-            double computingDensity;
+            int cpi;
             int helpReceivedCounter;
             int dataPartitionId;
-            int loadBalancingCounter;
+            int loadBalancingId;
             int availableReceivedCounter;
             int responseReceivedCounter;
     };
 }
 #endif /* APP_TASK_H_ */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
