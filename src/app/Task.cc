@@ -23,25 +23,25 @@ using namespace task_offloading;
 
 Task::Task() {
     this->id = 0;
-    this->data = 10e6;
+    this->totalData = 10e6;
     this->helpReceivedCounter = 0;
     this->dataPartitionId = 0;
     this->loadBalancingId = 0;
     this->availableReceivedCounter = 0;
     this->responseReceivedCounter = 0;
-    this->cpi = 1;
+    this->computingDensity = 1;
 }
 
-Task::Task(int id, double data, double loadRequested, int cpi) {
+Task::Task(int id, double totalData, double loadRequested, int cpi) {
     this->id = id;
-    this->data = data;
+    this->totalData = totalData;
     this->minimumLoadRequested = loadRequested;
     this->helpReceivedCounter = 0;
     this->dataPartitionId = 0;
     this->loadBalancingId = 0;
     this->availableReceivedCounter = 0;
     this->responseReceivedCounter = 0;
-    this->cpi = cpi;
+    this->computingDensity = cpi;
 }
 
 Task::~Task() {
@@ -65,8 +65,8 @@ int Task::getId() {
  *
  * @return double
  */
-double Task::getData() {
-    return this->data;
+double Task::getTotalData() {
+    return this->totalData;
 }
 
 /**
@@ -129,8 +129,8 @@ double Task::getMinimumLoadRequested() {
  *
  * @return int
  */
-int Task::getCpi() {
-    return this->cpi;
+int Task::getComputingDensity() {
+    return this->computingDensity;
 }
 
 /**
@@ -151,8 +151,8 @@ void Task::setId(int newId) {
  *
  * @return void
  */
-void Task::setData(double newData) {
-    this->data = newData;
+void Task::setTotalData(double newData) {
+    this->totalData = newData;
 }
 
 /**
@@ -214,6 +214,6 @@ void Task::setMinimumLoadRequested(double newMinimumLoad) {
  *
  * @return void
  */
-void Task::setCpi(int newCpi) {
-    this->cpi = newCpi;
+void Task::setComputingDensity(int newCpi) {
+    this->computingDensity = newCpi;
 }

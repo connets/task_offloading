@@ -53,6 +53,15 @@ simple TaskGenerator extends DemoBaseApplLayer
         // The load balancing sorting algorithm
         string sortingAlgorithm = default("FIFO");
         
+        // Time that is used to check whether a car will be in the bus range in those next seconds
+        double availabilityRangeTime = default(-1.0);
+        
+        // The input/output ratio
+        double IOratio = default(1);
+        
+        //refactor time
+        double retryFactorTime = default(3);
+                
         // Override default veins data length bits
         dataLengthBits = 0bit;
         
@@ -61,6 +70,10 @@ simple TaskGenerator extends DemoBaseApplLayer
         @signal[task_stopped](type = simtime_t);
         @statistic[startTimeTask](source = task_started; record = vector,stats; interpolationmode = none);
         @statistic[stopTimeTask](source = task_stopped; record = vector,stats; interpolationmode = none);
+        
+        // Statistics for collecting beacon messages
+        @signal[stopBeaconMessages](type = simtime_t);
+        @statistic[stopBeaconMessages](source = stopBeaconMessages; record = vector,stats; interpolationmode = none);
         
         // Statistics for balance loading
         @signal[start_balance_loading](type = simtime_t);

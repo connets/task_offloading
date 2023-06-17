@@ -24,6 +24,7 @@
 
 #include "app/messages/HelpMessage_m.h"
 #include "app/messages/AvailabilityMessage_m.h"
+#include "app/messages/BeaconMessage_m.h"
 #include "app/messages/AckMessage_m.h"
 #include "app/messages/DataMessage_m.h"
 #include "app/messages/ResponseMessage_m.h"
@@ -61,6 +62,7 @@ void TaskGenerator::initialize(int stage)
         stopBalance = registerSignal("stop_balance_loading");
         startHelp = registerSignal("start_bus_help_rq");
         startDataMessages = registerSignal("start_sending_data");
+        stopBeaconMessages = registerSignal("stopBeaconMessages");
         stopResponseMessages = registerSignal("stop_getting_response");
     }
 }
@@ -72,9 +74,8 @@ void TaskGenerator::finish()
 
 void TaskGenerator::onBSM(veins::DemoSafetyMessage* bsm)
 {
-    // Your application has received a beacon message from another car or RSU
-}
 
+}
 void TaskGenerator::onWSM(veins::BaseFrame1609_4* wsm)
 {
     /************************************************************************
@@ -90,6 +91,10 @@ void TaskGenerator::onWSM(veins::BaseFrame1609_4* wsm)
     if (ResponseMessage* responseMessage = dynamic_cast<ResponseMessage*>(wsm)) {
         handleResponseMessage(responseMessage);
     }
+
+    if(BeaconMessage* bmsg = dynamic_cast<BeaconMessage*>(wsm)) {
+            emit(stopBeaconMessages, simTime());
+        }
 }
 
 void TaskGenerator::onWSA(veins::DemoServiceAdvertisment* wsa)

@@ -23,32 +23,32 @@ namespace task_offloading {
     class Task {
         public:
             Task();
-            Task(int id, double data, double loadRequested, int cpi);
+            Task(int id, double totalData, double loadRequested, int computingDensity);
             int getId();
-            double getData();
+            double getTotalData();
             int getHelpReceivedCounter();
             int getDataPartitionId();
             int getLoadBalancingId();
             int getAvailableReceivedCounter();
             int getResponseReceivedCounter();
             double getMinimumLoadRequested();
-            int getCpi();
+            int getComputingDensity();
             void setId(int newId);
-            void setData(double newData);
+            void setTotalData(double newData);
             void setHelpReceivedCounter(int newCounter);
             void setDataPartitionId(int newDataPartitionId);
             void setLoadBalancingId(int newLoadBalancingId);
             void setAvailableReceivedCounter(int newCounter);
             void setResponseReceivedCounter(int newCounter);
             void setMinimumLoadRequested(double newMinimumLoad);
-            void setCpi(int newCpi);
+            void setComputingDensity(int newCpi);
             virtual ~Task();
 
         private:
             int id;
-            double data;
+            double totalData;
             double minimumLoadRequested;
-            int cpi;
+            int computingDensity;
             int helpReceivedCounter;
             int dataPartitionId;
             int loadBalancingId;
