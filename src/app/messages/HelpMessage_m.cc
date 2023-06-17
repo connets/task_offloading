@@ -179,6 +179,8 @@ void HelpMessage::copy(const HelpMessage& other)
 {
     this->vehicleIndex = other.vehicleIndex;
     this->id = other.id;
+    this->cpi = other.cpi;
+    this->taskSize = other.taskSize;
     this->minimumLoadRequested = other.minimumLoadRequested;
 }
 
@@ -187,6 +189,8 @@ void HelpMessage::parsimPack(omnetpp::cCommBuffer *b) const
     ::veins::BaseFrame1609_4::parsimPack(b);
     doParsimPacking(b,this->vehicleIndex);
     doParsimPacking(b,this->id);
+    doParsimPacking(b,this->cpi);
+    doParsimPacking(b,this->taskSize);
     doParsimPacking(b,this->minimumLoadRequested);
 }
 
@@ -195,6 +199,8 @@ void HelpMessage::parsimUnpack(omnetpp::cCommBuffer *b)
     ::veins::BaseFrame1609_4::parsimUnpack(b);
     doParsimUnpacking(b,this->vehicleIndex);
     doParsimUnpacking(b,this->id);
+    doParsimUnpacking(b,this->cpi);
+    doParsimUnpacking(b,this->taskSize);
     doParsimUnpacking(b,this->minimumLoadRequested);
 }
 
@@ -218,6 +224,26 @@ void HelpMessage::setId(int id)
     this->id = id;
 }
 
+double HelpMessage::getCpi() const
+{
+    return this->cpi;
+}
+
+void HelpMessage::setCpi(double cpi)
+{
+    this->cpi = cpi;
+}
+
+double HelpMessage::getTaskSize() const
+{
+    return this->taskSize;
+}
+
+void HelpMessage::setTaskSize(double taskSize)
+{
+    this->taskSize = taskSize;
+}
+
 double HelpMessage::getMinimumLoadRequested() const
 {
     return this->minimumLoadRequested;
@@ -235,6 +261,8 @@ class HelpMessageDescriptor : public omnetpp::cClassDescriptor
     enum FieldConstants {
         FIELD_vehicleIndex,
         FIELD_id,
+        FIELD_cpi,
+        FIELD_taskSize,
         FIELD_minimumLoadRequested,
     };
   public:
@@ -302,7 +330,7 @@ const char *HelpMessageDescriptor::getProperty(const char *propertyName) const
 int HelpMessageDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 3+base->getFieldCount() : 3;
+    return base ? 5+base->getFieldCount() : 5;
 }
 
 unsigned int HelpMessageDescriptor::getFieldTypeFlags(int field) const
@@ -316,9 +344,11 @@ unsigned int HelpMessageDescriptor::getFieldTypeFlags(int field) const
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,    // FIELD_vehicleIndex
         FD_ISEDITABLE,    // FIELD_id
+        FD_ISEDITABLE,    // FIELD_cpi
+        FD_ISEDITABLE,    // FIELD_taskSize
         FD_ISEDITABLE,    // FIELD_minimumLoadRequested
     };
-    return (field >= 0 && field < 3) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 5) ? fieldTypeFlags[field] : 0;
 }
 
 const char *HelpMessageDescriptor::getFieldName(int field) const
@@ -332,9 +362,11 @@ const char *HelpMessageDescriptor::getFieldName(int field) const
     static const char *fieldNames[] = {
         "vehicleIndex",
         "id",
+        "cpi",
+        "taskSize",
         "minimumLoadRequested",
     };
-    return (field >= 0 && field < 3) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 5) ? fieldNames[field] : nullptr;
 }
 
 int HelpMessageDescriptor::findField(const char *fieldName) const
@@ -343,7 +375,9 @@ int HelpMessageDescriptor::findField(const char *fieldName) const
     int baseIndex = base ? base->getFieldCount() : 0;
     if (strcmp(fieldName, "vehicleIndex") == 0) return baseIndex + 0;
     if (strcmp(fieldName, "id") == 0) return baseIndex + 1;
-    if (strcmp(fieldName, "minimumLoadRequested") == 0) return baseIndex + 2;
+    if (strcmp(fieldName, "cpi") == 0) return baseIndex + 2;
+    if (strcmp(fieldName, "taskSize") == 0) return baseIndex + 3;
+    if (strcmp(fieldName, "minimumLoadRequested") == 0) return baseIndex + 4;
     return base ? base->findField(fieldName) : -1;
 }
 
@@ -358,9 +392,11 @@ const char *HelpMessageDescriptor::getFieldTypeString(int field) const
     static const char *fieldTypeStrings[] = {
         "int",    // FIELD_vehicleIndex
         "int",    // FIELD_id
+        "double",    // FIELD_cpi
+        "double",    // FIELD_taskSize
         "double",    // FIELD_minimumLoadRequested
     };
-    return (field >= 0 && field < 3) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 5) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **HelpMessageDescriptor::getFieldPropertyNames(int field) const
@@ -445,6 +481,8 @@ std::string HelpMessageDescriptor::getFieldValueAsString(omnetpp::any_ptr object
     switch (field) {
         case FIELD_vehicleIndex: return long2string(pp->getVehicleIndex());
         case FIELD_id: return long2string(pp->getId());
+        case FIELD_cpi: return double2string(pp->getCpi());
+        case FIELD_taskSize: return double2string(pp->getTaskSize());
         case FIELD_minimumLoadRequested: return double2string(pp->getMinimumLoadRequested());
         default: return "";
     }
@@ -464,6 +502,8 @@ void HelpMessageDescriptor::setFieldValueAsString(omnetpp::any_ptr object, int f
     switch (field) {
         case FIELD_vehicleIndex: pp->setVehicleIndex(string2long(value)); break;
         case FIELD_id: pp->setId(string2long(value)); break;
+        case FIELD_cpi: pp->setCpi(string2double(value)); break;
+        case FIELD_taskSize: pp->setTaskSize(string2double(value)); break;
         case FIELD_minimumLoadRequested: pp->setMinimumLoadRequested(string2double(value)); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'HelpMessage'", field);
     }
@@ -481,6 +521,8 @@ omnetpp::cValue HelpMessageDescriptor::getFieldValue(omnetpp::any_ptr object, in
     switch (field) {
         case FIELD_vehicleIndex: return pp->getVehicleIndex();
         case FIELD_id: return pp->getId();
+        case FIELD_cpi: return pp->getCpi();
+        case FIELD_taskSize: return pp->getTaskSize();
         case FIELD_minimumLoadRequested: return pp->getMinimumLoadRequested();
         default: throw omnetpp::cRuntimeError("Cannot return field %d of class 'HelpMessage' as cValue -- field index out of range?", field);
     }
@@ -500,6 +542,8 @@ void HelpMessageDescriptor::setFieldValue(omnetpp::any_ptr object, int field, in
     switch (field) {
         case FIELD_vehicleIndex: pp->setVehicleIndex(omnetpp::checked_int_cast<int>(value.intValue())); break;
         case FIELD_id: pp->setId(omnetpp::checked_int_cast<int>(value.intValue())); break;
+        case FIELD_cpi: pp->setCpi(value.doubleValue()); break;
+        case FIELD_taskSize: pp->setTaskSize(value.doubleValue()); break;
         case FIELD_minimumLoadRequested: pp->setMinimumLoadRequested(value.doubleValue()); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'HelpMessage'", field);
     }

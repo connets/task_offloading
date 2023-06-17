@@ -37,6 +37,7 @@ namespace task_offloading {
 /**
  * Class generated from <tt>app/messages/ComputationTimerMessage.msg:23</tt> by opp_msgtool.
  * <pre>
+ * //TODO change to cMessage
  * packet ComputationTimerMessage extends veins::BaseFrame1609_4
  * {
  *     DataMessage *data;

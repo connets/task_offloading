@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgtool 6.0 from app/messages/DataMessage.msg.
+// Generated file, do not edit! Created by opp_msgtool 6.0 from app/messages//DataMessage.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -182,6 +182,7 @@ void DataMessage::copy(const DataMessage& other)
     this->hostIndex = other.hostIndex;
     this->partitionId = other.partitionId;
     this->taskId = other.taskId;
+    this->taskSize = other.taskSize;
     this->loadBalancingId = other.loadBalancingId;
     this->cpi = other.cpi;
     this->senderAddress = other.senderAddress;
@@ -195,6 +196,7 @@ void DataMessage::parsimPack(omnetpp::cCommBuffer *b) const
     doParsimPacking(b,this->hostIndex);
     doParsimPacking(b,this->partitionId);
     doParsimPacking(b,this->taskId);
+    doParsimPacking(b,this->taskSize);
     doParsimPacking(b,this->loadBalancingId);
     doParsimPacking(b,this->cpi);
     doParsimPacking(b,this->senderAddress);
@@ -208,6 +210,7 @@ void DataMessage::parsimUnpack(omnetpp::cCommBuffer *b)
     doParsimUnpacking(b,this->hostIndex);
     doParsimUnpacking(b,this->partitionId);
     doParsimUnpacking(b,this->taskId);
+    doParsimUnpacking(b,this->taskSize);
     doParsimUnpacking(b,this->loadBalancingId);
     doParsimUnpacking(b,this->cpi);
     doParsimUnpacking(b,this->senderAddress);
@@ -263,6 +266,16 @@ void DataMessage::setTaskId(int taskId)
     this->taskId = taskId;
 }
 
+double DataMessage::getTaskSize() const
+{
+    return this->taskSize;
+}
+
+void DataMessage::setTaskSize(double taskSize)
+{
+    this->taskSize = taskSize;
+}
+
 int DataMessage::getLoadBalancingId() const
 {
     return this->loadBalancingId;
@@ -303,6 +316,7 @@ class DataMessageDescriptor : public omnetpp::cClassDescriptor
         FIELD_hostIndex,
         FIELD_partitionId,
         FIELD_taskId,
+        FIELD_taskSize,
         FIELD_loadBalancingId,
         FIELD_cpi,
         FIELD_senderAddress,
@@ -372,7 +386,7 @@ const char *DataMessageDescriptor::getProperty(const char *propertyName) const
 int DataMessageDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *base = getBaseClassDescriptor();
-    return base ? 8+base->getFieldCount() : 8;
+    return base ? 9+base->getFieldCount() : 9;
 }
 
 unsigned int DataMessageDescriptor::getFieldTypeFlags(int field) const
@@ -389,11 +403,12 @@ unsigned int DataMessageDescriptor::getFieldTypeFlags(int field) const
         FD_ISEDITABLE,    // FIELD_hostIndex
         FD_ISEDITABLE,    // FIELD_partitionId
         FD_ISEDITABLE,    // FIELD_taskId
+        FD_ISEDITABLE,    // FIELD_taskSize
         FD_ISEDITABLE,    // FIELD_loadBalancingId
         FD_ISEDITABLE,    // FIELD_cpi
         0,    // FIELD_senderAddress
     };
-    return (field >= 0 && field < 8) ? fieldTypeFlags[field] : 0;
+    return (field >= 0 && field < 9) ? fieldTypeFlags[field] : 0;
 }
 
 const char *DataMessageDescriptor::getFieldName(int field) const
@@ -410,11 +425,12 @@ const char *DataMessageDescriptor::getFieldName(int field) const
         "hostIndex",
         "partitionId",
         "taskId",
+        "taskSize",
         "loadBalancingId",
         "cpi",
         "senderAddress",
     };
-    return (field >= 0 && field < 8) ? fieldNames[field] : nullptr;
+    return (field >= 0 && field < 9) ? fieldNames[field] : nullptr;
 }
 
 int DataMessageDescriptor::findField(const char *fieldName) const
@@ -426,9 +442,10 @@ int DataMessageDescriptor::findField(const char *fieldName) const
     if (strcmp(fieldName, "hostIndex") == 0) return baseIndex + 2;
     if (strcmp(fieldName, "partitionId") == 0) return baseIndex + 3;
     if (strcmp(fieldName, "taskId") == 0) return baseIndex + 4;
-    if (strcmp(fieldName, "loadBalancingId") == 0) return baseIndex + 5;
-    if (strcmp(fieldName, "cpi") == 0) return baseIndex + 6;
-    if (strcmp(fieldName, "senderAddress") == 0) return baseIndex + 7;
+    if (strcmp(fieldName, "taskSize") == 0) return baseIndex + 5;
+    if (strcmp(fieldName, "loadBalancingId") == 0) return baseIndex + 6;
+    if (strcmp(fieldName, "cpi") == 0) return baseIndex + 7;
+    if (strcmp(fieldName, "senderAddress") == 0) return baseIndex + 8;
     return base ? base->findField(fieldName) : -1;
 }
 
@@ -446,11 +463,12 @@ const char *DataMessageDescriptor::getFieldTypeString(int field) const
         "int",    // FIELD_hostIndex
         "int",    // FIELD_partitionId
         "int",    // FIELD_taskId
+        "double",    // FIELD_taskSize
         "int",    // FIELD_loadBalancingId
         "int",    // FIELD_cpi
         "veins::LAddress::L2Type",    // FIELD_senderAddress
     };
-    return (field >= 0 && field < 8) ? fieldTypeStrings[field] : nullptr;
+    return (field >= 0 && field < 9) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **DataMessageDescriptor::getFieldPropertyNames(int field) const
@@ -538,6 +556,7 @@ std::string DataMessageDescriptor::getFieldValueAsString(omnetpp::any_ptr object
         case FIELD_hostIndex: return long2string(pp->getHostIndex());
         case FIELD_partitionId: return long2string(pp->getPartitionId());
         case FIELD_taskId: return long2string(pp->getTaskId());
+        case FIELD_taskSize: return double2string(pp->getTaskSize());
         case FIELD_loadBalancingId: return long2string(pp->getLoadBalancingId());
         case FIELD_cpi: return long2string(pp->getCpi());
         case FIELD_senderAddress: return "";
@@ -562,6 +581,7 @@ void DataMessageDescriptor::setFieldValueAsString(omnetpp::any_ptr object, int f
         case FIELD_hostIndex: pp->setHostIndex(string2long(value)); break;
         case FIELD_partitionId: pp->setPartitionId(string2long(value)); break;
         case FIELD_taskId: pp->setTaskId(string2long(value)); break;
+        case FIELD_taskSize: pp->setTaskSize(string2double(value)); break;
         case FIELD_loadBalancingId: pp->setLoadBalancingId(string2long(value)); break;
         case FIELD_cpi: pp->setCpi(string2long(value)); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'DataMessage'", field);
@@ -583,6 +603,7 @@ omnetpp::cValue DataMessageDescriptor::getFieldValue(omnetpp::any_ptr object, in
         case FIELD_hostIndex: return pp->getHostIndex();
         case FIELD_partitionId: return pp->getPartitionId();
         case FIELD_taskId: return pp->getTaskId();
+        case FIELD_taskSize: return pp->getTaskSize();
         case FIELD_loadBalancingId: return pp->getLoadBalancingId();
         case FIELD_cpi: return pp->getCpi();
         case FIELD_senderAddress: return omnetpp::toAnyPtr(&pp->getSenderAddress()); break;
@@ -607,6 +628,7 @@ void DataMessageDescriptor::setFieldValue(omnetpp::any_ptr object, int field, in
         case FIELD_hostIndex: pp->setHostIndex(omnetpp::checked_int_cast<int>(value.intValue())); break;
         case FIELD_partitionId: pp->setPartitionId(omnetpp::checked_int_cast<int>(value.intValue())); break;
         case FIELD_taskId: pp->setTaskId(omnetpp::checked_int_cast<int>(value.intValue())); break;
+        case FIELD_taskSize: pp->setTaskSize(value.doubleValue()); break;
         case FIELD_loadBalancingId: pp->setLoadBalancingId(omnetpp::checked_int_cast<int>(value.intValue())); break;
         case FIELD_cpi: pp->setCpi(omnetpp::checked_int_cast<int>(value.intValue())); break;
         default: throw omnetpp::cRuntimeError("Cannot set field %d of class 'DataMessage'", field);

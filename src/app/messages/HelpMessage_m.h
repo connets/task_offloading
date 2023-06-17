@@ -39,6 +39,8 @@ namespace task_offloading {
  * {
  *     int vehicleIndex;
  *     int id;
+ *     double cpi;
+ *     double taskSize;
  *     double minimumLoadRequested;
  * }
  * </pre>
@@ -48,6 +50,8 @@ class HelpMessage : public ::veins::BaseFrame1609_4
   protected:
     int vehicleIndex = 0;
     int id = 0;
+    double cpi = 0;
+    double taskSize = 0;
     double minimumLoadRequested = 0;
 
   private:
@@ -70,6 +74,12 @@ class HelpMessage : public ::veins::BaseFrame1609_4
 
     virtual int getId() const;
     virtual void setId(int id);
+
+    virtual double getCpi() const;
+    virtual void setCpi(double cpi);
+
+    virtual double getTaskSize() const;
+    virtual void setTaskSize(double taskSize);
 
     virtual double getMinimumLoadRequested() const;
     virtual void setMinimumLoadRequested(double minimumLoadRequested);

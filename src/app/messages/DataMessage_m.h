@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgtool 6.0 from app/messages/DataMessage.msg.
+// Generated file, do not edit! Created by opp_msgtool 6.0 from app/messages//DataMessage.msg.
 //
 
 #ifndef __TASK_OFFLOADING_DATAMESSAGE_M_H
@@ -33,7 +33,7 @@ class DataMessage;
 namespace task_offloading {
 
 /**
- * Class generated from <tt>app/messages/DataMessage.msg:22</tt> by opp_msgtool.
+ * Class generated from <tt>app/messages//DataMessage.msg:22</tt> by opp_msgtool.
  * <pre>
  * packet DataMessage extends veins::BaseFrame1609_4
  * {
@@ -42,6 +42,7 @@ namespace task_offloading {
  *     int hostIndex;
  *     int partitionId;
  *     int taskId;
+ *     double taskSize;
  *     int loadBalancingId;
  *     int cpi;
  *     veins::LAddress::L2Type senderAddress = -1;
@@ -56,6 +57,7 @@ class DataMessage : public ::veins::BaseFrame1609_4
     int hostIndex = 0;
     int partitionId = 0;
     int taskId = 0;
+    double taskSize = 0;
     int loadBalancingId = 0;
     int cpi = 0;
     ::veins::LAddress::L2Type senderAddress = -1;
@@ -89,6 +91,9 @@ class DataMessage : public ::veins::BaseFrame1609_4
 
     virtual int getTaskId() const;
     virtual void setTaskId(int taskId);
+
+    virtual double getTaskSize() const;
+    virtual void setTaskSize(double taskSize);
 
     virtual int getLoadBalancingId() const;
     virtual void setLoadBalancingId(int loadBalancingId);

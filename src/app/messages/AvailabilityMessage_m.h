@@ -44,6 +44,9 @@ namespace task_offloading {
  *     veins::LAddress::L2Type senderAddress = -1;
  *     double vehicleAngle;
  *     double vehicleSpeed;
+ *     double vehiclePositionX;
+ *     double vehiclePositionY;
+ * 
  * }
  * </pre>
  */
@@ -57,6 +60,8 @@ class AvailabilityMessage : public ::veins::BaseFrame1609_4
     ::veins::LAddress::L2Type senderAddress = -1;
     double vehicleAngle = 0;
     double vehicleSpeed = 0;
+    double vehiclePositionX = 0;
+    double vehiclePositionY = 0;
 
   private:
     void copy(const AvailabilityMessage& other);
@@ -94,6 +99,12 @@ class AvailabilityMessage : public ::veins::BaseFrame1609_4
 
     virtual double getVehicleSpeed() const;
     virtual void setVehicleSpeed(double vehicleSpeed);
+
+    virtual double getVehiclePositionX() const;
+    virtual void setVehiclePositionX(double vehiclePositionX);
+
+    virtual double getVehiclePositionY() const;
+    virtual void setVehiclePositionY(double vehiclePositionY);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const AvailabilityMessage& obj) {obj.parsimPack(b);}
