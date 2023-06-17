@@ -25,7 +25,7 @@ void TaskGenerator::vehicleHandler()
     // Check the bus state
     int currentBusState = busState.getCurrentState();
     // Check if there's more data
-    bool moreDataToLoad = tasks[0].getData() > 0;
+    bool moreDataToLoad = tasks[0].getTotalData() > 0;
     // Check if it's the second (or more) help message
     bool isFirstHelpMessage = tasks[0].getHelpReceivedCounter() ==  0;
 
@@ -44,8 +44,10 @@ void TaskGenerator::vehicleHandler()
 
         // Populate the message
         populateWSM(helpMessage);
-        helpMessage->setId(tasks[0].getHelpReceivedCounter());
+        helpMessage->setId(tasks[0].getId());
         helpMessage->setVehicleIndex(busIndex);
+        helpMessage->setCpi(tasks[0].getComputingDensity());
+        helpMessage->setTaskSize(tasks[0].getTotalData());
         helpMessage->setMinimumLoadRequested(tasks[0].getMinimumLoadRequested());
 
         // Emit signal for start help message
@@ -78,7 +80,7 @@ void TaskGenerator::vehicleHandler()
 
         // Schedule the message -> simTime + availability msgs threshold
         scheduleAt(simTimeActual + par("busWaitingTimeForAvailability").doubleValue(), timerForLoadBalancing);
-    } else if (tasks[0].getData() <= 0) {
+    } else if (tasks[0].getTotalData() <= 0) {
         // Color the bus in white when computation ends
         findHost()->getDisplayString().setTagArg("i", 1, "white");
     }

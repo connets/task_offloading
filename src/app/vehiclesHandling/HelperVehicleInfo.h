@@ -29,6 +29,8 @@ namespace task_offloading {
         veins::LAddress::L2Type address;
         double vehicleSpeed;
         double vehicleAngle;
+        double vehiclePositionX;
+        double vehiclePositionY;
         int dataPartitionId;
         int taskCpi;
 
@@ -45,6 +47,8 @@ namespace task_offloading {
         int getDataPartitionId();
         int getTaskCpi();
         double getVehicleSpeed();
+        double getVehiclePositionX();
+        double getVehiclePositionY();
         void setIndex(std::string index);
         void setCurrentLoad(double newLoad);
         void setCPUFreq(double newFreq);
@@ -54,6 +58,8 @@ namespace task_offloading {
         void setDataPartitionId(int newPartitionId);
         void setTaskCpi(int newCpi);
         void setVehicleSpeed(double newSpeed);
+        void setVehiclePositionX(double newVehiclePositionX);
+        void setVehiclePositionY(double newVehiclePositionY);
         double getTotalComputationTime(int CPI);
     };
 }
