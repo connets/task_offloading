@@ -172,7 +172,7 @@ void Worker::handlePositionUpdate(cObject* obj)
 void Worker::setTaskAvailabilityTimer(int taskId, int taskSize){
     //Set task availability timer
     double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
-    double taskTransmissionTime = taskSize/bitRate;
+    double taskTransmissionTime = ceil(taskSize/bitRate);
     double taskTimer = (1 + taskTransmissionTime*1.1)*par("retryFactorTime").doubleValue();
 
     TotalComputationTimerMessage* tcm = new TotalComputationTimerMessage("taskAvailabilityTimerMessage");
