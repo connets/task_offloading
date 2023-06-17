@@ -33,8 +33,8 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         helpers[responseMessage->getHostIndex()].setDataPartitionId(-1);
 
         // Remove the data that the vehicle has computed
-        double localData = tasks[0].getData() - responseMessage->getDataComputed();
-        tasks[0].setData(localData);
+        double localData = tasks[0].getTotalData() - responseMessage->getDataComputed();
+        tasks[0].setTotalData(localData);
 
         // If there's no more data then emit signal for task finished
         if (localData <= 0) {
@@ -102,7 +102,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
             // Change it's status in help
             busState.setState(new Help);
         }
-    } else if (tasks[0].getData() <= 0) {
+    } else if (tasks[0].getTotalData() <= 0) {
         // If data <= 0 and I receive a response then send ack to the vehicle
         helpers.erase(responseMessage->getHostIndex());
         helpersOrderedList.remove(responseMessage->getHostIndex());
