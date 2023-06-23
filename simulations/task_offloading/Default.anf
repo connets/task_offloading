@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<analysis version="2">
-    <inputs>
-        <input pattern="/task_offloading/simulations/task_offloading/results/Default-*.vec"/>
-        <input pattern="/task_offloading/simulations/task_offloading/results/Default-*.sca"/>
-    </inputs>
-    <charts/>
-</analysis>
