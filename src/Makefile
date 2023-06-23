@@ -34,6 +34,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
 OBJS = \
+    $O/app/Beaconer.o \
     $O/app/Task.o \
     $O/app/TaskGenerator.o \
     $O/app/Worker.o \
@@ -53,11 +54,13 @@ OBJS = \
     $O/app/messages/AckMessage_m.o \
     $O/app/messages/AckTimerMessage_m.o \
     $O/app/messages/AvailabilityMessage_m.o \
+    $O/app/messages/BeaconMessage_m.o \
     $O/app/messages/ComputationTimerMessage_m.o \
     $O/app/messages/DataMessage_m.o \
     $O/app/messages/HelpMessage_m.o \
     $O/app/messages/LoadBalanceTimerMessage_m.o \
     $O/app/messages/ResponseMessage_m.o \
+    $O/app/messages/TotalComputationTimerMessage_m.o \
     $O/app/messages/UpdateAvailabilityMessage_m.o
 
 # Message files
@@ -65,11 +68,13 @@ MSGFILES = \
     app/messages/AckMessage.msg \
     app/messages/AckTimerMessage.msg \
     app/messages/AvailabilityMessage.msg \
+    app/messages/BeaconMessage.msg \
     app/messages/ComputationTimerMessage.msg \
     app/messages/DataMessage.msg \
     app/messages/HelpMessage.msg \
     app/messages/LoadBalanceTimerMessage.msg \
     app/messages/ResponseMessage.msg \
+    app/messages/TotalComputationTimerMessage.msg \
     app/messages/UpdateAvailabilityMessage.msg
 
 # SM files
