@@ -66,6 +66,9 @@ network task_offloading
         car[0]: Car {
             @display("p=469.53598,406.464");
         }
+        beaconer[0]: Car {
+            @display("p=469.53598,406.464");
+        }
 
     connections allowunconnected:
 }
