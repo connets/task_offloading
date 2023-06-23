@@ -25,6 +25,7 @@ packet DataMessage extends veins::BaseFrame1609_4 {
     int hostIndex;
     int partitionId;
     int taskId;
+    double taskSize;
     int loadBalancingId;
     int cpi;
     veins::LAddress::L2Type senderAddress = -1;

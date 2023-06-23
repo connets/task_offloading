@@ -1,0 +1,582 @@
+file 5475203 1685723829                                         
+version 3
+run Default-0-20230602-18:36:29-415
+attr configname Default
+attr datetime 20230602-18:36:29
+attr datetimef 20230602-183629
+attr experiment Default
+attr inifile omnetpp.ini
+attr iterationvars "$useAcks=false, $0=false"
+attr iterationvarsd useAcks=false/false
+attr iterationvarsf useAcks=false,false-
+attr measurement "$useAcks=false, $0=false"
+attr network task_offloading
+attr processid 415
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 100
+itervar useAcks false
+config image-path ../../../inet4.5/images:../../../veins-5.2/veins-veins-5.2/images
+config cmdenv-express-mode true
+config cmdenv-autoflush true
+config cmdenv-status-frequency 1s
+config **.cmdenv-log-level info
+config **.result-recording-modes all
+config seed-set 100
+config image-path ../../images
+config network task_offloading
+config debug-on-errors true
+config print-undisposed true
+config **.scalar-recording true
+config **.vector-recording true
+config *.playgroundSizeX 3500m
+config *.playgroundSizeY 3500m
+config *.playgroundSizeZ 50m
+config *.annotations.draw true
+config *.obstacles.obstacles "xmldoc(\"config.xml\", \"//AnalogueModel[@type='SimpleObstacleShadowing']/obstacles\")"
+config *.manager.updateInterval 0.1s
+config *.manager.host "\"localhost\""
+config *.manager.port 9999
+config *.manager.autoShutdown true
+config *.manager.launchConfig "xmldoc(\"task_offloading.launchd.xml\")"
+config *.connectionManager.sendDirect true
+config *.connectionManager.maxInterfDist 2600m
+config *.connectionManager.drawMaxIntfDist false
+config *.**.nic.mac1609_4.useServiceChannel false
+config *.**.nic.mac1609_4.txPower 20mW
+config *.**.nic.mac1609_4.bitrate 6Mbps
+config *.**.nic.phy80211p.minPowerLevel -110dBm
+config *.**.nic.phy80211p.useNoiseFloor true
+config *.**.nic.phy80211p.noiseFloor -98dBm
+config *.**.nic.phy80211p.decider "xmldoc(\"config.xml\")"
+config *.**.nic.phy80211p.analogueModels "xmldoc(\"config.xml\")"
+config *.**.nic.phy80211p.usePropagationDelay true
+config *.**.nic.phy80211p.antenna "xmldoc(\"antenna.xml\", \"/root/Antenna[@id='monopole']\")"
+config *.**[*].nic.phy80211p.antennaOffsetY "0 m"
+config *.**[*].nic.phy80211p.antennaOffsetZ "1.895 m"
+config *.**.nic.mac1609_4.useAcks false
+config *.veinsApp.useAcks false
+config *.manager.moduleDisplayString "\"BUS='i=veins/node/car_vs' CAR='i=veins/node/car_vs'\""
+config *.manager.moduleType "\"BUS=org.car2x.veins.nodes.Car CAR=org.car2x.veins.nodes.Car\""
+config *.manager.moduleName "\"BUS=bus CAR=car\""
+config *.bus[*].applType "\"TaskGenerator\""
+config *.car[*].applType "\"Worker\""
+config *.**[*].appl.headerLength "80 bit"
+config *.**[*].appl.sendBeacons false
+config *.**[*].appl.dataOnSch false
+config *.**[*].appl.beaconInterval 1s
+config *.**[*].veinsmobility.x 0
+config *.**[*].veinsmobility.y 0
+config *.**[*].veinsmobility.z 0
+config *.**[*].veinsmobility.setHostSpeed false
+config *.bus[*].appl.randomTimeFirstHelpMessage "uniform(30s, 40s)"
+config *.bus[*].appl.randomTimeHelpRequest "uniform(1s, 2s)"
+config *.bus[*].appl.busWaitingTimeForAvailability "uniform(100ms, 200ms)"
+config *.bus[*].appl.dataComputationThreshold "uniform(500ms, 600ms)"
+config *.bus[*].appl.computationLoad 18MB
+config *.bus[*].appl.busVehicleLoad 4MB
+config *.bus[*].appl.minimumVehicleLoadRequested 700kB
+config *.loadBalancingAlgorithm.typename ComputationTime
+config *.car[*].appl.stillAvailableProbability "uniform(0, 1)"
+config *.car[*].appl.stillAvailableThreshold 0.5
+config *.car[*].appl.commonVehicleLoad 1MB
+config *.car[*].appl.vehicleAvailabilityMessageTime "uniform(0ms, 100ms)"
+config *.car[*].appl.ackMessageThreshold "uniform(300ms, 400ms)"
+config *.car[*].appl.randomVehicleFreeLoadPercentage "uniform(0, 1)"
+config *.car[*].appl.randomVehicleCpuFreq "uniform(1.20GHz, 2.70GHz)"
+
+vector 0 task_offloading.car[0].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 1 task_offloading.car[0].veinsmobility posx ETV
+vector 2 task_offloading.car[0].veinsmobility posy ETV
+vector 3 task_offloading.bus[1].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 4 task_offloading.bus[1].veinsmobility posx ETV
+vector 5 task_offloading.bus[1].veinsmobility posy ETV
+vector 6 task_offloading.car[2].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 7 task_offloading.car[2].veinsmobility posx ETV
+vector 8 task_offloading.car[2].veinsmobility posy ETV
+vector 9 task_offloading.car[3].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 10 task_offloading.car[3].veinsmobility posx ETV
+vector 11 task_offloading.car[3].veinsmobility posy ETV
+vector 12 task_offloading.car[0].veinsmobility speed ETV
+vector 13 task_offloading.bus[1].veinsmobility speed ETV
+vector 14 task_offloading.car[2].veinsmobility speed ETV
+vector 15 task_offloading.car[3].veinsmobility speed ETV
+vector 16 task_offloading.car[0].veinsmobility acceleration ETV
+vector 17 task_offloading.car[0].veinsmobility co2emission ETV
+vector 18 task_offloading.bus[1].veinsmobility acceleration ETV
+vector 19 task_offloading.bus[1].veinsmobility co2emission ETV
+vector 20 task_offloading.car[2].veinsmobility acceleration ETV
+vector 21 task_offloading.car[2].veinsmobility co2emission ETV
+vector 22 task_offloading.car[3].veinsmobility acceleration ETV
+vector 23 task_offloading.car[3].veinsmobility co2emission ETV
+vector 24 task_offloading.car[4].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 25 task_offloading.car[4].veinsmobility posx ETV
+vector 26 task_offloading.car[4].veinsmobility posy ETV
+vector 27 task_offloading.car[5].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 28 task_offloading.car[5].veinsmobility posx ETV
+vector 29 task_offloading.car[5].veinsmobility posy ETV
+vector 30 task_offloading.car[4].veinsmobility speed ETV
+vector 31 task_offloading.car[5].veinsmobility speed ETV
+vector 32 task_offloading.car[4].veinsmobility acceleration ETV
+vector 33 task_offloading.car[4].veinsmobility co2emission ETV
+vector 34 task_offloading.car[5].veinsmobility acceleration ETV
+vector 35 task_offloading.car[5].veinsmobility co2emission ETV
+vector 36 task_offloading.bus[6].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 37 task_offloading.bus[6].veinsmobility posx ETV
+vector 38 task_offloading.bus[6].veinsmobility posy ETV
+vector 39 task_offloading.bus[6].veinsmobility speed ETV
+vector 40 task_offloading.car[7].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 41 task_offloading.car[7].veinsmobility posx ETV
+vector 42 task_offloading.car[7].veinsmobility posy ETV
+vector 43 task_offloading.bus[6].veinsmobility acceleration ETV
+vector 44 task_offloading.bus[6].veinsmobility co2emission ETV
+vector 45 task_offloading.car[7].veinsmobility speed ETV
+vector 46 task_offloading.car[7].veinsmobility acceleration ETV
+vector 47 task_offloading.car[7].veinsmobility co2emission ETV
+vector 48 task_offloading.car[8].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 49 task_offloading.car[8].veinsmobility posx ETV
+vector 50 task_offloading.car[8].veinsmobility posy ETV
+vector 51 task_offloading.car[9].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 52 task_offloading.car[9].veinsmobility posx ETV
+vector 53 task_offloading.car[9].veinsmobility posy ETV
+vector 54 task_offloading.car[8].veinsmobility speed ETV
+vector 55 task_offloading.car[9].veinsmobility speed ETV
+vector 56 task_offloading.car[8].veinsmobility acceleration ETV
+vector 57 task_offloading.car[8].veinsmobility co2emission ETV
+vector 58 task_offloading.car[9].veinsmobility acceleration ETV
+vector 59 task_offloading.car[9].veinsmobility co2emission ETV
+vector 60 task_offloading.car[10].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 61 task_offloading.car[10].veinsmobility posx ETV
+vector 62 task_offloading.car[10].veinsmobility posy ETV
+vector 63 task_offloading.car[10].veinsmobility speed ETV
+vector 64 task_offloading.car[10].veinsmobility acceleration ETV
+vector 65 task_offloading.car[10].veinsmobility co2emission ETV
+vector 66 task_offloading.car[11].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 67 task_offloading.car[11].veinsmobility posx ETV
+vector 68 task_offloading.car[11].veinsmobility posy ETV
+vector 69 task_offloading.car[11].veinsmobility speed ETV
+vector 70 task_offloading.car[11].veinsmobility acceleration ETV
+vector 71 task_offloading.car[11].veinsmobility co2emission ETV
+vector 72 task_offloading.car[12].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 73 task_offloading.car[12].veinsmobility posx ETV
+vector 74 task_offloading.car[12].veinsmobility posy ETV
+vector 75 task_offloading.car[12].veinsmobility speed ETV
+vector 76 task_offloading.car[12].veinsmobility acceleration ETV
+vector 77 task_offloading.car[12].veinsmobility co2emission ETV
+vector 78 task_offloading.car[13].nic.mac1609_4 channelBusy:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigChannelBusy
+vector 79 task_offloading.car[13].veinsmobility posx ETV
+vector 80 task_offloading.car[13].veinsmobility posy ETV
+vector 81 task_offloading.car[13].veinsmobility speed ETV
+vector 82 task_offloading.car[13].veinsmobility acceleration ETV
+vector 83 task_offloading.car[13].veinsmobility co2emission ETV
+vector 84 task_offloading.bus[6].appl startHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_bus_help_rq
+vector 85 task_offloading.bus[6].appl startTimeTask:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source task_started
+vector 86 task_offloading.bus[6].nic.mac1609_4 sentPackets:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigSentPacket
+vector 87 task_offloading.car[11].appl stopHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_bus_help_rq
+vector 88 task_offloading.car[11].appl availableMessageLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_load
+vector 89 task_offloading.car[13].appl stopHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_bus_help_rq
+vector 90 task_offloading.car[13].appl availableMessageLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_load
+vector 91 task_offloading.car[0].appl stopHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_bus_help_rq
+vector 92 task_offloading.car[0].appl availableMessageLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_load
+vector 93 task_offloading.bus[1].appl startHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_bus_help_rq
+vector 94 task_offloading.bus[1].appl startTimeTask:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source task_started
+vector 95 task_offloading.bus[1].nic.mac1609_4 sentPackets:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigSentPacket
+vector 96 task_offloading.car[7].appl stopHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_bus_help_rq
+vector 97 task_offloading.car[7].appl availableMessageLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_load
+vector 98 task_offloading.car[10].appl stopHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_bus_help_rq
+vector 99 task_offloading.car[10].appl availableMessageLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_load
+vector 100 task_offloading.car[12].appl stopHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_bus_help_rq
+vector 101 task_offloading.car[12].appl availableMessageLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_load
+vector 102 task_offloading.car[0].appl availableMessageSent:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_sent
+vector 103 task_offloading.car[0].nic.mac1609_4 sentPackets:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigSentPacket
+vector 104 task_offloading.bus[6].appl startBalanceLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_balance_loading
+vector 105 task_offloading.bus[6].appl stopBalanceLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_balance_loading
+vector 106 task_offloading.bus[6].appl startDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_sending_data
+vector 107 task_offloading.car[10].appl availableMessageSent:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_sent
+vector 108 task_offloading.car[10].nic.mac1609_4 sentPackets:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigSentPacket
+vector 109 task_offloading.car[11].appl stopDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_sending_data
+vector 110 task_offloading.car[13].appl stopDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_sending_data
+vector 111 task_offloading.car[0].appl stopDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_sending_data
+vector 112 task_offloading.car[0].appl startResponseMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_getting_response
+vector 113 task_offloading.bus[1].appl startBalanceLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_balance_loading
+vector 114 task_offloading.bus[1].appl stopBalanceLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_balance_loading
+vector 115 task_offloading.bus[1].appl startDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_sending_data
+vector 116 task_offloading.bus[6].appl stopResponseMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_getting_response
+vector 117 task_offloading.car[7].appl stopDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_sending_data
+vector 118 task_offloading.car[10].appl stopDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_sending_data
+vector 119 task_offloading.car[12].appl stopDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_sending_data
+vector 120 task_offloading.car[10].appl startResponseMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_getting_response
+vector 121 task_offloading.bus[1].appl stopResponseMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_getting_response
+vector 122 task_offloading.car[12].appl availableMessageSent:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_sent
+vector 123 task_offloading.car[12].nic.mac1609_4 sentPackets:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigSentPacket
+vector 124 task_offloading.car[12].appl startResponseMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_getting_response
+vector 125 task_offloading.car[13].appl availableMessageSent:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_sent
+vector 126 task_offloading.car[13].nic.mac1609_4 sentPackets:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigSentPacket
+vector 127 task_offloading.car[13].appl startResponseMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_getting_response
+vector 128 task_offloading.car[11].appl availableMessageSent:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_sent
+vector 129 task_offloading.car[11].nic.mac1609_4 sentPackets:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigSentPacket
+vector 130 task_offloading.car[11].appl startResponseMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_getting_response
+vector 131 task_offloading.car[7].appl availableMessageSent:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_sent
+vector 132 task_offloading.car[7].nic.mac1609_4 sentPackets:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigSentPacket
+vector 133 task_offloading.car[7].appl startResponseMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_getting_response
+vector 134 task_offloading.car[3].appl stopDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_sending_data
+vector 135 task_offloading.bus[1].appl stopTimeTask:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source task_stopped
+vector 136 task_offloading.car[5].appl stopDataMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_sending_data
+vector 137 task_offloading.car[3].appl stopHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_bus_help_rq
+vector 138 task_offloading.car[3].appl availableMessageLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_load
+vector 139 task_offloading.car[5].appl stopHelpRequests:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source stop_bus_help_rq
+vector 140 task_offloading.car[5].appl availableMessageLoad:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_load
+vector 141 task_offloading.car[5].appl availableMessageSent:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source available_message_sent
+vector 142 task_offloading.car[5].nic.mac1609_4 sentPackets:vector ETV
+attr recordingmode vector
+attr source org_car2x_veins_modules_mac_sigSentPacket
+vector 143 task_offloading.car[5].appl startResponseMessages:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source start_getting_response
+vector 144 task_offloading.bus[6].appl stopTimeTask:vector ETV
+attr interpolationmode none
+attr recordingmode vector
+attr source task_stopped
+138	19483 41 8466 8466 96.300068462855 96.300068462855 1 527984.44754444 527984.44754444 527984.44754444 278767576848.81
+134	19524 166 7602 8722 89.298069541973 98.253230719652 6 5 11 60 630
+137	19690 41 8466 8466 96.300068462855 96.300068462855 1 96.300068462855 96.300068462855 96.300068462855 9273.7031859506
+9	19731 1605 2 9085 0.1 107.10631345046 65 0 1 32 32
+23	21336 33643 4 9317 0.3 128.7 1285 0.43310030454771 17.692028821983 5931.4401248999 43530.029096198
+22	54979 35921 4 9317 0.3 128.7 1285 -9 2.6 173.20442879395 5868.5301701554
+15	90900 36630 3 9317 0.2 128.7 1286 0.2489653699901 23.473379769084 20823.844543877 365796.14503277
+11	127530 36652 2 9317 0.1 128.7 1287 650.79540466797 1372.8297871072 1536825.5827421 1877684830.039
+10	164182 36645 2 9317 0.1 128.7 1287 155.43256643612 1400.6436173244 1124222.9393697 1237222353.368
+140	200827 41 8470 8470 96.300068944308 96.300068944308 1 744498.03470634 744498.03470634 744498.03470634 554277323681.6
+141	200868 41 8530 8530 96.379635195748 96.379635195748 1 96.379635195748 96.379635195748 96.379635195748 9289.0340804655
+143	200909 27 8693 8693 97.471161134116 97.471161134116 1 5 5 5 25
+136	200936 82 8285 8726 95.217705957398 98.253231208121 3 5 11 27 267
+139	201018 41 8470 8470 96.300068944308 96.300068944308 1 96.300068944308 96.300068944308 96.300068944308 9273.7032786785
+142	201059 54 8532 8735 96.379641134688 98.253289208121 2 1 1 2 2
+27	201113 1151 28 8908 2.7 100.029028106353 45 0 1 22 22
+35	202264 35631 30 9429 2.9 139.9 1371 0.71544046884331 16.229359756374 5207.1899439484 32233.761413369
+34	237895 39571 30 9429 2.9 139.9 1371 -4.5 2.6 153.00271042395 4069.1708596809
+31	277466 39296 29 9429 2.8 139.9 1372 0.24720221750531 21.948633830522 20814.497592178 335042.22413078
+29	316762 39316 28 9429 2.7 139.9 1373 651.72988923732 1372.8273089975 1639703.2977677 2004893434.8606
+28	356078 39318 28 9429 2.7 139.9 1373 155.43256643612 1400.6191382016 1207431.6154887 1329560355.9498
+51	395396 376 54 8776 5.3 99.246018597601 15 0 1 7 7
+59	395772 40164 56 9635 5.5 160.5 1551 0.973 14.685576110699 4933.933710865 25439.677534201
+58	435936 45623 56 9635 5.5 160.5 1551 -4.5 2.6 128.59059497811 3539.2403082573
+55	481559 44743 55 9635 5.4 160.5 1552 0.25096793531254 20.955216736306 20823.65783751 291837.87274759
+53	526302 44792 54 9635 5.3 160.5 1553 650.81407109834 1372.8282752829 1849076.1494377 2256783134.86
+52	571094 44785 54 9635 5.3 160.5 1553 155.43256643612 1400.6431283512 1400992.1287235 1558358858.3158
+6	615879 110 2 2723 0.1 44.439204953061 5 0 1 2 2
+21	615989 71228 4 10766 0.3 273.6 2734 0.973 9.4515154039042 6071.8450180838 19686.688640778
+20	687217 83335 4 10766 0.3 273.6 2734 -4.5 2.6 128.06530823217 2890.9443093891
+14	770552 80444 3 10766 0.2 273.6 2735 0.24839281809283 13.131409608084 27476.965367884 295661.59065489
+8	850996 77699 2 10766 0.1 273.6 2736 710.22942647897 1908.3389322907 3264675.0294595 4331137699.9028
+7	928695 77701 2 10766 0.1 273.6 2736 1475.2530190755 2413.5228035762 5450701.3584307 10986633465.589
+121	1006396 607 974 8076 34.54334469061 92.842756239457 22 7 12 227 2429
+115	1007003 610 823 7860 32.584477613494 90.484477613494 22 7 12 227 2429
+93	1007613 301 359 7764 31.2 90.3 17 31.2 90.3 888.1 52651.43
+114	1007914 819 822 7859 32.584477613494 90.484477613494 20 32.584477613494 90.484477613494 1148.1858808199 72182.470251016
+113	1008733 819 822 7859 32.584477613494 90.484477613494 20 32.584477613494 90.484477613494 1148.1858808199 72182.470251016
+135	1009552 41 8076 8076 92.842756239457 92.842756239457 1 92.842756239457 92.842756239457 92.842756239457 8619.7773861392
+94	1009593 17 359 359 31.2 31.2 1 31.2 31.2 31.2 973.44
+95	1009610 1330 361 8089 31.20001 92.842814239457 53 1 1 53 53
+3	1010940 4346 2 8110 0.1 92.842879239457 179 0 1 89 89
+19	1015286 75328 4 10772 0.3 274.2 2740 0.973 5.8652109751957 5913.9301386577 15804.107167043
+18	1090614 83300 4 10772 0.3 274.2 2740 -4 1.2 137.59856836317 2311.956595906
+13	1173914 80600 3 10772 0.2 274.2 2741 0.11944135029288 13.889996190174 28177.785239297 314494.10076135
+5	1254514 77879 2 10772 0.1 274.2 2742 356.21122310963 1585.035242917 2757542.2158259 3025157417.2992
+4	1332393 77898 2 10772 0.1 274.2 2742 1062.4970891532 1887.2303292352 4380970.7119483 7139160350.4806
+97	1410291 673 387 7792 31.20007508695 90.300072696031 17 68486.554548144 956846.57013044 7048868.2105206 4074191685426.1
+131	1410964 123 4426 7402 57.417652691813 88.117652444899 3 57.417652691813 88.117652444899 215.45296224195 15949.986288124
+133	1411087 135 4582 7559 58.861643017314 89.269361127679 5 7 7 35 245
+117	1411222 664 908 7954 33.563162428067 91.662859511609 24 7 12 251 2717
+96	1411886 673 387 7792 31.20007508695 90.300072696031 17 31.20007508695 90.300072696031 888.1012312452 52651.557845119
+132	1412559 215 4428 7561 57.417665560985 89.269364505036 8 1 1 8 8
+40	1412774 4607 41 8114 4 92.842879334897 179 0 1 89 89
+47	1417381 71170 43 10793 4.2 276.3 2722 0.973 10.596965462256 6440.9898696792 21849.115806807
+46	1488551 83139 43 10793 4.2 276.3 2722 -4.5 2.6 137.87029178437 3183.8627885671
+45	1571690 80275 42 10793 4.1 276.3 2723 0.25484053724282 14.089622106517 28255.65274225 315216.5559921
+42	1651965 80318 41 10793 4 276.3 2724 355.3646510914 1585.0479758559 2732621.1734913 2988712944.0472
+41	1732283 80243 41 10793 4 276.3 2724 1056.0772855108 1887.2305569886 4363344.0196819 7124808591.3141
+92	1812526 235 348 4989 31.100071230433 62.600075668467 6 94895.48066631 919158.05311874 3413264.7272199 2377697967122.2
+102	1812761 81 454 5047 31.354409724956 62.654416162332 2 31.354409724956 62.654416162332 94.008825887288 4908.6748738431
+112	1812842 162 801 8983 32.500635174676 105.880573201587 6 0 0 0 0
+111	1813004 330 789 8718 32.499002693594 98.253230678722 12 0 13 100 1256
+91	1813334 236 348 4989 31.100071230433 62.600075668467 6 31.100071230433 62.600075668467 243.50043437736 10563.805504277
+103	1813570 215 456 8985 31.354415231091 105.880580707587 8 1 1 8 8
+0	1813785 3340 2 9090 0.1 107.106313749201 135 0 1 67 67
+17	1817125 76580 4 10862 0.3 283.2 2830 -0.79613439292814 20.816357416529 10056.461316084 62068.616862735
+16	1893705 85105 4 10862 0.3 283.2 2830 -4.5 2.6 273.99001286073 5330.1777742247
+12	1978810 83398 3 10862 0.2 283.2 2831 0.25433206626587 27.699956833255 44198.482829161 854885.49122201
+2	2062208 80528 2 10862 0.1 283.2 2832 333.10841207299 2997.1758734817 3518782.2435804 5447445022.3867
+1	2142736 80541 2 10862 0.1 283.2 2832 1160.5610059178 2504.1636024062 4557063.2126786 7744619356.1833
+99	2223277 671 391 7796 31.200075135081 90.30007300832 17 8714.6167643368 953433.92645009 9040618.6077744 5708443964788.6
+107	2223948 204 726 7811 32.425478610288 90.325474448303 5 32.425478610288 90.325474448303 280.92737176971 17877.949216914
+120	2224152 165 927 7973 33.564658770567 91.664379966756 6 10 10 60 600
+118	2224317 664 912 7958 33.563162512225 91.662859824452 24 7 12 251 2717
+98	2224981 671 391 7796 31.200075135081 90.30007300832 17 31.200075135081 90.30007300832 888.10123344871 52651.558116448
+108	2225652 293 728 7975 32.425485170305 91.664386824452 11 1 1 11 11
+60	2225945 4601 68 8118 6.7 92.842879661066 179 0 1 89 89
+65	2230546 76741 70 11036 6.9 300.6 2938 0.973 9.2701559907892 6265.2351155681 19185.218267805
+64	2307287 90471 70 11036 6.9 300.6 2938 -4.5 2.6 119.26953250122 2786.2121017127
+63	2397758 87003 69 11036 6.8 300.6 2939 0.25498779020854 12.266191483699 28253.426857626 289508.17944293
+62	2484761 87045 68 11036 6.7 300.6 2940 355.58719268907 1585.0418543341 2931665.2668693 3183507829.6226
+61	2571806 87035 68 11036 6.7 300.6 2940 1056.0772855108 1887.2365835735 4724935.9592355 7733698598.6272
+101	2658841 689 395 7800 31.200075157478 90.300073074845 17 114875.86284056 995265.40818624 8544595.3251328 5349370948192.5
+122	2659530 164 1127 6128 34.656120420115 69.956119706528 4 34.656120420115 69.956119706528 212.72447299581 12212.812556911
+124	2659694 389 1284 7197 36.114001507666 86.98128376856 14 12 12 168 2016
+119	2660083 662 916 7962 33.563162527932 91.662859891013 24 7 12 251 2717
+100	2660745 688 395 7800 31.200075157478 90.300073074845 17 31.200075157478 90.300073074845 888.10123432322 52651.55821614
+123	2661433 482 1129 7199 34.656124954043 86.981290763646 18 1 1 18 18
+72	2661915 4599 94 8122 9.3 92.842879727583 179 0 1 89 89
+77	2666514 75700 96 11050 9.5 302 2926 0.973 10.924395977438 6803.3610041024 24688.789628368
+76	2742214 89932 96 11050 9.5 302 2926 -4.5 2.6 145.94763700945 3570.4185685645
+75	2832146 86787 95 11050 9.4 302 2927 0.25395693201036 14.848720632956 28244.434835361 291947.77786889
+74	2918933 86822 94 11050 9.3 302 2928 356.48620559648 1585.0493316902 2918231.2364898 3165290579.0834
+73	3005755 86796 94 11050 9.3 302 2928 1056.0772855108 1887.2292897612 4710741.63219 7717439167.5367
+116	3092551 610 861 8898 33.522039928462 100.02902728748 22 0 13 210 2514
+106	3093161 600 504 8588 31.47760053128 96.47760053128 22 0 13 210 2514
+84	3093761 142 312 8426 31.1 96.3 8 31.1 96.3 387.4 22103.22
+105	3093903 765 503 8586 31.47760053128 96.47760053128 19 31.47760053128 96.47760053128 1156.5105842465 79931.458970864
+104	3094668 765 503 8586 31.47760053128 96.47760053128 19 31.47760053128 96.47760053128 1156.5105842465 79931.458970864
+144	3095433 41 8898 8898 100.02902728748 100.02902728748 1 100.02902728748 100.02902728748 100.02902728748 10005.806300079
+85	3095474 17 312 312 31.1 31.1 1 31.1 31.1 31.1 967.21
+86	3095491 1050 314 9051 31.100006 107.106248229583 41 1 1 41 41
+36	3096541 3770 39 9073 3.8 107.106313229583 147 0 1 73 73
+44	3100311 89529 41 11241 4 321.1 3172 0.71559964220307 11.648802652711 9356.7827135002 38674.5876747
+43	3189840 96613 41 11241 4 321.1 3172 -4 1.2 275.56030181497 2984.1746457694
+39	3286453 94055 40 11241 3.9 321.1 3173 0.11952212717431 27.699990541581 44121.128283281 801570.833111
+38	3380508 94082 39 11241 3.8 321.1 3174 340.10623256583 2996.4494549399 3852750.9483645 5802479299.2307
+37	3474590 94062 39 11241 3.8 321.1 3174 1160.5762374314 2504.0524417551 5050119.4150491 8471275363.5534
+88	3568652 314 340 8456 31.10007107679 96.30006794886 8 150431.61483482 976471.37497552 3590827.4657559 2310987173304.1
+128	3568966 123 2465 8479 42.929841463557 96.329834656634 3 42.929841463557 96.329834656634 201.88951804134 15044.905432128
+130	3569089 223 2807 8756 45.32574529342 98.253919493878 8 11 11 88 968
+109	3569312 636 781 8710 32.499002538963 98.253230320582 23 0 13 210 2514
+87	3569948 312 340 8456 31.10007107679 96.30006794886 8 31.10007107679 96.30006794886 387.40057845214 22103.275843514
+129	3570260 296 2467 8857 42.929850755783 99.246226199941 11 1 1 11 11
+66	3570556 3788 78 9077 7.7 107.106313307271 147 0 1 73 73
+71	3574344 85084 80 11247 7.9 321.7 3139 -0.77499167611671 20.551631057429 10050.586190508 55519.477207804
+70	3659428 96350 80 11247 7.9 321.7 3139 -4.5 2.6 274.12189280159 4335.6756870656
+69	3755778 93237 79 11247 7.8 321.7 3140 0.24776448706281 27.699882881155 44209.872055193 810069.86060912
+68	3849015 93233 78 11247 7.7 321.7 3141 333.10841207299 2997.7607813627 3820376.1670663 5763292313.5032
+67	3942248 93257 78 11247 7.7 321.7 3141 1160.5678523938 2507.5995842955 5007044.6099198 8417438379.6719
+90	4035505 315 344 8460 31.100071130234 96.30006802141 8 84186.071064323 924096.64625302 3674499.6807538 2520054546608.9
+125	4035820 123 1584 3205 37.970522783161 47.670523236395 3 37.970522783161 47.670523236395 128.61156658274 5560.7050235292
+127	4035943 249 1740 4798 39.269661639766 61.338840317887 9 13 13 117 1521
+110	4036192 661 785 8714 32.499002592435 98.25323039307 24 0 13 210 2514
+89	4036853 314 344 8460 31.100071130234 96.30006802141 8 31.100071130234 96.30006802141 387.40057892405 22103.275891782
+126	4037167 322 1586 4800 37.970530029108 61.338840966652 12 1 1 12 12
+78	4037489 3780 105 9081 10.4 107.106313364826 147 0 1 73 73
+83	4041269 83683 107 11259 10.6 322.9 3124 -0.78284704537842 20.674074943888 10319.58552201 60304.608794295
+82	4124952 95918 107 11259 10.6 322.9 3124 -4.5 2.6 274.09976815789 4860.4562380639
+81	4220870 92898 106 11259 10.5 322.9 3125 0.24741222256026 27.699963126301 44188.575216779 812674.97362403
+80	4313768 92930 105 11259 10.4 322.9 3126 333.10841207299 2996.1972850738 3807552.6500279 5748102109.4397
+79	4406698 92960 105 11259 10.4 322.9 3126 1160.5661633124 2504.0138533039 4985277.1076523 8381755176.881
+24	4499658 12 28 28 2.7 2.7 1 0 0 0 0
+33	4499670 87337 30 11402 2.9 337.2 3344 0.973 7.742970506165 6218.8585213246 15447.816342931
+32	4587007 103531 30 11402 2.9 337.2 3344 -4.5 2.6 102.98899404081 1914.1483247295
+30	4690538 99269 29 11402 2.8 337.2 3345 0.25797700371896 10.617949675174 27488.316206673 241210.56941529
+26	4789807 99317 28 11402 2.7 337.2 3346 710.23205857538 1908.3633193895 3978328.8784111 5259925402.0083
+25	4889124 99273 28 11402 2.7 337.2 3346 1474.1183373877 2413.5228035762 6658675.9125208 13406451730.638
+48	4988397 12 54 54 5.3 5.3 1 0 0 0 0
+57	4988409 85951 56 11417 5.5 338.7 3333 0.973 9.6964558326924 6668.4115650252 19368.953507147
+56	5074360 103506 56 11417 5.5 338.7 3333 -4.5 2.6 132.45931719068 2619.5292143488
+54	5177866 99094 55 11417 5.4 338.7 3334 0.25029536069301 13.496227079761 27486.246085197 242686.01248736
+50	5276960 99111 54 11417 5.3 338.7 3335 710.24104999937 1908.3683278309 3965156.4907653 5241569776.2306
+49	5376071 99131 54 11417 5.3 338.7 3335 1474.3252761852 2413.5228035762 6637872.005714 13364986065.877
+

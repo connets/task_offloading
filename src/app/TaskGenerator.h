@@ -72,6 +72,9 @@ private:
     // SECTION - Response messages statistics
     simsignal_t stopResponseMessages;
 
+    // SECTION - Beaconing messages statistics
+    simsignal_t stopBeaconMessages;
+
 protected:
     simtime_t lastDroveAt;
     std::map<int, HelperVehicleInfo> helpers;

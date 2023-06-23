@@ -29,6 +29,7 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
 
     // Check my current load
     double currentVehicleLoad = par("randomVehicleFreeLoadPercentage").doubleValue() * par("commonVehicleLoad").doubleValue();
+    availableLoad = availableLoad - currentVehicleLoad;
 
     // Emit the signal for my current load
     emit(availableMessageLoad, currentVehicleLoad);
@@ -41,6 +42,9 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
 
     // If I met requirements send an available message
     if (currentVehicleLoad >= minimumLoadRequested) {
+        //start task availability timer
+        setTaskAvailabilityTimer(helpMessage->getId(),helpMessage->getTaskSize());
+
         // Color the vehicle icon in blue
         findHost()->getDisplayString().setTagArg("i", 1, "blue");
 
@@ -55,6 +59,11 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
         available->setCpuFreq(cpuFreq);
         available->setVehicleAngle(traciVehicle->getAngle());
         available->setVehicleSpeed(traciVehicle->getSpeed());
+        veins::TraCIMobility* mobilityMod = check_and_cast<veins::TraCIMobility*>(getModuleByPath("^.veinsmobility"));
+        double cx = mobilityMod->getPositionAt(simTime()).x;
+        double cy = mobilityMod->getPositionAt(simTime()).y;
+        available->setVehiclePositionX(cx);
+        available->setVehiclePositionY(cy);
 
         // Schedule the ok message
         scheduleAt(simTime() + par("vehicleAvailabilityMessageTime").doubleValue(), available);

@@ -32,6 +32,18 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
 
     // Check if I'm the vehicle designated for computation and if the data is different
     if (dataMessage->getHostIndex() == findHost()->getIndex()) {
+
+        auto key = std::pair<int,int>(dataMessage->getTaskId(),dataMessage->getPartitionId());
+
+        //if the cache is not empty it resends the response message tied to this data message
+        if(!isNewPartition(dataMessage)){
+            sendAgainResponse(responseCache.at(key));
+            return;
+        }
+
+        //reset the task availability timer
+        resetTaskAvailabilityTimer(dataMessage->getTaskId());
+
         // Color the vehicle in red when computing
         findHost()->getDisplayString().setTagArg("i", 1, "red");
 
@@ -40,6 +52,10 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
 
         // Update if I'll be still available
         stillAvailableProbability = par("stillAvailableProbability").doubleValue() > par("stillAvailableThreshold").doubleValue();
+        if(stillAvailableProbability) {
+            setTaskAvailabilityTimer(dataMessage->getTaskId(), dataMessage->getTaskSize());
+        }
+
 
         // Prepare the response message
         ResponseMessage* responseMessage = new ResponseMessage();
@@ -62,6 +78,9 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
         responseMessage->setTaskID(dataMessage->getTaskId());
         responseMessage->setPartitionID(dataMessage->getPartitionId());
         responseMessage->addByteLength(dataMessage->getLoadToProcess());
+
+        //Insert response message in response cache
+        responseCache.insert(std::pair<std::pair<int, int>, ResponseMessage*>(key, responseMessage->dup()));
 
         // Schedule the response message
         scheduleAt(simTime() + timeToCompute, responseMessage);
