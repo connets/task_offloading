@@ -77,6 +77,7 @@ void TaskGenerator::balanceLoad()
             dataMessage->setPartitionId(tasks[0].getDataPartitionId());
             dataMessage->setLoadBalancingId(tasks[0].getLoadBalancingId());
             dataMessage->setCpi(tasks[0].getComputingDensity());
+            dataMessage->setRecipientAddress(helpers[i].getAddress());
 
             // Calculate time for timer
             double CPI = tasks[0].getComputingDensity();
@@ -97,7 +98,7 @@ void TaskGenerator::balanceLoad()
             if (par("useAcks").boolValue() == false) {
                 ComputationTimerMessage* computationTimerMessage = new ComputationTimerMessage();
                 populateWSM(computationTimerMessage);
-                computationTimerMessage->setData(dataMessage);
+                computationTimerMessage->setData(dataMessage->dup());
 
                 // Calculate time to file transmission
                 double transferTime = 10.0;

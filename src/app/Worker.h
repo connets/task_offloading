@@ -78,6 +78,7 @@ protected:
     int currentDataPartitionId;
     double availableLoad;
     bool stillAvailableProbability;
+    veins::LAddress::L2Type busAddress;
     std::map<int, TotalComputationTimerMessage*> taskAvailabilityTimers;
     std::map<std::pair<int,int>, ResponseMessage*> responseCache;
 

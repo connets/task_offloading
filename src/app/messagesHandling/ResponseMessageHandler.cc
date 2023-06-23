@@ -66,6 +66,8 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
                 ackMessage->setHostIndex(responseMessage->getHostIndex());
                 ackMessage->setTaskID(responseMessage->getTaskID());
                 ackMessage->setPartitionID(responseMessage->getPartitionID());
+                ackMessage->setSenderAddress(myId);
+                ackMessage->setRecipientAddress(responseMessage->getSenderAddress());
                 scheduleAt(simTime(), ackMessage);
             }
         }
@@ -115,6 +117,8 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
             ackMessage->setHostIndex(responseMessage->getHostIndex());
             ackMessage->setTaskID(responseMessage->getTaskID());
             ackMessage->setPartitionID(responseMessage->getPartitionID());
+            ackMessage->setSenderAddress(myId);
+            ackMessage->setRecipientAddress(responseMessage->getSenderAddress());
             scheduleAt(simTime(), ackMessage);
         }
     }

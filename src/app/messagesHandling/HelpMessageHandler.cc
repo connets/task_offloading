@@ -40,6 +40,9 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
     // Set my CPU freq
     cpuFreq = CPUFreq;
 
+    // Save the bus address
+    busAddress = helpMessage->getSenderAddress();
+
     // If I met requirements send an available message
     if (currentVehicleLoad >= minimumLoadRequested) {
         //start task availability timer
@@ -64,6 +67,8 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
         double cy = mobilityMod->getPositionAt(simTime()).y;
         available->setVehiclePositionX(cx);
         available->setVehiclePositionY(cy);
+        available->setRecipientAddress(busAddress);
+        available->setSenderAddress(myId);
 
         // Schedule the ok message
         scheduleAt(simTime() + par("vehicleAvailabilityMessageTime").doubleValue(), available);
