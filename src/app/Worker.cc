@@ -141,11 +141,6 @@ void Worker::handleSelfMsg(cMessage* msg)
         sendDown(responseMessage->dup());
     }
 
-    // Timer for re-send response message
-    if (AckTimerMessage* ackTimerMessage = dynamic_cast<AckTimerMessage*>(msg)) {
-        const ResponseMessage* response = ackTimerMessage->getData();
-        sendAgainResponse(response);
-    }
     //Timer for task
     if(TotalComputationTimerMessage* tcm = dynamic_cast<TotalComputationTimerMessage*>(msg)){
         //Color the vehicle in white when task availability timer runs out

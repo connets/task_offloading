@@ -49,8 +49,6 @@ void Beaconer::initialize(int stage)
         // Save the actual simtime for future help messages
         simtime_t simTimeActual = simTime();
 
-        // Your application has sent a beacon message to another car or bus
-        findHost()->getDisplayString().setTagArg("i", 1, "orange");
         // Schedule the message -> simTime + availability msgs threshold
         scheduleAt(simTimeActual + par("beaconIntervalTime").doubleValue(), sendBeaconEvt);
 
