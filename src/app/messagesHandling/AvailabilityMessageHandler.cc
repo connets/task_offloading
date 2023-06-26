@@ -73,7 +73,7 @@ void TaskGenerator::handleAvailabilityMessage(AvailabilityMessage* availabilityM
     // Check the bus state
     int currentBusState = busState.getCurrentState();
 
-    if (findHost()->getIndex() == busIndex && currentBusState == 1) {
+    if (currentBusState == 1) {
         // Color the bus that received help
         findHost()->getDisplayString().setTagArg("i", 1, "green");
         std::string currentHostIndex = availabilityMessage->getIndex() + std::to_string(availabilityMessage->getHostID());
