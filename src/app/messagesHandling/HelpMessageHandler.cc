@@ -64,7 +64,7 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
         double cy = mobilityMod->getPositionAt(simTime()).y;
         available->setVehiclePositionX(cx);
         available->setVehiclePositionY(cy);
-        available->setSenderAddress(myId);
+        available->setSenderAddress(mac->getMACAddress());
         available->setRecipientAddress(helpMessage->getSenderAddress());
 
         // Schedule the ok message
