@@ -23,4 +23,5 @@ packet AckMessage extends veins::BaseFrame1609_4 {
     int hostIndex;
     int taskID;
     int partitionID;
+    veins::LAddress::L2Type senderAddress = -1;
 }

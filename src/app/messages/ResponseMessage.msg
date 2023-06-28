@@ -26,4 +26,5 @@ packet ResponseMessage extends veins::BaseFrame1609_4 {
     double timeToCompute;
     int taskID;
     int partitionID;
+    veins::LAddress::L2Type senderAddress = -1;
 }
