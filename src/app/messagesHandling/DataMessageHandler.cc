@@ -75,14 +75,14 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     responseMessage->setTaskID(dataMessage->getTaskId());
     responseMessage->setPartitionID(dataMessage->getPartitionId());
     responseMessage->addByteLength(dataMessage->getLoadToProcess());
-    responseMessage->setRecipientAddress(busAddress);
-    responseMessage->setSenderAddress(myId);
+    responseMessage->setSenderAddress(mac->getMACAddress());
+    responseMessage->setRecipientAddress(dataMessage->getSenderAddress());
 
     //Insert response message in response cache
     responseCache.insert(std::pair<std::pair<int, int>, ResponseMessage*>(key, responseMessage->dup()));
 
     // Schedule the response message
-    scheduleAt(simTime() + timeToCompute, responseMessage);
+    scheduleAfter(timeToCompute, responseMessage);
 
     // Generate ACK timer if parameter useAcks is false
     // to achieve secure protocol manually and if I'm not still available
@@ -94,6 +94,6 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
         // Calculate time to file transmission
         double transferTime = 10.0;
 
-        scheduleAt(simTime() + timeToCompute + transferTime + par("ackMessageThreshold").doubleValue(), ackTimerMessage);
+        scheduleAfter(timeToCompute + transferTime + par("ackMessageThreshold").doubleValue(), ackTimerMessage);
     }
 }

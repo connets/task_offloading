@@ -121,7 +121,7 @@ void TaskGenerator::handleSelfMsg(cMessage* msg)
     // Timer for data computation
     if (ComputationTimerMessage* computationTimerMessage = dynamic_cast<ComputationTimerMessage*>(msg)) {
         const DataMessage* data = computationTimerMessage->getData();
-        sendAgainData(data);
+        sendAgainData(data->dup());
     }
 
     // Timer for data message

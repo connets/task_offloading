@@ -90,7 +90,7 @@ protected:
     void handleSelfMsg(cMessage* msg) override;
     void handleHelpMessage(HelpMessage* helpMsg);
     void handleDataMessage(DataMessage* dataMsg);
-    void sendAgainResponse(const ResponseMessage* data);
+    void sendAgainResponse(ResponseMessage* data);
     void handlePositionUpdate(cObject* obj) override;
 
     void setTaskAvailabilityTimer(int taskId, int taskSize);
