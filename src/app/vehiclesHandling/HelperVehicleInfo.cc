@@ -117,6 +117,13 @@ double HelperVehicleInfo::getVehiclePositionY() {
 }
 
 /**
+ * @returns The pointer to the current vehicle computation timer
+ */
+ComputationTimerMessage* HelperVehicleInfo::getVehicleComputationTimer() {
+    return this->vehicleComputationTimer;
+}
+
+/**
  * Set the current index of a vehicle
  *
  * @param newIndex The new index of a vehicle
@@ -210,6 +217,15 @@ void HelperVehicleInfo::setTaskCpi(int newCpi) {
  */
 void HelperVehicleInfo::setVehicleSpeed(double newSpeed) {
     this->vehicleSpeed = newSpeed;
+}
+
+/**
+ * Set the current pointer to vehicle computation timer
+ *
+ * @param newVehicleComputationTimer The new pointer to the current computation timer message
+ */
+void HelperVehicleInfo::setVehicleComputationTimer(ComputationTimerMessage* newVehicleComputationTimer) {
+    this->vehicleComputationTimer = newVehicleComputationTimer;
 }
 
 /**

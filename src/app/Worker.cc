@@ -100,13 +100,10 @@ void Worker::onWSM(veins::BaseFrame1609_4* wsm)
 
     // SECTION - When the host receive the ACK message
     if (AckMessage* ackMessage = dynamic_cast<AckMessage*>(wsm)) {
-        // Check if I'm the host for the ack message
-        if (ackMessage->getHostIndex() == findHost()->getIndex()) {
-            currentDataPartitionId = -1;
+        currentDataPartitionId = -1;
 
-            // Color the vehicle in white when computation ends
-            findHost()->getDisplayString().setTagArg("i", 1, "white");
-        }
+        // Color the vehicle in white when computation ends
+        findHost()->getDisplayString().setTagArg("i", 1, "white");
     }
 
     if(BeaconMessage* bmsg = dynamic_cast<BeaconMessage*>(wsm)) {
