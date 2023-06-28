@@ -30,53 +30,70 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
 
     double timeToCompute = CPI * I * (1 / CR);
 
-    // Check if I'm the vehicle designated for computation and if the data is different
-    if (dataMessage->getHostIndex() == findHost()->getIndex()) {
-        // Color the vehicle in red when computing
-        findHost()->getDisplayString().setTagArg("i", 1, "red");
+    auto key = std::pair<int,int>(dataMessage->getTaskId(),dataMessage->getPartitionId());
 
-        // Update the partition ID
-        currentDataPartitionId = dataMessage->getPartitionId();
+    //if the cache is not empty it resends the response message tied to this data message
+    if(!isNewPartition(dataMessage)){
+        sendAgainResponse(responseCache.at(key));
+        return;
+    }
 
-        // Update if I'll be still available
-        stillAvailableProbability = par("stillAvailableProbability").doubleValue() > par("stillAvailableThreshold").doubleValue();
+    //reset the task availability timer
+    resetTaskAvailabilityTimer(dataMessage->getTaskId());
 
-        // Prepare the response message
-        ResponseMessage* responseMessage = new ResponseMessage();
+    // Color the vehicle in red when computing
+    findHost()->getDisplayString().setTagArg("i", 1, "red");
 
-        // Populate the response message
+    // Update the partition ID
+    currentDataPartitionId = dataMessage->getPartitionId();
 
-        // If useAcks is active then send the message with L2Address
-        // otherwise send it without address to use the manual secure protocol
-        if (par("useAcks").boolValue()) {
-            populateWSM(responseMessage, dataMessage->getSenderAddress());
-        } else {
-            populateWSM(responseMessage);
-        }
+    // Update if I'll be still available
+    stillAvailableProbability = par("stillAvailableProbability").doubleValue() > par("stillAvailableThreshold").doubleValue();
+    if(stillAvailableProbability) {
+        setTaskAvailabilityTimer(dataMessage->getTaskId(), dataMessage->getTaskSize());
+    }
 
-        // Populate other fields
-        responseMessage->setHostIndex(dataMessage->getHostIndex());
-        responseMessage->setStillAvailable(stillAvailableProbability);
-        responseMessage->setDataComputed(dataMessage->getLoadToProcess());
-        responseMessage->setTimeToCompute(timeToCompute);
-        responseMessage->setTaskID(dataMessage->getTaskId());
-        responseMessage->setPartitionID(dataMessage->getPartitionId());
-        responseMessage->addByteLength(dataMessage->getLoadToProcess());
 
-        // Schedule the response message
-        scheduleAt(simTime() + timeToCompute, responseMessage);
+    // Prepare the response message
+    ResponseMessage* responseMessage = new ResponseMessage();
 
-        // Generate ACK timer if parameter useAcks is false
-        // to achieve secure protocol manually and if I'm not still available
-        if (!(par("useAcks").boolValue()) && !(stillAvailableProbability)) {
-            AckTimerMessage* ackTimerMessage = new AckTimerMessage();
-            populateWSM(ackTimerMessage);
-            ackTimerMessage->setData(responseMessage);
+    // Populate the response message
 
-            // Calculate time to file transmission
-            double transferTime = 10.0;
+    // If useAcks is active then send the message with L2Address
+    // otherwise send it without address to use the manual secure protocol
+    if (par("useAcks").boolValue()) {
+        populateWSM(responseMessage, dataMessage->getSenderAddress());
+    } else {
+        populateWSM(responseMessage);
+    }
 
-            scheduleAt(simTime() + timeToCompute + transferTime + par("ackMessageThreshold").doubleValue(), ackTimerMessage);
-        }
+    // Populate other fields
+    responseMessage->setHostIndex(dataMessage->getHostIndex());
+    responseMessage->setStillAvailable(stillAvailableProbability);
+    responseMessage->setDataComputed(dataMessage->getLoadToProcess());
+    responseMessage->setTimeToCompute(timeToCompute);
+    responseMessage->setTaskID(dataMessage->getTaskId());
+    responseMessage->setPartitionID(dataMessage->getPartitionId());
+    responseMessage->addByteLength(dataMessage->getLoadToProcess());
+    responseMessage->setSenderAddress(mac->getMACAddress());
+    responseMessage->setRecipientAddress(dataMessage->getSenderAddress());
+
+    //Insert response message in response cache
+    responseCache.insert(std::pair<std::pair<int, int>, ResponseMessage*>(key, responseMessage->dup()));
+
+    // Schedule the response message
+    scheduleAfter(timeToCompute, responseMessage);
+
+    // Generate ACK timer if parameter useAcks is false
+    // to achieve secure protocol manually and if I'm not still available
+    if (!(par("useAcks").boolValue()) && !(stillAvailableProbability)) {
+        AckTimerMessage* ackTimerMessage = new AckTimerMessage();
+        populateWSM(ackTimerMessage);
+        ackTimerMessage->setData(responseMessage->dup());
+
+        // Calculate time to file transmission
+        double transferTime = 10.0;
+
+        scheduleAfter(timeToCompute + transferTime + par("ackMessageThreshold").doubleValue(), ackTimerMessage);
     }
 }

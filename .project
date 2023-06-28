@@ -4,6 +4,7 @@
 	<comment></comment>
 	<projects>
 		<project>inet4.4</project>
+		<project>inet4.5</project>
 		<project>veins-5.2</project>
 	</projects>
 	<buildSpec>

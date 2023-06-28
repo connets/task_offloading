@@ -23,6 +23,7 @@
 #include "Worker.h"
 
 #include "app/messages/HelpMessage_m.h"
+#include "app/messages/BeaconMessage_m.h"
 #include "app/messages/AvailabilityMessage_m.h"
 #include "app/messages/AckMessage_m.h"
 #include "app/messages/DataMessage_m.h"
@@ -31,6 +32,7 @@
 #include "app/messages/LoadBalanceTimerMessage_m.h"
 #include "app/messages/ComputationTimerMessage_m.h"
 #include "app/messages/UpdateAvailabilityMessage_m.h"
+#include "app/messages/TotalComputationTimerMessage_m.h"
 
 using namespace task_offloading;
 
@@ -50,13 +52,21 @@ void Worker::initialize(int stage)
         // Initialize data partition id
         currentDataPartitionId = -1;
 
+        //common vehicle load
+        availableLoad = par("commonVehicleLoad").doubleValue();
+
         // Initialize the probability to be still available after computation
         stillAvailableProbability = false;
+
+        if(par("retryFactorTime").doubleValue()<1) {
+            throw cRuntimeError("retryFactorTime cannot be lower than 1");
+        }
 
         // Registering all signals
         stopHelp = registerSignal("stop_bus_help_rq");
         stopDataMessages = registerSignal("stop_sending_data");
         startResponseMessages = registerSignal("start_getting_response");
+        stopBeaconMessages = registerSignal("stopBeaconMessages");
         availableMessageSent = registerSignal("available_message_sent");
         availableMessageLoad = registerSignal("available_message_load");
     }
@@ -69,7 +79,7 @@ void Worker::finish()
 
 void Worker::onBSM(veins::DemoSafetyMessage* bsm)
 {
-    // Your application has received a beacon message from another car or RSU
+
 }
 
 void Worker::onWSM(veins::BaseFrame1609_4* wsm)
@@ -90,14 +100,15 @@ void Worker::onWSM(veins::BaseFrame1609_4* wsm)
 
     // SECTION - When the host receive the ACK message
     if (AckMessage* ackMessage = dynamic_cast<AckMessage*>(wsm)) {
-        // Check if I'm the host for the ack message
-        if (ackMessage->getHostIndex() == findHost()->getIndex()) {
-            currentDataPartitionId = -1;
+        currentDataPartitionId = -1;
 
-            // Color the vehicle in white when computation ends
-            findHost()->getDisplayString().setTagArg("i", 1, "white");
-        }
+        // Color the vehicle in white when computation ends
+        findHost()->getDisplayString().setTagArg("i", 1, "white");
     }
+
+    if(BeaconMessage* bmsg = dynamic_cast<BeaconMessage*>(wsm)) {
+            emit(stopBeaconMessages, simTime());
+        }
 }
 
 void Worker::onWSA(veins::DemoServiceAdvertisment* wsa)
@@ -107,6 +118,8 @@ void Worker::onWSA(veins::DemoServiceAdvertisment* wsa)
 
 void Worker::handleSelfMsg(cMessage* msg)
 {
+    //TODO timer based on cMessage and not on veins
+
     // Timer for ok message
     if (AvailabilityMessage* availabilityMessage = dynamic_cast<AvailabilityMessage*>(msg)) {
         // Emit the signal of ok message sent
@@ -128,11 +141,14 @@ void Worker::handleSelfMsg(cMessage* msg)
         sendDown(responseMessage->dup());
     }
 
-    // Timer for re-send response message
-    if (AckTimerMessage* ackTimerMessage = dynamic_cast<AckTimerMessage*>(msg)) {
-        const ResponseMessage* response = ackTimerMessage->getData();
-        sendAgainResponse(response);
+    //Timer for task
+    if(TotalComputationTimerMessage* tcm = dynamic_cast<TotalComputationTimerMessage*>(msg)){
+        //Color the vehicle in white when task availability timer runs out
+        findHost()->getDisplayString().setTagArg("i", 1, "white");
+        //Reset common vehicle load
+        availableLoad = par("commonVehicleLoad").doubleValue();  //Only with one task
     }
+
 }
 
 void Worker::handlePositionUpdate(cObject* obj)
@@ -143,4 +159,29 @@ void Worker::handlePositionUpdate(cObject* obj)
     veins::DemoBaseApplLayer::handlePositionUpdate(obj);
 
     lastDroveAt = simTime();
+}
+
+void Worker::setTaskAvailabilityTimer(int taskId, int taskSize){
+    //Set task availability timer
+    double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
+    double taskTransmissionTime = ceil(taskSize/bitRate);
+    double taskTimer = (1 + taskTransmissionTime*1.1)*par("retryFactorTime").doubleValue();
+
+    TotalComputationTimerMessage* tcm = new TotalComputationTimerMessage("taskAvailabilityTimerMessage");
+    tcm->setTaskId(taskId);
+    taskAvailabilityTimers.insert(std::pair<int,TotalComputationTimerMessage*>(taskId,tcm));
+    scheduleAfter(taskTimer, tcm);
+}
+
+void Worker::resetTaskAvailabilityTimer(int taskId) {
+    //stop task availability timer
+//    if(taskAvailabilityTimers.find(taskId)!=taskAvailabilityTimers.end()){
+        cancelAndDelete(taskAvailabilityTimers.at(taskId));
+        taskAvailabilityTimers.erase(taskId);
+//    }
+}
+
+bool Worker::isNewPartition(DataMessage* dataMessage){
+    auto key = std::pair<int,int>(dataMessage->getTaskId(),dataMessage->getPartitionId());
+    return responseCache.find(key) == responseCache.end();
 }

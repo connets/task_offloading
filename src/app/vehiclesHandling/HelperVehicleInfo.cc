@@ -103,6 +103,27 @@ double HelperVehicleInfo::getVehicleSpeed() {
 }
 
 /**
+ * @returns The x position of a vehicle
+ */
+double HelperVehicleInfo::getVehiclePositionX() {
+    return this->vehiclePositionX;
+}
+
+/**
+ * @returns The y position of a vehicle
+ */
+double HelperVehicleInfo::getVehiclePositionY() {
+    return this->vehiclePositionY;
+}
+
+/**
+ * @returns The pointer to the current vehicle computation timer
+ */
+ComputationTimerMessage* HelperVehicleInfo::getVehicleComputationTimer() {
+    return this->vehicleComputationTimer;
+}
+
+/**
  * Set the current index of a vehicle
  *
  * @param newIndex The new index of a vehicle
@@ -157,6 +178,21 @@ void HelperVehicleInfo::setVehicleAngle(double newAngle) {
 }
 
 /**
+ * Set the current x position of a vehicle
+ * @param newAddress The new x position of a vehicle
+ */
+void HelperVehicleInfo::setVehiclePositionX(double newVehiclePositionX) {
+    this->vehiclePositionX=newVehiclePositionX;
+}
+
+/**
+ * Set the current y position of a vehicle
+ * @param newAddress The new y position of a vehicle
+ */
+void HelperVehicleInfo::setVehiclePositionY(double newVehiclePositionY) {
+    this->vehiclePositionY=newVehiclePositionY;
+}
+/**
  * Set the current data partition id of the vehicle computation
  *
  * @param newPartitionId The new id of a data partition
@@ -181,6 +217,15 @@ void HelperVehicleInfo::setTaskCpi(int newCpi) {
  */
 void HelperVehicleInfo::setVehicleSpeed(double newSpeed) {
     this->vehicleSpeed = newSpeed;
+}
+
+/**
+ * Set the current pointer to vehicle computation timer
+ *
+ * @param newVehicleComputationTimer The new pointer to the current computation timer message
+ */
+void HelperVehicleInfo::setVehicleComputationTimer(ComputationTimerMessage* newVehicleComputationTimer) {
+    this->vehicleComputationTimer = newVehicleComputationTimer;
 }
 
 /**

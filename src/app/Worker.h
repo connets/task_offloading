@@ -25,6 +25,7 @@
 #include "veins/veins.h"
 
 #include "app/messages/HelpMessage_m.h"
+#include "app/messages/TotalComputationTimerMessage_m.h"
 #include "app/messages/AvailabilityMessage_m.h"
 #include "app/messages/DataMessage_m.h"
 #include "app/messages/ResponseMessage_m.h"
@@ -32,6 +33,7 @@
 #include "app/loadBalancing/sortingAlgorithm/BaseSorting.h"
 #include "loadBalancing/BusState.h"
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
+#include "inet/common/ModuleRefByPar.h"
 
 using namespace omnetpp;
 
@@ -67,12 +69,17 @@ private:
     // SECTION - OK messages statistics
     simsignal_t availableMessageSent;
     simsignal_t availableMessageLoad;
+    // SECTION - Beaconing messages statistics
+    simsignal_t stopBeaconMessages;
 
 protected:
     simtime_t lastDroveAt;
     double cpuFreq;
     int currentDataPartitionId;
+    double availableLoad;
     bool stillAvailableProbability;
+    std::map<int, TotalComputationTimerMessage*> taskAvailabilityTimers;
+    std::map<std::pair<int,int>, ResponseMessage*> responseCache;
 
 protected:
     void onBSM(veins::DemoSafetyMessage* bsm) override;
@@ -82,7 +89,13 @@ protected:
     void handleSelfMsg(cMessage* msg) override;
     void handleHelpMessage(HelpMessage* helpMsg);
     void handleDataMessage(DataMessage* dataMsg);
-    void sendAgainResponse(const ResponseMessage* data);
+    void sendAgainResponse(ResponseMessage* data);
     void handlePositionUpdate(cObject* obj) override;
+
+    void setTaskAvailabilityTimer(int taskId, int taskSize);
+    void resetTaskAvailabilityTimer(int taskId);
+private:
+    bool isNewPartition(DataMessage* dataMsg);
+
 };
 }

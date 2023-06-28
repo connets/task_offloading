@@ -72,6 +72,9 @@ private:
     // SECTION - Response messages statistics
     simsignal_t stopResponseMessages;
 
+    // SECTION - Beaconing messages statistics
+    simsignal_t stopBeaconMessages;
+
 protected:
     simtime_t lastDroveAt;
     std::map<int, HelperVehicleInfo> helpers;
@@ -89,7 +92,7 @@ protected:
     void handleSelfMsg(cMessage* msg) override;
     void handleAvailabilityMessage(AvailabilityMessage* okMsg);
     void handleResponseMessage(ResponseMessage* responseMsg);
-    void sendAgainData(const DataMessage* data);
+    void sendAgainData(DataMessage* data);
     void balanceLoad();
     void vehicleHandler();
     void handlePositionUpdate(cObject* obj) override;

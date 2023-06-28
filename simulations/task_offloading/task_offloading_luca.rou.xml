@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on dom 4 dic 2022, 15:00:04 by Eclipse SUMO netedit Version 1.8.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="/opt/omnetpp-6.0.1/workspace/task_offloading/simulations/task_offloading/task_offloading.net.xml"/>
+    </input>
+
+    <output>
+        <output-file value="/opt/omnetpp-6.0.1/workspace/task_offloading/simulations/task_offloading/task_offloading.net.xml"/>
+    </output>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="false"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="0"/>
+        <junctions.limit-turn-speed value="-1"/>
+        <rectangular-lane-cut value="false"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="false"/>
+    </pedestrian>
+
+    <netedit>
+        <route-files value="/opt/omnetpp-6.0.1/workspace/task_offloading/simulations/task_offloading/task_offloading.rou.xml"/>
+    </netedit>
+
+    <report>
+        <aggregate-warnings value="5"/>
+    </report>
+
+/*-</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType id="BUS" maxSpeed="27.7" vClass="bus"/>
+    <vType id="CAR" maxSpeed="27.7" vClass="passenger"/>
+    <trip id="vehicle_0" type="BUS" depart="0.00" from="15259223" to="-32282774" via="113939242#0 5445204#2 5445204#3 23570844#2 10419402 -4006693#0 -31401017#2 -8402998#3 -29900564#0 -4006674#4 23605600#1 4006675 -32270593 4006674#0 -4006682 32302591#2 32302591#4 33174302#0 33174302#1 4686970#0 -30357194"/>
+    <trip id="vehicle_1" type="CAR" depart="0.00" from="15259223" to="-32282774" via="113939242#0 5445204#2 5445204#3 23570844#2 10419402 -4006693#0 -31401017#2 -8402998#3 -29900564#0 -4006674#4 23605600#1 4006675 -32270593 4006674#0 -4006682 32302591#2 32302591#4 33174302#0 33174302#1 4686970#0 -30357194"/>
+    <trip id="vehicle_10" type="CAR" depart="0.00" from="4047316" to="-125685391" via="31777493#1 4047446#1 30350445 -33174302#0 -32302591#5"/>
+    <trip id="vehicle_11" type="CAR" depart="0.00" from="4047316" to="-125685391" via="31777493#1 4047446#1 30350445 -33174302#0 -32302591#5"/>
+    <trip id="vehicle_12" type="CAR" depart="0.00" from="4047316" to="-125685391" via="31777493#1 4047446#1 30350445 -33174302#0 -32302591#5"/>
+    <trip id="vehicle_13" type="CAR" depart="0.00" from="4047316" to="-125685391" via="31777493#1 4047446#1 30350445 -33174302#0 -32302591#5"/>
+    <trip id="vehicle_14" type="CAR" depart="0.00" from="4006703#0" to="3998653" via="28269598 -4006702#1 -4006702#0 -3013106#2 3998615#3 -3998645#1 -3998612#0 3998613#0"/>
+    <trip id="vehicle_15" type="CAR" depart="0.00" from="4006703#0" to="3998653" via="28269598 -4006702#1 -4006702#0 -3013106#2 3998615#3 -3998645#1 -3998612#0 3998613#0"/>
+    <trip id="vehicle_16" type="CAR" depart="0.00" from="4006703#0" to="3998653" via="28269598 -4006702#1 -4006702#0 -3013106#2 3998615#3 -3998645#1 -3998612#0 3998613#0"/>
+    <trip id="vehicle_17" type="CAR" depart="0.00" from="125685391" to="4319349" via="32270592#1 31401018 -23605600#1 -4006674#3 4006684 4006683 -4006682 32302591#3 33174302#0 33174302#1 4686970#1 30350448 30350450#0 30350450#2"/>
+    <trip id="vehicle_18" type="CAR" depart="0.00" from="125685391" to="4319349" via="32270592#1 31401018 -23605600#1 -4006674#3 4006684 4006683 -4006682 32302591#3 33174302#0 33174302#1 4686970#1 30350448 30350450#0 30350450#2"/>
+    <trip id="vehicle_19" type="CAR" depart="0.00" from="125685391" to="4319349" via="32270592#1 31401018 -23605600#1 -4006674#3 4006684 4006683 -4006682 32302591#3 33174302#0 33174302#1 4686970#1 30350448 30350450#0 30350450#2"/>
+    <trip id="vehicle_20" type="CAR" depart="0.00" from="125685391" to="4319349" via="32270592#1 31401018 -23605600#1 -4006674#3 4006684 4006683 -4006682 32302591#3 33174302#0 33174302#1 4686970#1 30350448 30350450#0 30350450#2"/>
+    <trip id="vehicle_21" type="CAR" depart="0.00" from="125685391" to="4319349" via="32270592#1 31401018 -23605600#1 -4006674#3 4006684 4006683 -4006682 32302591#3 33174302#0 33174302#1 4686970#1 30350448 30350450#0 30350450#2"/>
+    <trip id="vehicle_2" type="CAR" depart="0.00" from="15259223" to="-32282774" via="113939242#0 5445204#2 5445204#3 23570844#2 10419402 -4006693#0 -31401017#2 -8402998#3 -29900564#0 -4006674#4 23605600#1 4006675 -32270593 4006674#0 -4006682 32302591#2 32302591#4 33174302#0 33174302#1 4686970#0 -30357194"/>
+    <trip id="vehicle_3" type="CAR" depart="0.00" from="15259223" to="-32282774" via="113939242#0 5445204#2 5445204#3 23570844#2 10419402 -4006693#0 -31401017#2 -8402998#3 -29900564#0 -4006674#4 23605600#1 4006675 -32270593 4006674#0 -4006682 32302591#2 32302591#4 33174302#0 33174302#1 4686970#0 -30357194"/>
+    <trip id="vehicle_4" type="CAR" depart="0.00" from="15259223" to="-32282774" via="113939242#0 5445204#2 5445204#3 23570844#2 10419402 -4006693#0 -31401017#2 -8402998#3 -29900564#0 -4006674#4 23605600#1 4006675 -32270593 4006674#0 -4006682 32302591#2 32302591#4 33174302#0 33174302#1 4686970#0 -30357194"/>
+    <trip id="vehicle_5" type="CAR" depart="0.00" from="15259223" to="-32282774" via="113939242#0 5445204#2 5445204#3 23570844#2 10419402 -4006693#0 -31401017#2 -8402998#3 -29900564#0 -4006674#4 23605600#1 4006675 -32270593 4006674#0 -4006682 32302591#2 32302591#4 33174302#0 33174302#1 4686970#0 -30357194"/>
+    <trip id="vehicle_6" type="CAR" depart="0.00" from="4047316" to="-125685391" via="31777493#1 4047446#1 30350445 -33174302#0 -32302591#5"/>
+    <trip id="vehicle_7" type="CAR" depart="0.00" from="4047316" to="-125685391" via="31777493#1 4047446#1 30350445 -33174302#0 -32302591#5"/>
+    <trip id="vehicle_8" type="CAR" depart="0.00" from="4047316" to="-125685391" via="31777493#1 4047446#1 30350445 -33174302#0 -32302591#5"/>
+    <trip id="vehicle_9" type="CAR" depart="0.00" from="4047316" to="-125685391" via="31777493#1 4047446#1 30350445 -33174302#0 -32302591#5"/>
+</routes>

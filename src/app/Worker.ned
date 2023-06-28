@@ -43,12 +43,22 @@ simple Worker extends DemoBaseApplLayer
         // The threshold for the ack messages
         volatile double ackMessageThreshold @unit(s) = default(uniform(50ms, 100ms));
         
+        // The input/output ratio
+        double IOratio = default(1);
+        
+        //refactor time
+        double retryFactorTime = default(3);
+        
         // Override default veins data length bits
         dataLengthBits = 0bit;
         
         // Statistics for collecting help requests
         @signal[stop_bus_help_rq](type = simtime_t);
         @statistic[stopHelpRequests](source = stop_bus_help_rq; record = vector,stats; interpolationmode = none);
+        
+        // Statistics for collecting beacon messages
+        @signal[stopBeaconMessages](type = simtime_t);
+        @statistic[stopBeaconMessages](source = stopBeaconMessages; record = vector,stats; interpolationmode = none);
         
         // Statistics for sending data messages
         @signal[stop_sending_data](type = int);

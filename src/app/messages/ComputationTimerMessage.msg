@@ -19,7 +19,7 @@ import veins.base.utils.SimpleAddress;
 import DataMessage;
 
 namespace task_offloading;
-
+//TODO change to cMessage
 packet ComputationTimerMessage extends veins::BaseFrame1609_4 {
     DataMessage* data;
 }

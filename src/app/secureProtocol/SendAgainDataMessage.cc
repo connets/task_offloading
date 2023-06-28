@@ -18,7 +18,7 @@
 
 using namespace task_offloading;
 
-void TaskGenerator::sendAgainData(const DataMessage* data)
+void TaskGenerator::sendAgainData(DataMessage* data)
 {
     // Search the vehicle in the map
     auto found = helpers.find(data->getHostIndex());
@@ -32,8 +32,31 @@ void TaskGenerator::sendAgainData(const DataMessage* data)
         bool checkDataPartitionId = helpers[data->getHostIndex()].getDataPartitionId() != -1;
 
         if (checkDataPartitionId) {
+            DataMessage* newData = new DataMessage();
+
+            // Fill fields of data message with previous data message
+
+            /**************************************************************************
+             * This has to be done because in veins if you send a message duplicate   *
+             * it will be discarded from MAC L2 because it's a message that the       *
+             * single node "read" as already received                                 *
+             *************************************************************************/
+
+            populateWSM(newData);
+            newData->addByteLength(data->getByteLength());
+            newData->setLoadToProcess(data->getLoadToProcess());
+            newData->setSenderAddress(mac->getMACAddress());
+            newData->setHostIndex(data->getHostIndex());
+            newData->setTaskId(data->getTaskId());
+            newData->setTaskSize(data->getTaskSize());
+            newData->setPartitionId(data->getPartitionId());
+            newData->setLoadBalancingId(data->getLoadBalancingId());
+            newData->setCpi(data->getCpi());
+            newData->setRecipientAddress(data->getRecipientAddress());
+            newData->setComputationTime(data->getComputationTime());
+
             // Send the duplicate data message
-            sendDown(data->dup());
+            sendDown(newData);
 
             // Restart again the timer
             ComputationTimerMessage* computationTimerMessage = new ComputationTimerMessage();
