@@ -49,6 +49,7 @@ void TaskGenerator::vehicleHandler()
         helpMessage->setCpi(tasks[0].getComputingDensity());
         helpMessage->setTaskSize(tasks[0].getTotalData());
         helpMessage->setMinimumLoadRequested(tasks[0].getMinimumLoadRequested());
+        helpMessage->setSenderAddress(mac->getMACAddress());
 
         // Emit signal for start help message
         emit(startHelp, simTime());
