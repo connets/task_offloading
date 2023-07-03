@@ -40,7 +40,7 @@ void TaskGenerator::handleAvailabilityMessage(AvailabilityMessage* availabilityM
 
    if(aRt==-1.0) {
         //Generate the time that is used to check whether a car will be in the bus range in those next seconds
-        aRt = transferTime + timeToCompute + transferTimeRes;
+        aRt = (transferTime + timeToCompute + transferTimeRes)*par("retryFactorTime").doubleValue();
 
     }
     //car position at the current time
@@ -52,28 +52,27 @@ void TaskGenerator::handleAvailabilityMessage(AvailabilityMessage* availabilityM
     double by = mobilityMod->getPositionAt(simTime()).y;
 
     //future positions of car (next aRt seconds)
-//    double nextCx = (helpers[availabilityMessage->getHostID()].getVehicleSpeed()*aRt*std::cos(helpers[availabilityMessage->getHostID()].getVehicleAngle())) + cx;
-//    double nextCy = (helpers[availabilityMessage->getHostID()].getVehicleSpeed()*aRt*std::sin(helpers[availabilityMessage->getHostID()].getVehicleAngle())) + cy;
+    double nextCx = (helpers[availabilityMessage->getHostID()].getVehicleSpeed()*aRt*std::cos(helpers[availabilityMessage->getHostID()].getVehicleAngle())) + cx;
+    double nextCy = (helpers[availabilityMessage->getHostID()].getVehicleSpeed()*aRt*std::sin(helpers[availabilityMessage->getHostID()].getVehicleAngle())) + cy;
     //future positions of car (next aRt seconds)
     double nextBx = (traciVehicle->getSpeed()*aRt*std::cos(traciVehicle->getAngle())) + bx;
     double nextBy = (traciVehicle->getSpeed()*aRt*std::sin(traciVehicle->getAngle())) + by;
 
-    //radius for both the car and bus reach in their next 15 seconds
+    //radius for both the car and bus reach in their next aRt seconds
 //    double radiusCar = sqrt(pow((nextCx - cx),2.0) + pow((nextCy - cy),2.0));
     double radiusBus = sqrt(pow((nextBx - bx),2.0) + pow((nextBy - by),2.0));
 
-    //check if both the bus and the car will be in each other reach in the next 15 seconds
+    //check if both the bus and the car will be in each other reach in the next aRt seconds
     //((x-center_x)^2 + (y-center_y)^2 < radius^2)
-    if(!(pow(cx-nextBx,2.0) + pow(cy-nextBy,2.0) < pow(radiusBus,2.0))) {
+    if(!(pow(nextCx-nextBx,2.0) + pow(nextCy-nextBy,2.0) < pow(radiusBus,2.0))) {
         //remove vehicle availability due to projected long distance
         helpers.erase(availabilityMessage->getHostID());
         helpersOrderedList.remove(availabilityMessage->getHostID());
     }
-
     // Check the bus state
     int currentBusState = busState.getCurrentState();
 
-    if (findHost()->getIndex() == busIndex && currentBusState == 1) {
+    if (currentBusState == 1) {
         // Color the bus that received help
         findHost()->getDisplayString().setTagArg("i", 1, "green");
         std::string currentHostIndex = availabilityMessage->getIndex() + std::to_string(availabilityMessage->getHostID());

@@ -29,6 +29,9 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         // Emit signal for having received response
         emit(stopResponseMessages, responseMessage->getHostIndex());
 
+        // Cancel and delete the timer message of this vehicle
+        cancelAndDelete(helpers[responseMessage->getHostIndex()].getVehicleComputationTimer());
+
         // Update the data partiton id into the helpers map
         helpers[responseMessage->getHostIndex()].setDataPartitionId(-1);
 
@@ -36,9 +39,12 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         double localData = tasks[0].getTotalData() - responseMessage->getDataComputed();
         tasks[0].setTotalData(localData);
 
+        EV<<"DATA TASK REMAINED "<<localData<< endl;
+        EV<<"HELPERS REMAINED "<<helpers.size()<< endl;
         // If there's no more data then emit signal for task finished
         if (localData <= 0) {
             emit(stopTask, simTime());
+            EV<<"END"<<helpers.size()<< endl;
         }
 
         // Increment the task responses received
@@ -55,9 +61,6 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         // If the vehicle is not available anymore erase it from the map
         // and from the list
         if (responseMessage->getStillAvailable() == false) {
-            helpers.erase(responseMessage->getHostIndex());
-            helpersOrderedList.remove(responseMessage->getHostIndex());
-
             // Schedule the ack message
             if (!(par("useAcks").boolValue())) {
                 // Send ACK message to the host
@@ -66,8 +69,13 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
                 ackMessage->setHostIndex(responseMessage->getHostIndex());
                 ackMessage->setTaskID(responseMessage->getTaskID());
                 ackMessage->setPartitionID(responseMessage->getPartitionID());
+                ackMessage->setSenderAddress(mac->getMACAddress());
+                ackMessage->setRecipientAddress(responseMessage->getSenderAddress());
                 scheduleAt(simTime(), ackMessage);
             }
+
+            helpers.erase(responseMessage->getHostIndex());
+            helpersOrderedList.remove(responseMessage->getHostIndex());
         }
 
         // If there are more vehicles available and I've received all responses
@@ -85,6 +93,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
             tasks[0].setResponseReceivedCounter(0);
 
             balanceLoad();
+
         }
 
         // If there are no more vehicles but still more data to compute then take the bus
@@ -104,8 +113,6 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         }
     } else if (tasks[0].getTotalData() <= 0) {
         // If data <= 0 and I receive a response then send ack to the vehicle
-        helpers.erase(responseMessage->getHostIndex());
-        helpersOrderedList.remove(responseMessage->getHostIndex());
 
         // Schedule the ack message
         if (!(par("useAcks").boolValue())) {
@@ -115,7 +122,12 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
             ackMessage->setHostIndex(responseMessage->getHostIndex());
             ackMessage->setTaskID(responseMessage->getTaskID());
             ackMessage->setPartitionID(responseMessage->getPartitionID());
+            ackMessage->setSenderAddress(mac->getMACAddress());
+            ackMessage->setRecipientAddress(responseMessage->getSenderAddress());
             scheduleAt(simTime(), ackMessage);
         }
+
+        helpers.erase(responseMessage->getHostIndex());
+        helpersOrderedList.remove(responseMessage->getHostIndex());
     }
 }

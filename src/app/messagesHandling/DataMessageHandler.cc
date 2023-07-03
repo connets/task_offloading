@@ -29,73 +29,75 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     double CR = cpuFreq;
 
     double timeToCompute = CPI * I * (1 / CR);
+    EV<<"TIME TO COMPUTE"<<timeToCompute<<endl;
 
-    // Check if I'm the vehicle designated for computation and if the data is different
-    if (dataMessage->getHostIndex() == findHost()->getIndex()) {
+    auto key = std::pair<int,int>(dataMessage->getTaskId(),dataMessage->getPartitionId());
 
-        auto key = std::pair<int,int>(dataMessage->getTaskId(),dataMessage->getPartitionId());
+    //if the cache is not empty it resends the response message tied to this data message
+    if(!isNewPartition(dataMessage)){
+        sendAgainResponse(responseCache.at(key));
+        return;
+    }
 
-        //if the cache is not empty it resends the response message tied to this data message
-        if(!isNewPartition(dataMessage)){
-            sendAgainResponse(responseCache.at(key));
-            return;
-        }
+    //reset the task availability timer
+    resetTaskAvailabilityTimer(dataMessage->getTaskId());
 
-        //reset the task availability timer
-        resetTaskAvailabilityTimer(dataMessage->getTaskId());
+    // Color the vehicle in red when computing
+    findHost()->getDisplayString().setTagArg("i", 1, "red");
 
-        // Color the vehicle in red when computing
-        findHost()->getDisplayString().setTagArg("i", 1, "red");
+    // Update the partition ID
+    currentDataPartitionId = dataMessage->getPartitionId();
 
-        // Update the partition ID
-        currentDataPartitionId = dataMessage->getPartitionId();
-
-        // Update if I'll be still available
-        stillAvailableProbability = par("stillAvailableProbability").doubleValue() > par("stillAvailableThreshold").doubleValue();
-        if(stillAvailableProbability) {
-            setTaskAvailabilityTimer(dataMessage->getTaskId(), dataMessage->getTaskSize());
-        }
+    // Update if I'll be still available
+    stillAvailableProbability = par("stillAvailableProbability").doubleValue() > par("stillAvailableThreshold").doubleValue();
+    if(stillAvailableProbability) {
+        setTaskAvailabilityTimer(dataMessage->getTaskId(), dataMessage->getTaskSize());
+    }
 
 
-        // Prepare the response message
-        ResponseMessage* responseMessage = new ResponseMessage();
+    // Prepare the response message
+    ResponseMessage* responseMessage = new ResponseMessage();
 
-        // Populate the response message
+    // Populate the response message
 
-        // If useAcks is active then send the message with L2Address
-        // otherwise send it without address to use the manual secure protocol
-        if (par("useAcks").boolValue()) {
-            populateWSM(responseMessage, dataMessage->getSenderAddress());
-        } else {
-            populateWSM(responseMessage);
-        }
+    // If useAcks is active then send the message with L2Address
+    // otherwise send it without address to use the manual secure protocol
+    if (par("useAcks").boolValue()) {
+        populateWSM(responseMessage, dataMessage->getSenderAddress());
+    } else {
+        populateWSM(responseMessage);
+    }
 
-        // Populate other fields
-        responseMessage->setHostIndex(dataMessage->getHostIndex());
-        responseMessage->setStillAvailable(stillAvailableProbability);
-        responseMessage->setDataComputed(dataMessage->getLoadToProcess());
-        responseMessage->setTimeToCompute(timeToCompute);
-        responseMessage->setTaskID(dataMessage->getTaskId());
-        responseMessage->setPartitionID(dataMessage->getPartitionId());
-        responseMessage->addByteLength(dataMessage->getLoadToProcess());
+    // Populate other fields
+    responseMessage->setHostIndex(dataMessage->getHostIndex());
+    responseMessage->setStillAvailable(stillAvailableProbability);
+    responseMessage->setDataComputed(dataMessage->getLoadToProcess());
+    responseMessage->setTimeToCompute(timeToCompute);
+    responseMessage->setTaskID(dataMessage->getTaskId());
+    responseMessage->setPartitionID(dataMessage->getPartitionId());
+    responseMessage->addByteLength(dataMessage->getLoadToProcess());
+    responseMessage->setSenderAddress(mac->getMACAddress());
+    responseMessage->setRecipientAddress(dataMessage->getSenderAddress());
 
-        //Insert response message in response cache
-        responseCache.insert(std::pair<std::pair<int, int>, ResponseMessage*>(key, responseMessage->dup()));
+    //Insert response message in response cache
+    responseCache.insert(std::pair<std::pair<int, int>, ResponseMessage*>(key, responseMessage->dup()));
 
-        // Schedule the response message
-        scheduleAt(simTime() + timeToCompute, responseMessage);
+    // Schedule the response message
+    scheduleAfter(timeToCompute, responseMessage);
 
-        // Generate ACK timer if parameter useAcks is false
-        // to achieve secure protocol manually and if I'm not still available
-        if (!(par("useAcks").boolValue()) && !(stillAvailableProbability)) {
-            AckTimerMessage* ackTimerMessage = new AckTimerMessage();
-            populateWSM(ackTimerMessage);
-            ackTimerMessage->setData(responseMessage);
+    // Generate ACK timer if parameter useAcks is false
+    // to achieve secure protocol manually and if I'm not still available
+    if (!(par("useAcks").boolValue()) && !(stillAvailableProbability)) {
+        AckTimerMessage* ackTimerMessage = new AckTimerMessage();
+        populateWSM(ackTimerMessage);
+        ackTimerMessage->setData(responseMessage->dup());
 
-            // Calculate time to file transmission
-            double transferTime = 10.0;
+        //Calculate bitrate conversion from megabit to megabyte
+        double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
+        double transferTime = dataMessage->getLoadToProcess()/bitRate;
 
-            scheduleAt(simTime() + timeToCompute + transferTime + par("ackMessageThreshold").doubleValue(), ackTimerMessage);
-        }
+        EV<<"ACKTIMER dopo"<< timeToCompute + transferTime + par("ackMessageThreshold").doubleValue() <<endl;
+        scheduleAfter(timeToCompute + transferTime + par("ackMessageThreshold").doubleValue(), ackTimerMessage);
+
     }
 }
