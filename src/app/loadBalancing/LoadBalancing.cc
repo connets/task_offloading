@@ -70,13 +70,14 @@ void TaskGenerator::balanceLoad()
 
 
             // Populate the other fields
-            dataMessage->setSenderAddress(myId);
+            dataMessage->setSenderAddress(mac->getMACAddress());
             dataMessage->setHostIndex(i);
             dataMessage->setTaskId(tasks[0].getId());
             dataMessage->setTaskSize(tasks[0].getTotalData());
             dataMessage->setPartitionId(tasks[0].getDataPartitionId());
             dataMessage->setLoadBalancingId(tasks[0].getLoadBalancingId());
             dataMessage->setCpi(tasks[0].getComputingDensity());
+            dataMessage->setRecipientAddress(helpers[i].getAddress());
 
             // Calculate time for timer
             double CPI = tasks[0].getComputingDensity();
@@ -90,20 +91,25 @@ void TaskGenerator::balanceLoad()
             // Save into the helper the data partition ID
             helpers[i].setDataPartitionId(currentPartitionId);
 
-            // Schedule the data message
-            scheduleAt(simTime(), dataMessage);
-
             // Create timer computation message for each host if auto ACKs are disabled
             if (par("useAcks").boolValue() == false) {
                 ComputationTimerMessage* computationTimerMessage = new ComputationTimerMessage();
                 populateWSM(computationTimerMessage);
-                computationTimerMessage->setData(dataMessage);
+                computationTimerMessage->setData(dataMessage->dup());
 
                 // Calculate time to file transmission
-                double transferTime = 10.0;
+                //Calculate bitrate conversion from megabit to megabyte
+                double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
+                double transferTime = localData/bitRate;
 
-                scheduleAt(simTime() + timeToCompute + transferTime + par("dataComputationThreshold").doubleValue(), computationTimerMessage);
+                // Save the computation timer into helpers map
+                helpers[i].setVehicleComputationTimer(computationTimerMessage);
+
+                scheduleAfter(timeToCompute + transferTime + par("dataComputationThreshold").doubleValue(), computationTimerMessage);
             }
+
+            // Schedule the data message
+            sendDown(dataMessage);
 
             // Increment data partition ID
             currentPartitionId++;
