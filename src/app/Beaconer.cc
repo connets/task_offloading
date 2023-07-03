@@ -38,21 +38,18 @@ void Beaconer::initialize(int stage)
       //registering signal
       startBeaconMessages = registerSignal("startBeaconMessages");
     }
-    sendBeaconEvt = new cMessage("beacon evt", SEND_BEACON_EVT);
+    sendBeaconEvt = new cMessage("beacon_evt", SEND_BEACON_EVT);
     // Get the timer for the first help message
     bool timerForFirstBeaconMessage = simTime() > par("randomWarmupTime").doubleValue();
 
     if(timerForFirstBeaconMessage && sendBeacons) {
         // Emit signal for start beacon message
         emit(startBeaconMessages, simTime());
-
-        // Save the actual simtime for future help messages
-        simtime_t simTimeActual = simTime();
-
-        // Your application has sent a beacon message to another car or bus
-        findHost()->getDisplayString().setTagArg("i", 1, "orange");
+        if(sendBeaconEvt->isScheduled()){
+             cancelAndDelete(sendBeaconEvt);
+        }
         // Schedule the message -> simTime + availability msgs threshold
-        scheduleAt(simTimeActual + par("beaconIntervalTime").doubleValue(), sendBeaconEvt);
+        scheduleAt(simTime(), sendBeaconEvt);
 
     }
 }
@@ -78,10 +75,12 @@ void Beaconer::onWSA(veins::DemoServiceAdvertisment* wsa)
 
 void Beaconer::handleSelfMsg(cMessage* msg)
 {
-    switch (msg->getKind()) {
-    case SEND_BEACON_EVT: {
+   switch (msg->getKind()) {
+   case SEND_BEACON_EVT: {
+//        if(msg->isScheduled()){
+//            cancelEvent(msg);
+//        }
         BeaconMessage* bsm = new BeaconMessage();
-
         if(simTime() >= par("randomWarmupTime").doubleValue()) {
             bsm->addByteLength(par("beaconByteLength").doubleValue());
             populateWSM(bsm);
@@ -91,9 +90,7 @@ void Beaconer::handleSelfMsg(cMessage* msg)
 
         }
         // Schedule the message -> simTime + availability msgs threshold
-        scheduleAt(simTime() + par("beaconIntervalTime").doubleValue(), sendBeaconEvt);
-
-
+        //scheduleAt(simTime() + par("beaconIntervalTime").doubleValue(), sendBeaconEvt);
         break;
     }
     default: {

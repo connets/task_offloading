@@ -109,7 +109,7 @@ void TaskGenerator::handleSelfMsg(cMessage* msg)
     if (LoadBalanceTimerMessage* loadBalanceMsg = dynamic_cast<LoadBalanceTimerMessage*>(msg)) {
         // If I'm the bus and I've received help then load balance
         // otherwise back to help messages
-        if (findHost()->getIndex() == busIndex && helpers.size() > 0 && busState.getCurrentState() == 1) {
+        if (helpers.size() > 0 && busState.getCurrentState() == 1) {
             // Call to load balancing function
             balanceLoad();
         } else if (helpers.size() == 0) {
@@ -121,7 +121,7 @@ void TaskGenerator::handleSelfMsg(cMessage* msg)
     // Timer for data computation
     if (ComputationTimerMessage* computationTimerMessage = dynamic_cast<ComputationTimerMessage*>(msg)) {
         const DataMessage* data = computationTimerMessage->getData();
-        sendAgainData(data);
+        sendAgainData(data->dup());
     }
 
     // Timer for data message

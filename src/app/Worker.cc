@@ -100,13 +100,10 @@ void Worker::onWSM(veins::BaseFrame1609_4* wsm)
 
     // SECTION - When the host receive the ACK message
     if (AckMessage* ackMessage = dynamic_cast<AckMessage*>(wsm)) {
-        // Check if I'm the host for the ack message
-        if (ackMessage->getHostIndex() == findHost()->getIndex()) {
-            currentDataPartitionId = -1;
+        currentDataPartitionId = -1;
 
-            // Color the vehicle in white when computation ends
-            findHost()->getDisplayString().setTagArg("i", 1, "white");
-        }
+        // Color the vehicle in white when computation ends
+        findHost()->getDisplayString().setTagArg("i", 1, "white");
     }
 
     if(BeaconMessage* bmsg = dynamic_cast<BeaconMessage*>(wsm)) {
@@ -136,19 +133,19 @@ void Worker::handleSelfMsg(cMessage* msg)
     if (ResponseMessage* responseMessage = dynamic_cast<ResponseMessage*>(msg)) {
         // Send signal for response message statistic with the host ID
         emit(startResponseMessages, responseMessage->getHostIndex());
-
-        // Color the vehicle in white when send down the response
-        findHost()->getDisplayString().setTagArg("i", 1, "white");
-
+        if(responseMessage->getStillAvailable()) {
+            findHost()->getDisplayString().setTagArg("i", 1, "blue");
+        } else{
+            // Color the vehicle in white when send down the response
+            findHost()->getDisplayString().setTagArg("i", 1, "white");
+            //Reset common vehicle load
+            availableLoad = par("commonVehicleLoad").doubleValue();  //Only with one task
+        }
         // Send the response message
         sendDown(responseMessage->dup());
+
     }
 
-    // Timer for re-send response message
-    if (AckTimerMessage* ackTimerMessage = dynamic_cast<AckTimerMessage*>(msg)) {
-        const ResponseMessage* response = ackTimerMessage->getData();
-        sendAgainResponse(response);
-    }
     //Timer for task
     if(TotalComputationTimerMessage* tcm = dynamic_cast<TotalComputationTimerMessage*>(msg)){
         //Color the vehicle in white when task availability timer runs out
