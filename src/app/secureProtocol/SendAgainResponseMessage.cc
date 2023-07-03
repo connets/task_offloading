@@ -18,11 +18,32 @@
 
 using namespace task_offloading;
 
-void Worker::sendAgainResponse(const ResponseMessage* response)
+void Worker::sendAgainResponse(ResponseMessage* response)
 {
     if (currentDataPartitionId == response->getPartitionID()) {
+        ResponseMessage* newResponse = new ResponseMessage();
+
+        // Fill fields of response message with previous response message
+
+        /**************************************************************************
+         * This has to be done because in veins if you send a message duplicate   *
+         * it will be discarded from MAC L2 because it's a message that the       *
+         * single node "read" as already received                                 *
+         *************************************************************************/
+
+        populateWSM(newResponse);
+        newResponse->setHostIndex(response->getHostIndex());
+        newResponse->setStillAvailable(response->getStillAvailable());
+        newResponse->setDataComputed(response->getDataComputed());
+        newResponse->setTimeToCompute(response->getTimeToCompute());
+        newResponse->setTaskID(response->getTaskID());
+        newResponse->setPartitionID(response->getPartitionID());
+        newResponse->addByteLength(response->getByteLength());
+        newResponse->setSenderAddress(mac->getMACAddress());
+        newResponse->setRecipientAddress(response->getRecipientAddress());
+
         // Schedule the new duplicate response message
-        scheduleAt(simTime() + response->getTimeToCompute(), response->dup());
+        scheduleAfter(response->getTimeToCompute(), newResponse);
 
         // Restart the ACK timer
         AckTimerMessage* ackTimerMessage = new AckTimerMessage();
