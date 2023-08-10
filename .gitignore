@@ -1,4 +1,4 @@
-# ignore generated files
+# Ignore generated files
 src/**/*_m.h
 src/**/*_m.cc
 src/**/Makefile
@@ -14,9 +14,8 @@ src/Makefile.vc
 .settings/
 err/
 src/err
-**/simulator_5g_v2x*
-**/libsimulator_5g_v2x*
-# ignore binary files
+**/task_offloading*
+# Ignore binary files
 out/
 *.so
 *.dylib
@@ -34,7 +33,7 @@ out/
 *.out
 .computed
 
-# ignore backup and temp files
+# Ignore backup and temp files
 *.bak
 backups
 *~
@@ -46,7 +45,7 @@ backups
 *.ERROR
 ui/com.simulte.configeditor/bin/
 
-# ignore result folders
+# Ignore result folders
 /simulations/gtpNetwork/ResultLteCoreNetwork/
 /simulations/*/results*/
 /simulations/*/*/results*/
@@ -77,7 +76,7 @@ vim files
 *.swo
 .qtenvrc.*
 
-# files for performance evaluation
+# Files for performance evaluation
 *.ipynb
 
 simulations/results*
