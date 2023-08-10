@@ -14,7 +14,7 @@ src/Makefile.vc
 .settings/
 err/
 src/err
-**/task_offloading*
+src/task_offloading*
 # Ignore binary files
 out/
 *.so
