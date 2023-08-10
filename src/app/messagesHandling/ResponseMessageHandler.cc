@@ -39,9 +39,12 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         double localData = tasks[0].getTotalData() - responseMessage->getDataComputed();
         tasks[0].setTotalData(localData);
 
+        EV<<"DATA TASK REMAINED "<<localData<< endl;
+        EV<<"HELPERS REMAINED "<<helpers.size()<< endl;
         // If there's no more data then emit signal for task finished
         if (localData <= 0) {
             emit(stopTask, simTime());
+            EV<<"END"<<helpers.size()<< endl;
         }
 
         // Increment the task responses received
@@ -90,6 +93,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
             tasks[0].setResponseReceivedCounter(0);
 
             balanceLoad();
+
         }
 
         // If there are no more vehicles but still more data to compute then take the bus
