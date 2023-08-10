@@ -98,7 +98,9 @@ void TaskGenerator::balanceLoad()
                 computationTimerMessage->setData(dataMessage->dup());
 
                 // Calculate time to file transmission
-                double transferTime = 10.0;
+                //Calculate bitrate conversion from megabit to megabyte
+                double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
+                double transferTime = localData/bitRate;
 
                 // Save the computation timer into helpers map
                 helpers[i].setVehicleComputationTimer(computationTimerMessage);
