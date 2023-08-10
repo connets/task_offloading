@@ -29,6 +29,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     double CR = cpuFreq;
 
     double timeToCompute = CPI * I * (1 / CR);
+    EV<<"TIME TO COMPUTE"<<timeToCompute<<endl;
 
     auto key = std::pair<int,int>(dataMessage->getTaskId(),dataMessage->getPartitionId());
 
@@ -91,8 +92,9 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
         populateWSM(ackTimerMessage);
         ackTimerMessage->setData(responseMessage->dup());
 
-        // Calculate time to file transmission
-        double transferTime = 10.0;
+        //Calculate bitrate conversion from megabit to megabyte
+        double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
+        double transferTime = dataMessage->getLoadToProcess()/bitRate;
 
         scheduleAfter(timeToCompute + transferTime + par("ackMessageThreshold").doubleValue(), ackTimerMessage);
     }

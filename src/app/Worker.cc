@@ -133,12 +133,17 @@ void Worker::handleSelfMsg(cMessage* msg)
     if (ResponseMessage* responseMessage = dynamic_cast<ResponseMessage*>(msg)) {
         // Send signal for response message statistic with the host ID
         emit(startResponseMessages, responseMessage->getHostIndex());
-
-        // Color the vehicle in white when send down the response
-        findHost()->getDisplayString().setTagArg("i", 1, "white");
-
+        if(responseMessage->getStillAvailable()) {
+            findHost()->getDisplayString().setTagArg("i", 1, "blue");
+        } else{
+            // Color the vehicle in white when send down the response
+            findHost()->getDisplayString().setTagArg("i", 1, "white");
+            //Reset common vehicle load
+            availableLoad = par("commonVehicleLoad").doubleValue();  //Only with one task
+        }
         // Send the response message
         sendDown(responseMessage->dup());
+
     }
 
     //Timer for task
