@@ -14,10 +14,10 @@
 // 
 
 package task_offloading.app;
-import org.car2x.veins.modules.application.ieee80211p.DemoBaseApplLayer;
+import inet.applications.contract.IApp;
 
-simple Worker extends DemoBaseApplLayer 
-{
+simple Worker like IApp 
+{    
     parameters:
         // The random CPU frequency
         volatile double randomVehicleCpuFreq @unit(Hz) = default(uniform(1.20GHz, 2.70GHz));
@@ -50,7 +50,7 @@ simple Worker extends DemoBaseApplLayer
         double retryFactorTime = default(3);
         
         // Override default veins data length bits
-        dataLengthBits = 0bit;
+        double dataLengthBits @unit(byte) = default(0bit);
         
         // Statistics for collecting help requests
         @signal[stop_bus_help_rq](type = simtime_t);
@@ -73,7 +73,11 @@ simple Worker extends DemoBaseApplLayer
         @signal[available_message_load](type = double);
         @statistic[availableMessageSent](source = available_message_sent; record = vector,stats; interpolationmode = none);
         @statistic[availableMessageLoad](source = available_message_load; record = vector,stats; interpolationmode = none);
-
-    @class(task_offloading::Worker);
-    @display("i=block/app2");
+        
+        @class(task_offloading::Worker);
+    	@display("i=block/app2");
+        
+    gates:
+        input socketIn @labels(UdpControlInfo/up);
+        output socketOut @labels(UdpControlInfo/down);
 }
