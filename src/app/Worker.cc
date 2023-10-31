@@ -35,12 +35,13 @@
 #include "app/messages/TotalComputationTimerMessage_m.h"
 
 using namespace task_offloading;
+using namespace inet;
 
 Define_Module(task_offloading::Worker);
 
 void Worker::initialize(int stage)
 {
-    veins::DemoBaseApplLayer::initialize(stage);
+    veins::VeinsInetApplicationBase::initialize(stage);
 
     if (stage == 0) {
         // Initializing members and pointers of your application goes here
@@ -72,98 +73,127 @@ void Worker::initialize(int stage)
     }
 }
 
+void Worker::handleStartOperation(inet::LifecycleOperation* doneCallback)
+{
+    // Starting operation for worker app
+    veins::VeinsInetApplicationBase::handleStartOperation(doneCallback);
+}
+
+void Worker::sendUnicastPacket(std::unique_ptr<inet::Packet> pk, inet::L3Address destAddress, int portNumber)
+{
+    socket.sendTo(pk.release(), destAddress, portNumber);
+}
+
+void Worker::handleStopOperation(inet::LifecycleOperation* doneCallback)
+{
+    veins::VeinsInetApplicationBase::handleStopOperation(doneCallback);
+    // Close the socket
+    socket.close();
+}
+
 void Worker::finish()
 {
-    veins::DemoBaseApplLayer::finish();
+    veins::VeinsInetApplicationBase::finish();
 }
 
-void Worker::onBSM(veins::DemoSafetyMessage* bsm)
+void Worker::handleMessageWhenUp(inet::cMessage* msg)
 {
+    // Check if the message is a self-message
+    if (msg->isSelfMessage()) {
+        /************************************************************************
+                  Your application has received a self-message (timers)
+        ************************************************************************/
+        // Timer for ok message
+        if (AvailabilityMessage* availabilityMessage = dynamic_cast<AvailabilityMessage*>(msg)) {
+            // Emit the signal of ok message sent
+            emit(availableMessageSent, simTime());
 
-}
+            // Send the ok message
+            auto availability = availabilityMessage->dupShared();
 
-void Worker::onWSM(veins::BaseFrame1609_4* wsm)
-{
-    /************************************************************************
-      Your application has received a data message from a bus
-    ************************************************************************/
-
-    // SECTION - When the host receive an help message
-    if (HelpMessage* helpMessage = dynamic_cast<HelpMessage*>(wsm)) {
-        handleHelpMessage(helpMessage);
-    }
-
-    // SECTION - When the host receive the data message
-    if (DataMessage* dataMessage = dynamic_cast<DataMessage*>(wsm)) {
-        handleDataMessage(dataMessage);
-    }
-
-    // SECTION - When the host receive the ACK message
-    if (AckMessage* ackMessage = dynamic_cast<AckMessage*>(wsm)) {
-        currentDataPartitionId = -1;
-
-        // Color the vehicle in white when computation ends
-        findHost()->getDisplayString().setTagArg("i", 1, "white");
-    }
-
-    if(BeaconMessage* bmsg = dynamic_cast<BeaconMessage*>(wsm)) {
-            emit(stopBeaconMessages, simTime());
+            auto availabilityPkt = createPacket("availability_duplicate");
+            availabilityPkt->insertAtBack(availability);
+            int servicePort = par("servicePort").intValue();
+            L3Address destAddress = availabilityMessage->getTag<L3AddressInd>()->getSrcAddress();
+            sendUnicastPacket(std::move(availabilityPkt), destAddress, servicePort);
         }
-}
 
-void Worker::onWSA(veins::DemoServiceAdvertisment* wsa)
-{
-    // Your application has received a service advertisement from a bus
-}
+        // Timer for response message
+        if (ResponseMessage* responseMessage = dynamic_cast<ResponseMessage*>(msg)) {
+            // Send signal for response message statistic with the host ID
+            emit(startResponseMessages, responseMessage->getHostIndex());
+            if(responseMessage->getStillAvailable()) {
+                getParentModule()->getDisplayString().setTagArg("i", 1, "blue");
+            } else{
+                // Color the vehicle in white when send down the response
+                getParentModule()->getDisplayString().setTagArg("i", 1, "white");
+                //Reset common vehicle load
+                availableLoad = par("commonVehicleLoad").doubleValue();  //Only with one task
+            }
 
-void Worker::handleSelfMsg(cMessage* msg)
-{
-    //TODO timer based on cMessage and not on veins
+            // Send the response message
+            auto response = responseMessage->dupShared();
 
-    // Timer for ok message
-    if (AvailabilityMessage* availabilityMessage = dynamic_cast<AvailabilityMessage*>(msg)) {
-        // Emit the signal of ok message sent
-        emit(availableMessageSent, simTime());
+            auto responsePkt = createPacket("response_duplicate");
+            responsePkt->insertAtBack(response);
+            int servicePort = par("servicePort").intValue();
+            L3Address destAddress = responseMessage->getTag<L3AddressInd>()->getSrcAddress();;
+            sendUnicastPacket(std::move(responsePkt), destAddress, servicePort);
 
-        // Send the ok message
-        sendDown(availabilityMessage->dup());
-    }
+        }
 
-    // Timer for response message
-    if (ResponseMessage* responseMessage = dynamic_cast<ResponseMessage*>(msg)) {
-        // Send signal for response message statistic with the host ID
-        emit(startResponseMessages, responseMessage->getHostIndex());
-        if(responseMessage->getStillAvailable()) {
-            findHost()->getDisplayString().setTagArg("i", 1, "blue");
-        } else{
-            // Color the vehicle in white when send down the response
-            findHost()->getDisplayString().setTagArg("i", 1, "white");
+        //Timer for task
+        if (TotalComputationTimerMessage* tcm = dynamic_cast<TotalComputationTimerMessage*>(msg)){
+            //Color the vehicle in white when task availability timer runs out
+            getParentModule()->getDisplayString().setTagArg("i", 1, "white");
             //Reset common vehicle load
             availableLoad = par("commonVehicleLoad").doubleValue();  //Only with one task
         }
-        // Send the response message
-        sendDown(responseMessage->dup());
 
+        // Timer to simulate the computation timer
+        if (ComputationTimerMessage* timer = dynamic_cast<ComputationTimerMessage*>(msg)) {
+            // Call the simulation function passing the inet chunk and the dest addresses and port
+            int servicePort = par("servicePort").intValue();
+            L3Address destAddress;
+
+            // Check if the message is a response or an availability message to get the correct sender address
+            if (ResponseMessage* response = dynamic_cast<ResponseMessage*>(msg)) {
+                destAddress = response->getSenderAddress();
+                simulateComputationTime(response, destAddress, servicePort);
+            }
+
+            if (AvailabilityMessage* available = dynamic_cast<AvailabilityMessage*>(msg)) {
+                destAddress = available->getSenderAddress();
+                simulateComputationTime(available, destAddress, servicePort);
+            }
+        }
+    } else {
+        /************************************************************************
+          Your application has received a data message from a task generator
+        ************************************************************************/
+
+        // SECTION - When the host receive an help message
+        if (HelpMessage* helpMessage = dynamic_cast<HelpMessage*>(msg)) {
+            handleHelpMessage(helpMessage);
+        }
+
+        // SECTION - When the host receive the data message
+        if (DataMessage* dataMessage = dynamic_cast<DataMessage*>(msg)) {
+            handleDataMessage(dataMessage);
+        }
+
+        // SECTION - When the host receive the ACK message
+        if (AckMessage* ackMessage = dynamic_cast<AckMessage*>(msg)) {
+            currentDataPartitionId = -1;
+
+            // Color the vehicle in white when computation ends
+            getParentModule()->getDisplayString().setTagArg("i", 1, "white");
+        }
+
+        if(BeaconMessage* bmsg = dynamic_cast<BeaconMessage*>(msg)) {
+            emit(stopBeaconMessages, simTime());
+        }
     }
-
-    //Timer for task
-    if(TotalComputationTimerMessage* tcm = dynamic_cast<TotalComputationTimerMessage*>(msg)){
-        //Color the vehicle in white when task availability timer runs out
-        findHost()->getDisplayString().setTagArg("i", 1, "white");
-        //Reset common vehicle load
-        availableLoad = par("commonVehicleLoad").doubleValue();  //Only with one task
-    }
-
-}
-
-void Worker::handlePositionUpdate(cObject* obj)
-{
-    // The vehicle has moved. Code that reacts to new positions goes here.
-    // Member variables such as currentPosition and currentSpeed are updated in the parent class
-
-    veins::DemoBaseApplLayer::handlePositionUpdate(obj);
-
-    lastDroveAt = simTime();
 }
 
 void Worker::setTaskAvailabilityTimer(int taskId, int taskSize){
@@ -189,4 +219,190 @@ void Worker::resetTaskAvailabilityTimer(int taskId) {
 bool Worker::isNewPartition(DataMessage* dataMessage){
     auto key = std::pair<int,int>(dataMessage->getTaskId(),dataMessage->getPartitionId());
     return responseCache.find(key) == responseCache.end();
+}
+
+void Worker::handleHelpMessage(HelpMessage* helpMessage)
+{
+    // I've received an help request from bus
+
+    // Emit the help message received
+    emit(stopHelp, simTime());
+
+    // First check if I met requirements for the bus
+    double minimumLoadRequested = helpMessage->getMinimumLoadRequested();
+
+    // Check my current load
+    double currentVehicleLoad = par("randomVehicleFreeLoadPercentage").doubleValue() * par("commonVehicleLoad").doubleValue();
+    availableLoad = availableLoad - currentVehicleLoad;
+
+    // Emit the signal for my current load
+    emit(availableMessageLoad, currentVehicleLoad);
+
+    // Check my current CPU freq
+    double CPUFreq = par("randomVehicleCpuFreq").doubleValue();
+
+    // Set my CPU freq
+    cpuFreq = CPUFreq;
+
+    // If I met requirements send an available message
+    if (currentVehicleLoad >= minimumLoadRequested) {
+        //start task availability timer
+        setTaskAvailabilityTimer(helpMessage->getId(),helpMessage->getTaskSize());
+
+        // Color the vehicle icon in blue
+        getParentModule()->getDisplayString().setTagArg("i", 1, "blue");
+
+        // Prepare the availability message
+        auto available = makeShared<AvailabilityMessage>();
+
+        // Populate the message
+        available->setHostID(getParentModule()->getIndex());
+        available->setIndex(getParentModule()->getName());
+        available->setAvailableLoad(currentVehicleLoad);
+        available->setCpuFreq(cpuFreq);
+        available->setVehicleAngle(traciVehicle->getAngle());
+        available->setVehicleSpeed(traciVehicle->getSpeed());
+        veins::TraCIMobility* mobilityMod = check_and_cast<veins::TraCIMobility*>(getModuleByPath("^.veinsmobility"));
+        double cx = mobilityMod->getPositionAt(simTime()).x;
+        double cy = mobilityMod->getPositionAt(simTime()).y;
+        available->setVehiclePositionX(cx);
+        available->setVehiclePositionY(cy);
+        available->setChunkLength(B(500));
+
+        // Create the computation timer to simulate the computation time
+        ComputationTimerMessage* computationTimer = new ComputationTimerMessage();
+        AvailabilityMessage* availabilityTimer = available.get();
+        computationTimer->setData(availabilityTimer);
+
+        // Schedule the ok message
+        scheduleAt(simTime() + par("vehicleAvailabilityMessageTime").doubleValue(), computationTimer);
+    }
+}
+
+void Worker::handleDataMessage(DataMessage* dataMessage)
+{
+    // Emit the signal for have received data message
+    emit(stopDataMessages, dataMessage->getHostIndex());
+
+    // Calculate time for computation
+    double CPI = dataMessage->getCpi();
+    double I = dataMessage->getLoadToProcess();
+    double CR = cpuFreq;
+
+    double timeToCompute = CPI * I * (1 / CR);
+    EV<<"TIME TO COMPUTE"<<timeToCompute<<endl;
+
+    auto key = std::pair<int,int>(dataMessage->getTaskId(),dataMessage->getPartitionId());
+
+    //if the cache is not empty it resends the response message tied to this data message
+    if(!isNewPartition(dataMessage)){
+        sendAgainResponse(responseCache.at(key));
+        return;
+    }
+
+    //reset the task availability timer
+    resetTaskAvailabilityTimer(dataMessage->getTaskId());
+
+    // Color the vehicle in red when computing
+    getParentModule()->getDisplayString().setTagArg("i", 1, "red");
+
+    // Update the partition ID
+    currentDataPartitionId = dataMessage->getPartitionId();
+
+    // Update if I'll be still available
+    stillAvailableProbability = par("stillAvailableProbability").doubleValue() > par("stillAvailableThreshold").doubleValue();
+    if(stillAvailableProbability) {
+        setTaskAvailabilityTimer(dataMessage->getTaskId(), dataMessage->getTaskSize());
+    }
+
+
+    // Prepare the response message
+    auto responseMessage = makeShared<ResponseMessage>();
+
+    // Populate the response message
+    responseMessage->setHostIndex(dataMessage->getHostIndex());
+    responseMessage->setStillAvailable(stillAvailableProbability);
+    responseMessage->setDataComputed(dataMessage->getLoadToProcess());
+    responseMessage->setTimeToCompute(timeToCompute);
+    responseMessage->setTaskID(dataMessage->getTaskId());
+    responseMessage->setPartitionID(dataMessage->getPartitionId());
+    responseMessage->setChunkLength(B(dataMessage->getLoadToProcess()));
+    L3Address worker = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
+    responseMessage->setSenderAddress(worker);
+
+    //Insert response message in response cache
+    responseCache.insert(std::pair<std::pair<int, int>, ResponseMessage*>(key, responseMessage->dup()));
+
+    // Schedule the response message
+    // Create the computation timer to simulate the computation time
+    ComputationTimerMessage* computationTimer = new ComputationTimerMessage();
+    ResponseMessage* responseTimer = responseMessage.get();
+    computationTimer->setData(responseTimer);
+
+    // Schedule the timer
+    scheduleAfter(timeToCompute, computationTimer);
+
+    // Generate ACK timer if parameter useAcks is false
+    // to achieve secure protocol manually and if I'm not still available
+    if (!(par("useAcks").boolValue()) && !(stillAvailableProbability)) {
+        AckTimerMessage* ackTimerMessage = new AckTimerMessage();
+        ackTimerMessage->setData(responseMessage->dup());
+
+        //Calculate bitrate conversion from megabit to megabyte
+        double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
+        double transferTime = dataMessage->getLoadToProcess()/bitRate;
+
+        scheduleAfter(timeToCompute + transferTime + par("ackMessageThreshold").doubleValue(), ackTimerMessage);
+    }
+}
+
+void Worker::sendAgainResponse(ResponseMessage* response)
+{
+    if (currentDataPartitionId == response->getPartitionID()) {
+        auto newResponse = makeShared<ResponseMessage>();
+
+        // Fill fields of response message with previous response message
+
+        /**************************************************************************
+         * This has to be done because in veins if you send a message duplicate   *
+         * it will be discarded from MAC L2 because it's a message that the       *
+         * single node "read" as already received                                 *
+         *************************************************************************/
+
+        newResponse->setHostIndex(response->getHostIndex());
+        newResponse->setStillAvailable(response->getStillAvailable());
+        newResponse->setDataComputed(response->getDataComputed());
+        newResponse->setTimeToCompute(response->getTimeToCompute());
+        newResponse->setTaskID(response->getTaskID());
+        newResponse->setPartitionID(response->getPartitionID());
+        newResponse->setChunkLength(B(response->getChunkLength()));
+        L3Address worker = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
+        newResponse->setSenderAddress(worker);
+
+        // Create the computation timer to simulate the computation time
+        ComputationTimerMessage* computationTimer = new ComputationTimerMessage();
+        ResponseMessage* responseTimer = newResponse.get();
+        computationTimer->setData(responseTimer);
+
+        // Schedule the new duplicate response message
+        scheduleAfter(response->getTimeToCompute(), computationTimer);
+
+        // Restart the ACK timer
+        AckTimerMessage* ackTimerMessage = new AckTimerMessage();
+        ackTimerMessage->setData(response->dup());
+
+        double transferTime = 10.0;
+
+        scheduleAt(simTime() + transferTime + response->getTimeToCompute() + par("ackMessageThreshold").doubleValue(), ackTimerMessage);
+    }
+}
+
+void Worker::simulateComputationTime(inet::FieldsChunk* data, L3Address destAddress, int portNumber)
+{
+    // Prepare the inet chunks to be sent
+    auto dataToSend = data->dupShared();
+
+    auto dataPacket = createPacket("data_computed");
+    dataPacket->insertAtBack(dataToSend);
+    sendUnicastPacket(std::move(dataPacket), destAddress, portNumber);
 }

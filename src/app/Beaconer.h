@@ -21,10 +21,11 @@
 //
 #pragma once
 
-#include "veins/veins.h"
+#include "veins_inet/veins_inet.h"
 
 #include "app/vehiclesHandling/HelperVehicleInfo.h"
-#include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
+#include "veins_inet/VeinsInetApplicationBase.h"
+#include "inet/transportlayer/udp/UdpHeader_m.h"
 
 using namespace omnetpp;
 
@@ -43,15 +44,15 @@ namespace task_offloading {
  * @see PhyLayer80211p
  * @see Decider80211p
  */
-class VEINS_API Beaconer : public veins::DemoBaseApplLayer  {
+class VEINS_INET_API Beaconer : public veins::VeinsInetApplicationBase  {
 
 public:
     void initialize(int stage) override;
     void finish() override;
 
     enum DemoApplMessageKinds {
-            SEND_BEACON_EVT
-        };
+        SEND_BEACON_EVT
+    };
 private:
     // Simulations signals
     simsignal_t startBeaconMessages;
@@ -63,11 +64,8 @@ protected:
     /* messages for periodic events such as beacon transmissions */
     cMessage* sendBeaconEvt;
 protected:
-    void onBSM(veins::DemoSafetyMessage* bsm) override;
-    void onWSM(veins::BaseFrame1609_4* wsm) override;
-    void onWSA(veins::DemoServiceAdvertisment* wsa) override;
-
-    void handleSelfMsg(cMessage* msg) override;
-    void handlePositionUpdate(cObject* obj) override;
+    virtual void handleStartOperation(inet::LifecycleOperation* doneCallback) override;
+    virtual void handleStopOperation(inet::LifecycleOperation* doneCallback) override;
+    virtual void handleMessageWhenUp(inet::cMessage* msg) override;
 };
 }
