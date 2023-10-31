@@ -13,17 +13,17 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-import veins.base.utils.Coord;
-import veins.modules.messages.BaseFrame1609_4;
-import veins.base.utils.SimpleAddress;
+import inet.common.INETDefs;
+import inet.common.packet.chunk.Chunk;
+import inet.networklayer.common.L3Address;
 
 namespace task_offloading;
 
-packet HelpMessage extends veins::BaseFrame1609_4 {
+class HelpMessage extends inet::FieldsChunk {
     int vehicleIndex;
     int id;
     double cpi;
     double taskSize;
     double minimumLoadRequested;
-    veins::LAddress::L2Type senderAddress = -1;
+    inet::L3Address senderAddress;
 }
