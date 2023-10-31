@@ -19,6 +19,7 @@
 #include "veins/veins.h"
 #include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
 #include "app/messages/ComputationTimerMessage_m.h"
+#include "inet/networklayer/common/L3Address.h"
 
 namespace task_offloading {
     class HelperVehicleInfo {
@@ -27,7 +28,7 @@ namespace task_offloading {
         double hostCurrentLoad;
         double hostCPUFreq;
         simtime_t createdAt;
-        veins::LAddress::L2Type address;
+        inet::L3Address address;
         double vehicleSpeed;
         double vehicleAngle;
         double vehiclePositionX;
@@ -38,13 +39,13 @@ namespace task_offloading {
 
     public:
         HelperVehicleInfo();
-        HelperVehicleInfo(std::string index, double load, double freq, veins::LAddress::L2Type address);
+        HelperVehicleInfo(std::string index, double load, double freq, inet::L3Address address);
         virtual ~HelperVehicleInfo();
         std::string getIndex();
         double getCurrentLoad();
         double getCPUFreq();
         simtime_t getCreatedAt();
-        veins::LAddress::L2Type getAddress();
+        inet::L3Address getAddress();
         double getVehicleAngle();
         int getDataPartitionId();
         int getTaskCpi();
@@ -56,7 +57,7 @@ namespace task_offloading {
         void setCurrentLoad(double newLoad);
         void setCPUFreq(double newFreq);
         void setCreatedAt(simtime_t newTime);
-        void setAddress(veins::LAddress::L2Type newAddress);
+        void setAddress(inet::L3Address newAddress);
         void setVehicleAngle(double newAngle);
         void setDataPartitionId(int newPartitionId);
         void setTaskCpi(int newCpi);
