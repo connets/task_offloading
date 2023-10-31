@@ -14,9 +14,9 @@
 // 
 
 package task_offloading.app;
-import inet.applications.contract.IApp;
+import org.car2x.veins.subprojects.veins_inet.VeinsInetApplicationBase;
 
-simple Worker like IApp 
+simple Worker extends VeinsInetApplicationBase
 {    
     parameters:
         // The random CPU frequency
@@ -52,6 +52,9 @@ simple Worker like IApp
         // Override default veins data length bits
         double dataLengthBits @unit(byte) = default(0bit);
         
+        // Local port
+        int servicePort = default(10020);
+        
         // Statistics for collecting help requests
         @signal[stop_bus_help_rq](type = simtime_t);
         @statistic[stopHelpRequests](source = stop_bus_help_rq; record = vector,stats; interpolationmode = none);
@@ -76,8 +79,4 @@ simple Worker like IApp
         
         @class(task_offloading::Worker);
     	@display("i=block/app2");
-        
-    gates:
-        input socketIn @labels(UdpControlInfo/up);
-        output socketOut @labels(UdpControlInfo/down);
 }

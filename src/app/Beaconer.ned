@@ -21,9 +21,9 @@
 //
 
 package task_offloading.app;
-import org.car2x.veins.modules.application.ieee80211p.DemoBaseApplLayer;
+import org.car2x.veins.subprojects.veins_inet.VeinsInetApplicationBase;
 
-simple Beaconer extends DemoBaseApplLayer 
+simple Beaconer extends VeinsInetApplicationBase
 {
     parameters:
         // Set this to true if you want to use automatic ack messages

@@ -21,9 +21,9 @@
 //
 
 package task_offloading.app;
-import inet.applications.contract.IApp;
+import org.car2x.veins.subprojects.veins_inet.VeinsInetApplicationBase;
 
-simple TaskGenerator like IApp 
+simple TaskGenerator extends VeinsInetApplicationBase 
 {
     parameters:
         // The random time for te first help message
@@ -65,6 +65,9 @@ simple TaskGenerator like IApp
         // Override default veins data length bits
         double dataLengthBits @unit(byte) = default(0bit);
         
+        // Local port
+        int servicePort = default(10020);
+        
         // General statistic for task time
         @signal[task_started](type = simtime_t);
         @signal[task_stopped](type = simtime_t);
@@ -95,8 +98,4 @@ simple TaskGenerator like IApp
 
     	@class(task_offloading::TaskGenerator);
     	@display("i=block/app2");
-
-	gates:
-        input socketIn @labels(UdpControlInfo/up);
-        output socketOut @labels(UdpControlInfo/down);
 }
