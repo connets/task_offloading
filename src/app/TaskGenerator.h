@@ -97,6 +97,5 @@ protected:
     virtual void handleStartOperation(inet::LifecycleOperation* doneCallback) override;
     virtual void handleStopOperation(inet::LifecycleOperation* doneCallback) override;
     virtual void handleMessageWhenUp(inet::cMessage* msg) override;
-    virtual void sendUnicastPacket(std::unique_ptr<inet::Packet> pk, inet::L3Address destAddress, int portNumber);
 };
 }

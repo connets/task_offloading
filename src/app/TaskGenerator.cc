@@ -78,11 +78,6 @@ void TaskGenerator::handleStartOperation(inet::LifecycleOperation* doneCallback)
     scheduleAfter(time, timer);
 }
 
-void TaskGenerator::sendUnicastPacket(std::unique_ptr<inet::Packet> pk, inet::L3Address destAddress, int portNumber)
-{
-    socket.sendTo(pk.release(), destAddress, portNumber);
-}
-
 void TaskGenerator::handleStopOperation(inet::LifecycleOperation* doneCallback)
 {
     veins::VeinsInetApplicationBase::handleStopOperation(doneCallback);
@@ -139,9 +134,7 @@ void TaskGenerator::handleMessageWhenUp(inet::cMessage* msg)
             // Create the data packet
             auto dataPacket = createPacket("duplicate_data");
             dataPacket->insertAtBack(data);
-            int servicePort = par("servicePort").intValue();
-            L3Address destAddress = dataMsg->getSenderAddress();
-            sendUnicastPacket(std::move(dataPacket), destAddress, servicePort);
+            sendPacket(std::move(dataPacket));
         }
 
         // Timer for ACK message
@@ -152,9 +145,7 @@ void TaskGenerator::handleMessageWhenUp(inet::cMessage* msg)
             // Create the data packet
             auto ackPacket = createPacket("duplicate_ack");
             ackPacket->insertAtBack(ack);
-            int servicePort = par("servicePort").intValue();
-            L3Address destAddress = ackMsg->getSenderAddress();
-            sendUnicastPacket(std::move(ackPacket), destAddress, servicePort);
+            sendPacket(std::move(ackPacket));
         }
     } else {
         /************************************************************************
@@ -260,9 +251,7 @@ void TaskGenerator::balanceLoad()
             // Schedule the data packet
             auto dataPacket = createPacket("data_message");
             dataPacket->insertAtBack(dataMessage);
-            int servicePort = par("servicePort").intValue();
-            L3Address destAddress = helpers[i].getAddress();
-            sendUnicastPacket(std::move(dataPacket), destAddress, servicePort);
+            sendPacket(std::move(dataPacket));
 
             // Increment data partition ID
             currentPartitionId++;
@@ -279,7 +268,6 @@ void TaskGenerator::balanceLoad()
 
 void TaskGenerator::vehicleHandler()
 {
-    EV << "test_start_application" << std::endl;
     // Get the timer for the first help message
     // bool timerForFirstHelpMessage = simTime() > par("randomTimeFirstHelpMessage").doubleValue();
     // Check the bus state
@@ -316,8 +304,7 @@ void TaskGenerator::vehicleHandler()
         // Send the packet in broadcast
         auto packet = createPacket("help_message");
         packet->insertAtBack(helpMessage);
-        int servicePort = par("servicePort").intValue();
-        sendUnicastPacket(std::move(packet), destAddress, portNumber);
+        sendPacket(std::move(packet));
 
         if (tasks[0].getHelpReceivedCounter() == 0) {
             emit(startTask, simTime());
@@ -483,9 +470,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
 
                 auto ackPkt = createPacket("ACK");
                 ackPkt->insertAtBack(ackMessage);
-                int servicePort = par("servicePort").intValue();
-                L3Address destAddress = responseMessage->getSenderAddress();
-                sendUnicastPacket(std::move(ackPkt), destAddress, servicePort);
+                sendPacket(std::move(ackPkt));
             }
 
             helpers.erase(responseMessage->getHostIndex());
@@ -539,9 +524,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
 
             auto ackPkt = createPacket("ACK");
             ackPkt->insertAtFront(ackMessage);
-            int servicePort = par("servicePort").intValue();
-            L3Address destAddress = responseMessage->getSenderAddress();
-            sendUnicastPacket(std::move(ackPkt), destAddress, servicePort);
+            sendPacket(std::move(ackPkt));
         }
 
         helpers.erase(responseMessage->getHostIndex());
@@ -587,11 +570,9 @@ void TaskGenerator::sendAgainData(DataMessage* data)
 
             auto newDataPkt = createPacket("send_again_data");
             newDataPkt->insertAtBack(newData);
-            int servicePort = par("servicePort").intValue();
-            L3Address destAddress = helpers[data->getHostIndex()].getAddress();
 
             // Send the duplicate data message
-            sendUnicastPacket(std::move(newDataPkt), destAddress, servicePort);
+            sendPacket(std::move(newDataPkt));
 
             // Restart again the timer
             ComputationTimerMessage* computationTimerMessage = new ComputationTimerMessage();

@@ -79,11 +79,6 @@ void Worker::handleStartOperation(inet::LifecycleOperation* doneCallback)
     veins::VeinsInetApplicationBase::handleStartOperation(doneCallback);
 }
 
-void Worker::sendUnicastPacket(std::unique_ptr<inet::Packet> pk, inet::L3Address destAddress, int portNumber)
-{
-    socket.sendTo(pk.release(), destAddress, portNumber);
-}
-
 void Worker::handleStopOperation(inet::LifecycleOperation* doneCallback)
 {
     veins::VeinsInetApplicationBase::handleStopOperation(doneCallback);
@@ -113,9 +108,7 @@ void Worker::handleMessageWhenUp(inet::cMessage* msg)
 
             auto availabilityPkt = createPacket("availability_duplicate");
             availabilityPkt->insertAtBack(availability);
-            int servicePort = par("servicePort").intValue();
-            L3Address destAddress = availabilityMessage->getTag<L3AddressInd>()->getSrcAddress();
-            sendUnicastPacket(std::move(availabilityPkt), destAddress, servicePort);
+            sendPacket(std::move(availabilityPkt));
         }
 
         // Timer for response message
@@ -136,9 +129,7 @@ void Worker::handleMessageWhenUp(inet::cMessage* msg)
 
             auto responsePkt = createPacket("response_duplicate");
             responsePkt->insertAtBack(response);
-            int servicePort = par("servicePort").intValue();
-            L3Address destAddress = responseMessage->getTag<L3AddressInd>()->getSrcAddress();;
-            sendUnicastPacket(std::move(responsePkt), destAddress, servicePort);
+            sendPacket(std::move(responsePkt));
 
         }
 
@@ -153,25 +144,20 @@ void Worker::handleMessageWhenUp(inet::cMessage* msg)
         // Timer to simulate the computation timer
         if (ComputationTimerMessage* timer = dynamic_cast<ComputationTimerMessage*>(msg)) {
             // Call the simulation function passing the inet chunk and the dest addresses and port
-            int servicePort = par("servicePort").intValue();
-            L3Address destAddress;
-
             // Check if the message is a response or an availability message to get the correct sender address
             if (ResponseMessage* response = dynamic_cast<ResponseMessage*>(msg)) {
-                destAddress = response->getSenderAddress();
-                simulateComputationTime(response, destAddress, servicePort);
+                simulateComputationTime(response);
             }
 
             if (AvailabilityMessage* available = dynamic_cast<AvailabilityMessage*>(msg)) {
-                destAddress = available->getSenderAddress();
-                simulateComputationTime(available, destAddress, servicePort);
+                simulateComputationTime(available);
             }
         }
     } else {
         /************************************************************************
           Your application has received a data message from a task generator
         ************************************************************************/
-
+        EV << "Handling message" << std::endl;
         // SECTION - When the host receive an help message
         if (HelpMessage* helpMessage = dynamic_cast<HelpMessage*>(msg)) {
             handleHelpMessage(helpMessage);
@@ -224,7 +210,6 @@ bool Worker::isNewPartition(DataMessage* dataMessage){
 void Worker::handleHelpMessage(HelpMessage* helpMessage)
 {
     // I've received an help request from bus
-
     // Emit the help message received
     emit(stopHelp, simTime());
 
@@ -397,12 +382,12 @@ void Worker::sendAgainResponse(ResponseMessage* response)
     }
 }
 
-void Worker::simulateComputationTime(inet::FieldsChunk* data, L3Address destAddress, int portNumber)
+void Worker::simulateComputationTime(inet::FieldsChunk* data)
 {
     // Prepare the inet chunks to be sent
     auto dataToSend = data->dupShared();
 
     auto dataPacket = createPacket("data_computed");
     dataPacket->insertAtBack(dataToSend);
-    sendUnicastPacket(std::move(dataPacket), destAddress, portNumber);
+    sendPacket(std::move(dataPacket));
 }
