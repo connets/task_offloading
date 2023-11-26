@@ -195,7 +195,7 @@ void TaskGenerator::balanceLoad()
 
                 int64_t time = (int64_t) (timeToCompute + transferTime + par("dataComputationThreshold").doubleValue());
 
-                timerManager.create(veins::TimerSpecification(sendAgainData(dataMessage->dup())).oneshotAt(SimTime(time, SIMTIME_S)));
+                timerManager.create(veins::TimerSpecification(sendAgainData(dataMessage->dup())).oneshotIn(SimTime(time, SIMTIME_S)));
             }
 
             // Schedule the data packet
@@ -536,7 +536,7 @@ std::function<void()> TaskGenerator::sendAgainData(DataMessage* data)
 
             int64_t time = (int64_t) (transferTime + data->getComputationTime() + par("dataComputationThreshold").doubleValue());
 
-            timerManager.create(veins::TimerSpecification(sendAgainData(data->dup())).oneshotAt(SimTime(time, SIMTIME_S)));
+            timerManager.create(veins::TimerSpecification(sendAgainData(data->dup())).oneshotIn(SimTime(time, SIMTIME_S)));
         }
     }
 }
