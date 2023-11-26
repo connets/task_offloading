@@ -118,7 +118,7 @@ double HelperVehicleInfo::getVehiclePositionY() {
 /**
  * @returns The pointer to the current vehicle computation timer
  */
-ComputationTimerMessage* HelperVehicleInfo::getVehicleComputationTimer() {
+double HelperVehicleInfo::getVehicleComputationTimer() {
     return this->vehicleComputationTimer;
 }
 
@@ -223,7 +223,7 @@ void HelperVehicleInfo::setVehicleSpeed(double newSpeed) {
  *
  * @param newVehicleComputationTimer The new pointer to the current computation timer message
  */
-void HelperVehicleInfo::setVehicleComputationTimer(ComputationTimerMessage* newVehicleComputationTimer) {
+void HelperVehicleInfo::setVehicleComputationTimer(double newVehicleComputationTimer) {
     this->vehicleComputationTimer = newVehicleComputationTimer;
 }
 

@@ -35,7 +35,7 @@ namespace task_offloading {
         double vehiclePositionY;
         int dataPartitionId;
         int taskCpi;
-        ComputationTimerMessage* vehicleComputationTimer;
+        double vehicleComputationTimer;
 
     public:
         HelperVehicleInfo();
@@ -52,7 +52,7 @@ namespace task_offloading {
         double getVehicleSpeed();
         double getVehiclePositionX();
         double getVehiclePositionY();
-        ComputationTimerMessage* getVehicleComputationTimer();
+        double getVehicleComputationTimer();
         void setIndex(std::string index);
         void setCurrentLoad(double newLoad);
         void setCPUFreq(double newFreq);
@@ -64,7 +64,7 @@ namespace task_offloading {
         void setVehicleSpeed(double newSpeed);
         void setVehiclePositionX(double newVehiclePositionX);
         void setVehiclePositionY(double newVehiclePositionY);
-        void setVehicleComputationTimer(ComputationTimerMessage* newComputationTimer);
+        void setVehicleComputationTimer(double newComputationTimer);
         double getTotalComputationTime(int CPI);
     };
 }
