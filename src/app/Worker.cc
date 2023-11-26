@@ -91,94 +91,36 @@ void Worker::finish()
     veins::VeinsInetApplicationBase::finish();
 }
 
-void Worker::handleMessageWhenUp(inet::cMessage* msg)
+void Worker::processPacket(std::shared_ptr<inet::Packet> pk)
 {
-    // Check if the message is a self-message
-    if (msg->isSelfMessage()) {
-        /************************************************************************
-                  Your application has received a self-message (timers)
-        ************************************************************************/
-        // Timer for ok message
-        if (AvailabilityMessage* availabilityMessage = dynamic_cast<AvailabilityMessage*>(msg)) {
-            // Emit the signal of ok message sent
-            emit(availableMessageSent, simTime());
+    /************************************************************************
+      Your application has received a data message from a task generator
+    ************************************************************************/
+    EV << "Handling message" << std::endl;
+    // SECTION - When the host receive an help message
+    if (pk->hasData<HelpMessage>()) {
+        auto dataFromPacket = pk->peekData<HelpMessage>();
+        HelpMessage* helpMessage = dataFromPacket->dup();
+        handleHelpMessage(helpMessage);
+    }
 
-            // Send the ok message
-            auto availability = availabilityMessage->dupShared();
+    // SECTION - When the host receive the data message
+    if (pk->hasData<DataMessage>()) {
+        auto dataFromPacket = pk->peekData<DataMessage>();
+        DataMessage* dataMessage = dataFromPacket->dup();
+        handleDataMessage(dataMessage);
+    }
 
-            auto availabilityPkt = createPacket("availability_duplicate");
-            availabilityPkt->insertAtBack(availability);
-            sendPacket(std::move(availabilityPkt));
-        }
+    // SECTION - When the host receive the ACK message
+    if (pk->hasData<AckMessage>()) {
+        currentDataPartitionId = -1;
 
-        // Timer for response message
-        if (ResponseMessage* responseMessage = dynamic_cast<ResponseMessage*>(msg)) {
-            // Send signal for response message statistic with the host ID
-            emit(startResponseMessages, responseMessage->getHostIndex());
-            if(responseMessage->getStillAvailable()) {
-                getParentModule()->getDisplayString().setTagArg("i", 1, "blue");
-            } else{
-                // Color the vehicle in white when send down the response
-                getParentModule()->getDisplayString().setTagArg("i", 1, "white");
-                //Reset common vehicle load
-                availableLoad = par("commonVehicleLoad").doubleValue();  //Only with one task
-            }
+        // Color the vehicle in white when computation ends
+        getParentModule()->getDisplayString().setTagArg("i", 1, "white");
+    }
 
-            // Send the response message
-            auto response = responseMessage->dupShared();
-
-            auto responsePkt = createPacket("response_duplicate");
-            responsePkt->insertAtBack(response);
-            sendPacket(std::move(responsePkt));
-
-        }
-
-        //Timer for task
-        if (TotalComputationTimerMessage* tcm = dynamic_cast<TotalComputationTimerMessage*>(msg)){
-            //Color the vehicle in white when task availability timer runs out
-            getParentModule()->getDisplayString().setTagArg("i", 1, "white");
-            //Reset common vehicle load
-            availableLoad = par("commonVehicleLoad").doubleValue();  //Only with one task
-        }
-
-        // Timer to simulate the computation timer
-        if (ComputationTimerMessage* timer = dynamic_cast<ComputationTimerMessage*>(msg)) {
-            // Call the simulation function passing the inet chunk and the dest addresses and port
-            // Check if the message is a response or an availability message to get the correct sender address
-            if (ResponseMessage* response = dynamic_cast<ResponseMessage*>(msg)) {
-                simulateComputationTime(response);
-            }
-
-            if (AvailabilityMessage* available = dynamic_cast<AvailabilityMessage*>(msg)) {
-                simulateComputationTime(available);
-            }
-        }
-    } else {
-        /************************************************************************
-          Your application has received a data message from a task generator
-        ************************************************************************/
-        EV << "Handling message" << std::endl;
-        // SECTION - When the host receive an help message
-        if (HelpMessage* helpMessage = dynamic_cast<HelpMessage*>(msg)) {
-            handleHelpMessage(helpMessage);
-        }
-
-        // SECTION - When the host receive the data message
-        if (DataMessage* dataMessage = dynamic_cast<DataMessage*>(msg)) {
-            handleDataMessage(dataMessage);
-        }
-
-        // SECTION - When the host receive the ACK message
-        if (AckMessage* ackMessage = dynamic_cast<AckMessage*>(msg)) {
-            currentDataPartitionId = -1;
-
-            // Color the vehicle in white when computation ends
-            getParentModule()->getDisplayString().setTagArg("i", 1, "white");
-        }
-
-        if(BeaconMessage* bmsg = dynamic_cast<BeaconMessage*>(msg)) {
-            emit(stopBeaconMessages, simTime());
-        }
+    if(pk->hasData<BeaconMessage>()) {
+        emit(stopBeaconMessages, simTime());
     }
 }
 
@@ -188,10 +130,21 @@ void Worker::setTaskAvailabilityTimer(int taskId, int taskSize){
     double taskTransmissionTime = ceil(taskSize/bitRate);
     double taskTimer = (1 + taskTransmissionTime*1.1)*par("retryFactorTime").doubleValue();
 
+    auto callback = [this]() {
+        //Color the vehicle in white when task availability timer runs out
+        getParentModule()->getDisplayString().setTagArg("i", 1, "white");
+        //Reset common vehicle load
+        availableLoad = par("commonVehicleLoad").doubleValue();  //Only with one task
+    };
+
+    int64_t time = (int64_t) taskTimer;
+
     TotalComputationTimerMessage* tcm = new TotalComputationTimerMessage("taskAvailabilityTimerMessage");
     tcm->setTaskId(taskId);
     taskAvailabilityTimers.insert(std::pair<int,TotalComputationTimerMessage*>(taskId,tcm));
-    scheduleAfter(taskTimer, tcm);
+
+    // Start the timer
+    timerManager.create(veins::TimerSpecification(callback).oneshotIn(SimTime(time, SIMTIME_S)));
 }
 
 void Worker::resetTaskAvailabilityTimer(int taskId) {
@@ -254,13 +207,9 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
         available->setVehiclePositionY(cy);
         available->setChunkLength(B(500));
 
-        // Create the computation timer to simulate the computation time
-        ComputationTimerMessage* computationTimer = new ComputationTimerMessage();
-        AvailabilityMessage* availabilityTimer = available.get();
-        computationTimer->setData(availabilityTimer);
-
         // Schedule the ok message
-        scheduleAt(simTime() + par("vehicleAvailabilityMessageTime").doubleValue(), computationTimer);
+        int64_t time = (int64_t) par("vehicleAvailabilityMessageTime").doubleValue();
+        timerManager.create(veins::TimerSpecification(simulateAvailabilityTime(available->dup())).oneshotIn(SimTime(time, SIMTIME_S)));
     }
 }
 
@@ -320,28 +269,24 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
 
     // Schedule the response message
     // Create the computation timer to simulate the computation time
-    ComputationTimerMessage* computationTimer = new ComputationTimerMessage();
-    ResponseMessage* responseTimer = responseMessage.get();
-    computationTimer->setData(responseTimer);
+    int64_t time = (int64_t) timeToCompute;
 
     // Schedule the timer
-    scheduleAfter(timeToCompute, computationTimer);
+    timerManager.create(veins::TimerSpecification(simulateResponseTime(responseMessage->dup())).oneshotIn(SimTime(time, SIMTIME_S)));
 
     // Generate ACK timer if parameter useAcks is false
     // to achieve secure protocol manually and if I'm not still available
     if (!(par("useAcks").boolValue()) && !(stillAvailableProbability)) {
-        AckTimerMessage* ackTimerMessage = new AckTimerMessage();
-        ackTimerMessage->setData(responseMessage->dup());
-
         //Calculate bitrate conversion from megabit to megabyte
         double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
         double transferTime = dataMessage->getLoadToProcess()/bitRate;
 
-        scheduleAfter(timeToCompute + transferTime + par("ackMessageThreshold").doubleValue(), ackTimerMessage);
+        time = (int64_t) (timeToCompute + transferTime + par("ackMessageThreshold").doubleValue());
+        timerManager.create(veins::TimerSpecification(sendAgainResponse(responseMessage->dup())).oneshotIn(SimTime(time, SIMTIME_S)));
     }
 }
 
-void Worker::sendAgainResponse(ResponseMessage* response)
+std::function<void()> Worker::sendAgainResponse(ResponseMessage* response)
 {
     if (currentDataPartitionId == response->getPartitionID()) {
         auto newResponse = makeShared<ResponseMessage>();
@@ -365,29 +310,49 @@ void Worker::sendAgainResponse(ResponseMessage* response)
         newResponse->setSenderAddress(worker);
 
         // Create the computation timer to simulate the computation time
-        ComputationTimerMessage* computationTimer = new ComputationTimerMessage();
-        ResponseMessage* responseTimer = newResponse.get();
-        computationTimer->setData(responseTimer);
+        int64_t time = (int64_t) response->getTimeToCompute();
 
         // Schedule the new duplicate response message
-        scheduleAfter(response->getTimeToCompute(), computationTimer);
+        timerManager.create(veins::TimerSpecification(simulateResponseTime(newResponse->dup())).oneshotIn(SimTime(time, SIMTIME_S)));
 
         // Restart the ACK timer
-        AckTimerMessage* ackTimerMessage = new AckTimerMessage();
-        ackTimerMessage->setData(response->dup());
-
         double transferTime = 10.0;
 
-        scheduleAt(simTime() + transferTime + response->getTimeToCompute() + par("ackMessageThreshold").doubleValue(), ackTimerMessage);
+        time = (int64_t) (transferTime + response->getTimeToCompute() + par("ackMessageThreshold").doubleValue());
+
+        timerManager.create(veins::TimerSpecification(sendAgainResponse(newResponse->dup())).oneshotIn(SimTime(time, SIMTIME_S)));
     }
 }
 
-void Worker::simulateComputationTime(inet::FieldsChunk* data)
+std::function<void()> Worker::simulateAvailabilityTime(AvailabilityMessage* availabilityMessage)
 {
-    // Prepare the inet chunks to be sent
-    auto dataToSend = data->dupShared();
+    // Emit the signal of ok message sent
+    emit(availableMessageSent, simTime());
 
-    auto dataPacket = createPacket("data_computed");
-    dataPacket->insertAtBack(dataToSend);
-    sendPacket(std::move(dataPacket));
+    // Send the ok message
+    auto availability = availabilityMessage->dupShared();
+
+    auto availabilityPkt = createPacket("availability_duplicate");
+    availabilityPkt->insertAtBack(availability);
+    sendPacket(std::move(availabilityPkt));
+}
+
+std::function<void()> Worker::simulateResponseTime(ResponseMessage* responseMessage) {
+    // Send signal for response message statistic with the host ID
+    emit(startResponseMessages, responseMessage->getHostIndex());
+    if(responseMessage->getStillAvailable()) {
+        getParentModule()->getDisplayString().setTagArg("i", 1, "blue");
+    } else{
+        // Color the vehicle in white when send down the response
+        getParentModule()->getDisplayString().setTagArg("i", 1, "white");
+        //Reset common vehicle load
+        availableLoad = par("commonVehicleLoad").doubleValue();  //Only with one task
+    }
+
+    // Send the response message
+    auto response = responseMessage->dupShared();
+
+    auto responsePkt = createPacket("response_duplicate");
+    responsePkt->insertAtBack(response);
+    sendPacket(std::move(responsePkt));
 }

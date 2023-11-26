@@ -87,15 +87,16 @@ protected:
 protected:
     void handleHelpMessage(HelpMessage* helpMsg);
     void handleDataMessage(DataMessage* dataMsg);
-    void sendAgainResponse(ResponseMessage* data);
-    void simulateComputationTime(inet::FieldsChunk* data);
+    std::function<void()> sendAgainResponse(ResponseMessage* data);
+    std::function<void()> simulateAvailabilityTime(AvailabilityMessage* availabilityMessage);
+    std::function<void()> simulateResponseTime(ResponseMessage* responseMessage);
 
     void setTaskAvailabilityTimer(int taskId, int taskSize);
     void resetTaskAvailabilityTimer(int taskId);
 
     virtual void handleStartOperation(inet::LifecycleOperation* doneCallback) override;
     virtual void handleStopOperation(inet::LifecycleOperation* doneCallback) override;
-    virtual void handleMessageWhenUp(inet::cMessage* msg) override;
+    virtual void processPacket(std::shared_ptr<inet::Packet> pk) override;
 private:
     bool isNewPartition(DataMessage* dataMsg);
 
