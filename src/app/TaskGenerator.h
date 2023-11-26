@@ -91,11 +91,11 @@ protected:
 protected:
     void handleAvailabilityMessage(AvailabilityMessage* okMsg);
     void handleResponseMessage(ResponseMessage* responseMsg);
-    void sendAgainData(DataMessage* data);
+    std::function<void()> sendAgainData(DataMessage* data);
     void balanceLoad();
     void vehicleHandler();
     virtual void handleStartOperation(inet::LifecycleOperation* doneCallback) override;
     virtual void handleStopOperation(inet::LifecycleOperation* doneCallback) override;
-    virtual void handleMessageWhenUp(inet::cMessage* msg) override;
+    virtual void processPacket(std::shared_ptr<inet::Packet> pk) override;
 };
 }

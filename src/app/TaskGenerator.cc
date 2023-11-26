@@ -73,9 +73,13 @@ void TaskGenerator::handleStartOperation(inet::LifecycleOperation* doneCallback)
 {
     veins::VeinsInetApplicationBase::handleStartOperation(doneCallback);
     // Start the timer for the first help message
-    TimerFirstHelpMessage* timer = new TimerFirstHelpMessage();
-    simtime_t time = simTime() + par("randomTimeFirstHelpMessage").doubleValue();
-    scheduleAfter(time, timer);
+    int64_t time = (int64_t) par("randomTimeFirstHelpMessage").doubleValue();
+
+    auto callback = [this]() {
+        vehicleHandler();
+    };
+
+    timerManager.create(veins::TimerSpecification(callback).oneshotIn(SimTime(time, SIMTIME_S)));
 }
 
 void TaskGenerator::handleStopOperation(inet::LifecycleOperation* doneCallback)
@@ -90,81 +94,28 @@ void TaskGenerator::finish()
     veins::VeinsInetApplicationBase::finish();
 }
 
-void TaskGenerator::handleMessageWhenUp(inet::cMessage* msg)
+void TaskGenerator::processPacket(std::shared_ptr<inet::Packet> pk)
 {
     /************************************************************************
-      Your application has received a data message itself (self-message)
+      Your application has received a data message from another car or RSU
     ************************************************************************/
-    // Check if the message is a self message
-    if (msg->isSelfMessage()) {
-        // Timer for the first help message
-        if (TimerFirstHelpMessage* loadBalanceMsg = dynamic_cast<TimerFirstHelpMessage*>(msg)) {
-            vehicleHandler();
-        }
 
-        // Timer for future help messages
-        if (LoadBalanceTimerMessage* loadBalanceMsg = dynamic_cast<LoadBalanceTimerMessage*>(msg)) {
-            // If I'm the bus and I've received help then load balance
-            // otherwise back to help messages
-            if (helpers.size() > 0 && busState.getCurrentState() == 1) {
-                // Call to load balancing function
-                balanceLoad();
-            } else if (helpers.size() == 0) {
-                // Disable load balancing
-                busState.setState(new Help);
-                // Restart the vehicle handler function
-                vehicleHandler();
-            }
-        }
+    // SECTION - When the bus receives the ok messages
+    if (pk->hasData<AvailabilityMessage>()) {
+        auto dataFromPacket = pk->peekData<AvailabilityMessage>();
+        AvailabilityMessage* availabilityMessage = dataFromPacket->dup();
+        handleAvailabilityMessage(availabilityMessage);
+    }
 
-        // Timer for data computation
-        if (ComputationTimerMessage* computationTimerMessage = dynamic_cast<ComputationTimerMessage*>(msg)) {
-            DataMessage* data = (DataMessage*)computationTimerMessage->getData();
-            sendAgainData(data);
-        }
+    // SECTION - When the bus receive the response message
+    if (pk->hasData<ResponseMessage>()) {
+        auto dataFromPacket = pk->peekData<ResponseMessage>();
+        ResponseMessage* responseMessage = dataFromPacket->dup();
+        handleResponseMessage(responseMessage);
+    }
 
-        // Timer for data message
-        if (DataMessage* dataMsg = dynamic_cast<DataMessage*>(msg)) {
-            // Send signal for data message statistic with the host ID
-            emit(startDataMessages, dataMsg->getHostIndex());
-
-            // Create data payload
-            auto data = dataMsg->dupShared();
-
-            // Create the data packet
-            auto dataPacket = createPacket("duplicate_data");
-            dataPacket->insertAtBack(data);
-            sendPacket(std::move(dataPacket));
-        }
-
-        // Timer for ACK message
-        if (AckMessage* ackMsg = dynamic_cast<AckMessage*>(msg)) {
-            // Create data payload
-            auto ack = ackMsg->dupShared();
-
-            // Create the data packet
-            auto ackPacket = createPacket("duplicate_ack");
-            ackPacket->insertAtBack(ack);
-            sendPacket(std::move(ackPacket));
-        }
-    } else {
-        /************************************************************************
-          Your application has received a data message from another car or RSU
-        ************************************************************************/
-
-        // SECTION - When the bus receives the ok messages
-        if (AvailabilityMessage* availabilityMessage = dynamic_cast<AvailabilityMessage*>(msg)) {
-            handleAvailabilityMessage(availabilityMessage);
-        }
-
-        // SECTION - When the bus receive the response message
-        if (ResponseMessage* responseMessage = dynamic_cast<ResponseMessage*>(msg)) {
-            handleResponseMessage(responseMessage);
-        }
-
-        if(BeaconMessage* bmsg = dynamic_cast<BeaconMessage*>(msg)) {
-            emit(stopBeaconMessages, simTime());
-        }
+    if(pk->hasData<BeaconMessage>()) {
+        emit(stopBeaconMessages, simTime());
     }
 }
 
@@ -234,18 +185,17 @@ void TaskGenerator::balanceLoad()
 
             // Create timer computation message for each host if auto ACKs are disabled
             if (par("useAcks").boolValue() == false) {
-                ComputationTimerMessage* computationTimerMessage = new ComputationTimerMessage();
-                computationTimerMessage->setData(dataMessage->dup());
-
                 // Calculate time to file transmission
                 //Calculate bitrate conversion from megabit to megabyte
                 double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
                 double transferTime = localData/bitRate;
 
                 // Save the computation timer into helpers map
-                helpers[i].setVehicleComputationTimer(computationTimerMessage);
+                helpers[i].setVehicleComputationTimer(timeToCompute + transferTime + par("dataComputationThreshold").doubleValue());
 
-                scheduleAfter(timeToCompute + transferTime + par("dataComputationThreshold").doubleValue(), computationTimerMessage);
+                int64_t time = (int64_t) (timeToCompute + transferTime + par("dataComputationThreshold").doubleValue());
+
+                timerManager.create(veins::TimerSpecification(sendAgainData(dataMessage->dup())).oneshotAt(SimTime(time, SIMTIME_S)));
             }
 
             // Schedule the data packet
@@ -310,14 +260,19 @@ void TaskGenerator::vehicleHandler()
             emit(startTask, simTime());
         }
 
-        // Start bus waiting timer for accepting availability messages
-        LoadBalanceTimerMessage* timerForLoadBalancing = new LoadBalanceTimerMessage();
-
-        // Save the actual simtime for future help messages
-        simtime_t simTimeActual = simTime();
-
-        // Populate the message
-        timerForLoadBalancing->setSimulationTime(simTimeActual);
+        auto callback = [this]() {
+            // If I'm the bus and I've received help then load balance
+            // otherwise back to help messages
+            if (helpers.size() > 0 && busState.getCurrentState() == 1) {
+                // Call to load balancing function
+                balanceLoad();
+            } else if (helpers.size() == 0) {
+                // Disable load balancing
+                busState.setState(new Help);
+                // Restart the vehicle handler function
+                vehicleHandler();
+            }
+        };
 
         // Change the load balancing state
         busState.setState(new LoadBalancing);
@@ -327,8 +282,10 @@ void TaskGenerator::vehicleHandler()
         helpCounter++;
         tasks[0].setHelpReceivedCounter(helpCounter);
 
+        int64_t time = (int64_t) par("busWaitingTimeForAvailability").doubleValue();
+
         // Schedule the message -> simTime + availability msgs threshold
-        scheduleAt(simTimeActual + par("busWaitingTimeForAvailability").doubleValue(), timerForLoadBalancing);
+        timerManager.create(veins::TimerSpecification(callback).oneshotIn(SimTime(time, SIMTIME_S)));
     } else if (tasks[0].getTotalData() <= 0) {
         // Color the bus in white when computation ends
         getParentModule()->getDisplayString().setTagArg("i", 1, "white");
@@ -427,7 +384,8 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         emit(stopResponseMessages, responseMessage->getHostIndex());
 
         // Cancel and delete the timer message of this vehicle
-        cancelAndDelete(helpers[responseMessage->getHostIndex()].getVehicleComputationTimer());
+        // This timer should not be deleted because now is the timer manager that hanldes timers in application
+        // cancelAndDelete(helpers[responseMessage->getHostIndex()].getVehicleComputationTimer());
 
         // Update the data partiton id into the helpers map
         helpers[responseMessage->getHostIndex()].setDataPartitionId(-1);
@@ -532,7 +490,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
     }
 }
 
-void TaskGenerator::sendAgainData(DataMessage* data)
+std::function<void()> TaskGenerator::sendAgainData(DataMessage* data)
 {
     // Search the vehicle in the map
     auto found = helpers.find(data->getHostIndex());
@@ -574,13 +532,11 @@ void TaskGenerator::sendAgainData(DataMessage* data)
             // Send the duplicate data message
             sendPacket(std::move(newDataPkt));
 
-            // Restart again the timer
-            ComputationTimerMessage* computationTimerMessage = new ComputationTimerMessage();
-            computationTimerMessage->setData(data->dup());
-
             double transferTime = 10.0;
 
-            scheduleAt(simTime() + transferTime + data->getComputationTime() + par("dataComputationThreshold").doubleValue(), computationTimerMessage);
+            int64_t time = (int64_t) (transferTime + data->getComputationTime() + par("dataComputationThreshold").doubleValue());
+
+            timerManager.create(veins::TimerSpecification(sendAgainData(data->dup())).oneshotAt(SimTime(time, SIMTIME_S)));
         }
     }
 }
