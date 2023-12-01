@@ -13,13 +13,13 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-import inet.common.INETDefs;
-import inet.common.packet.chunk.Chunk;
 import inet.networklayer.common.L3Address;
+import BasePacket;
 
 namespace task_offloading;
 
-class BeaconMessage extends inet::FieldsChunk {
+class BeaconMessage extends BasePacket {
+    type = BEACON;
     int hostID;
     inet::L3Address senderAddress;
 }

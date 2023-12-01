@@ -13,13 +13,13 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-import inet.common.INETDefs;
-import inet.common.packet.chunk.Chunk;
 import inet.networklayer.common.L3Address;
+import BasePacket;
 
 namespace task_offloading;
 
-class AvailabilityMessage extends inet::FieldsChunk {
+class AvailabilityMessage extends BasePacket {
+    type = AVAILABILITY;
 	int hostID;
 	string index;
 	double availableLoad;
