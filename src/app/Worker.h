@@ -30,6 +30,7 @@
 #include "app/messages/AvailabilityMessage_m.h"
 #include "app/messages/DataMessage_m.h"
 #include "app/messages/ResponseMessage_m.h"
+#include "app/messages/BasePacket_m.h"
 #include "app/vehiclesHandling/HelperVehicleInfo.h"
 #include "app/loadBalancing/sortingAlgorithm/BaseSorting.h"
 #include "loadBalancing/BusState.h"

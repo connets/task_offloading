@@ -73,13 +73,13 @@ void TaskGenerator::handleStartOperation(inet::LifecycleOperation* doneCallback)
 {
     veins::VeinsInetApplicationBase::handleStartOperation(doneCallback);
     // Start the timer for the first help message
-    int64_t time = (int64_t) par("randomTimeFirstHelpMessage").doubleValue();
+    double time = par("randomTimeFirstHelpMessage").doubleValue();
 
     auto callback = [this]() {
         vehicleHandler();
     };
 
-    timerManager.create(veins::TimerSpecification(callback).oneshotIn(SimTime(time, SIMTIME_S)));
+    timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
 }
 
 void TaskGenerator::handleStopOperation(inet::LifecycleOperation* doneCallback)
@@ -99,23 +99,31 @@ void TaskGenerator::processPacket(std::shared_ptr<inet::Packet> pk)
     /************************************************************************
       Your application has received a data message from another car or RSU
     ************************************************************************/
+    try {
+        if (pk->hasData<BasePacket>()) {
+            auto packet = pk->peekData<BasePacket>();
+            BasePacket* data = packet->dup();
 
-    // SECTION - When the bus receives the ok messages
-    if (pk->hasData<AvailabilityMessage>()) {
-        auto dataFromPacket = pk->peekData<AvailabilityMessage>();
-        AvailabilityMessage* availabilityMessage = dataFromPacket->dup();
-        handleAvailabilityMessage(availabilityMessage);
-    }
+            // SECTION - When the bus receives the ok messages
+            if (data->getType() == AVAILABILITY) {
+                auto dataFromPacket = pk->peekData<AvailabilityMessage>();
+                AvailabilityMessage* availabilityMessage = dataFromPacket->dup();
+                handleAvailabilityMessage(availabilityMessage);
+            }
 
-    // SECTION - When the bus receive the response message
-    if (pk->hasData<ResponseMessage>()) {
-        auto dataFromPacket = pk->peekData<ResponseMessage>();
-        ResponseMessage* responseMessage = dataFromPacket->dup();
-        handleResponseMessage(responseMessage);
-    }
+            // SECTION - When the bus receive the response message
+            if (data->getType() == RESPONSE) {
+                auto dataFromPacket = pk->peekData<ResponseMessage>();
+                ResponseMessage* responseMessage = dataFromPacket->dup();
+                handleResponseMessage(responseMessage);
+            }
 
-    if(pk->hasData<BeaconMessage>()) {
-        emit(stopBeaconMessages, simTime());
+            if (data->getType() == BEACON) {
+                emit(stopBeaconMessages, simTime());
+            }
+        }
+    } catch (cException e) {
+        EV << "Package type not expected" << std::endl;
     }
 }
 
@@ -162,8 +170,8 @@ void TaskGenerator::balanceLoad()
             }
 
             // Populate the other fields
-            L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
-            dataMessage->setSenderAddress(generator);
+            // L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
+            // dataMessage->setSenderAddress(generator);
             dataMessage->setHostIndex(i);
             dataMessage->setTaskId(tasks[0].getId());
             dataMessage->setTaskSize(tasks[0].getTotalData());
@@ -187,15 +195,17 @@ void TaskGenerator::balanceLoad()
             if (par("useAcks").boolValue() == false) {
                 // Calculate time to file transmission
                 //Calculate bitrate conversion from megabit to megabyte
-                double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
+                // double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
+                // FIXME -> Get the correct value for bitrate -> now it is 6Mbps
+                double bitRate = 93750;
                 double transferTime = localData/bitRate;
 
                 // Save the computation timer into helpers map
                 helpers[i].setVehicleComputationTimer(timeToCompute + transferTime + par("dataComputationThreshold").doubleValue());
 
-                int64_t time = (int64_t) (timeToCompute + transferTime + par("dataComputationThreshold").doubleValue());
+                double time = (timeToCompute + transferTime + par("dataComputationThreshold").doubleValue());
 
-                timerManager.create(veins::TimerSpecification(sendAgainData(dataMessage->dup())).oneshotIn(SimTime(time, SIMTIME_S)));
+                timerManager.create(veins::TimerSpecification(sendAgainData(dataMessage->dup())).oneshotIn(time));
             }
 
             // Schedule the data packet
@@ -260,6 +270,16 @@ void TaskGenerator::vehicleHandler()
             emit(startTask, simTime());
         }
 
+        // Change the load balancing state
+        busState.setState(new LoadBalancing);
+
+        // Increment the counter for help messages
+        int helpCounter = tasks[0].getHelpReceivedCounter();
+        helpCounter++;
+        tasks[0].setHelpReceivedCounter(helpCounter);
+
+        double time = par("busWaitingTimeForAvailability").doubleValue();
+
         auto callback = [this]() {
             // If I'm the bus and I've received help then load balance
             // otherwise back to help messages
@@ -274,18 +294,8 @@ void TaskGenerator::vehicleHandler()
             }
         };
 
-        // Change the load balancing state
-        busState.setState(new LoadBalancing);
-
-        // Increment the counter for help messages
-        int helpCounter = tasks[0].getHelpReceivedCounter();
-        helpCounter++;
-        tasks[0].setHelpReceivedCounter(helpCounter);
-
-        int64_t time = (int64_t) par("busWaitingTimeForAvailability").doubleValue();
-
         // Schedule the message -> simTime + availability msgs threshold
-        timerManager.create(veins::TimerSpecification(callback).oneshotIn(SimTime(time, SIMTIME_S)));
+        timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
     } else if (tasks[0].getTotalData() <= 0) {
         // Color the bus in white when computation ends
         getParentModule()->getDisplayString().setTagArg("i", 1, "white");
@@ -295,55 +305,59 @@ void TaskGenerator::vehicleHandler()
 void TaskGenerator::handleAvailabilityMessage(AvailabilityMessage* availabilityMessage)
 {
 
-   double aRt =par("availabilityRangeTime").doubleValue();
+    double aRt = par("availabilityRangeTime").doubleValue();
 
-   // Calculate time for computation
-   double CPI = tasks[0].getComputingDensity();
-   double CR = availabilityMessage->getCpuFreq();
+    // Calculate time for computation
+    double CPI = tasks[0].getComputingDensity();
+    double CR = availabilityMessage->getCpuFreq();
 
-   //Calculate bitrate conversion from megabit to megabyte
-   double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
+    //Calculate bitrate conversion from megabit to megabyte
+    // double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
+    // FIXME -> Get the correct value for bitrate -> now it is 6Mbps
+    double bitRate = 93750;
 
-   //Calculate the available load for the car
-   double localData = (availabilityMessage->getAvailableLoad());
+    //Calculate the available load for the car
+    double localData = (availabilityMessage->getAvailableLoad());
 
-   double IO = par("IOratio").doubleValue();
+    double IO = par("IOratio").doubleValue();
 
-   double transferTime = localData/bitRate;
-   double transferTimeRes =(localData*IO)/bitRate;
-   double timeToCompute = CPI * localData * (1 / CR);
+    double transferTime = localData/bitRate;
+    double transferTimeRes =(localData*IO)/bitRate;
+    double timeToCompute = CPI * localData * (1 / CR);
 
-   if(aRt==-1.0) {
-        //Generate the time that is used to check whether a car will be in the bus range in those next seconds
+    // FIXME -> get the correct module for mobility
+    if(aRt==-1.0) {
+        // Generate the time that is used to check whether a car will be in the bus range in those next seconds
         aRt = (transferTime + timeToCompute + transferTimeRes)*par("retryFactorTime").doubleValue();
-
     }
-    //car position at the current time
+
+    // Car position at the current time
     double cx = helpers[availabilityMessage->getHostID()].getVehiclePositionX();
     double cy = helpers[availabilityMessage->getHostID()].getVehiclePositionY();
-    //bus position at the current time
-    veins::TraCIMobility* mobilityMod = check_and_cast<veins::TraCIMobility*>(getModuleByPath("^.veinsmobility"));
-    double bx = mobilityMod->getPositionAt(simTime()).x;
-    double by = mobilityMod->getPositionAt(simTime()).y;
+    // Bus position at the current time
+    // veins::TraCIMobility* mobilityMod = check_and_cast<veins::TraCIMobility*>(findModuleByPath("^.veinsmobility"));
+    double bx = mobility->getCurrentPosition().x;
+    double by = mobility->getCurrentPosition().y;
 
-    //future positions of car (next aRt seconds)
+    // Future positions of car (next aRt seconds)
     double nextCx = (helpers[availabilityMessage->getHostID()].getVehicleSpeed()*aRt*std::cos(helpers[availabilityMessage->getHostID()].getVehicleAngle())) + cx;
     double nextCy = (helpers[availabilityMessage->getHostID()].getVehicleSpeed()*aRt*std::sin(helpers[availabilityMessage->getHostID()].getVehicleAngle())) + cy;
-    //future positions of car (next aRt seconds)
+    // Future positions of car (next aRt seconds)
     double nextBx = (traciVehicle->getSpeed()*aRt*std::cos(traciVehicle->getAngle())) + bx;
     double nextBy = (traciVehicle->getSpeed()*aRt*std::sin(traciVehicle->getAngle())) + by;
 
-    //radius for both the car and bus reach in their next aRt seconds
-//    double radiusCar = sqrt(pow((nextCx - cx),2.0) + pow((nextCy - cy),2.0));
+    // Radius for both the car and bus reach in their next aRt seconds
+    // double radiusCar = sqrt(pow((nextCx - cx),2.0) + pow((nextCy - cy),2.0));
     double radiusBus = sqrt(pow((nextBx - bx),2.0) + pow((nextBy - by),2.0));
 
-    //check if both the bus and the car will be in each other reach in the next aRt seconds
-    //((x-center_x)^2 + (y-center_y)^2 < radius^2)
+    // Check if both the bus and the car will be in each other reach in the next aRt seconds
+    // ((x-center_x)^2 + (y-center_y)^2 < radius^2)
     if(!(pow(nextCx-nextBx,2.0) + pow(nextCy-nextBy,2.0) < pow(radiusBus,2.0))) {
-        //remove vehicle availability due to projected long distance
+        // remove vehicle availability due to projected long distance
         helpers.erase(availabilityMessage->getHostID());
         helpersOrderedList.remove(availabilityMessage->getHostID());
     }
+
     // Check the bus state
     int currentBusState = busState.getCurrentState();
 
@@ -423,8 +437,8 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
                 ackMessage->setHostIndex(responseMessage->getHostIndex());
                 ackMessage->setTaskID(responseMessage->getTaskID());
                 ackMessage->setPartitionID(responseMessage->getPartitionID());
-                L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
-                ackMessage->setSenderAddress(generator);
+                // L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
+                // ackMessage->setSenderAddress(generator);
 
                 auto ackPkt = createPacket("ACK");
                 ackPkt->insertAtBack(ackMessage);
@@ -477,8 +491,8 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
             ackMessage->setHostIndex(responseMessage->getHostIndex());
             ackMessage->setTaskID(responseMessage->getTaskID());
             ackMessage->setPartitionID(responseMessage->getPartitionID());
-            L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
-            ackMessage->setSenderAddress(generator);
+            // L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
+            // ackMessage->setSenderAddress(generator);
 
             auto ackPkt = createPacket("ACK");
             ackPkt->insertAtFront(ackMessage);
@@ -516,8 +530,8 @@ std::function<void()> TaskGenerator::sendAgainData(DataMessage* data)
 
             newData->setChunkLength(B(data->getChunkLength()));
             newData->setLoadToProcess(data->getLoadToProcess());
-            L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
-            newData->setSenderAddress(generator);
+            // L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
+            // newData->setSenderAddress(generator);
             newData->setHostIndex(data->getHostIndex());
             newData->setTaskId(data->getTaskId());
             newData->setTaskSize(data->getTaskSize());
@@ -534,9 +548,11 @@ std::function<void()> TaskGenerator::sendAgainData(DataMessage* data)
 
             double transferTime = 10.0;
 
-            int64_t time = (int64_t) (transferTime + data->getComputationTime() + par("dataComputationThreshold").doubleValue());
+            double time = (transferTime + data->getComputationTime() + par("dataComputationThreshold").doubleValue());
 
-            timerManager.create(veins::TimerSpecification(sendAgainData(data->dup())).oneshotIn(SimTime(time, SIMTIME_S)));
+            timerManager.create(veins::TimerSpecification(sendAgainData(data->dup())).oneshotIn(time));
         }
     }
+
+    return 0;
 }

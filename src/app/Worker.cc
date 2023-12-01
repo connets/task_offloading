@@ -96,37 +96,47 @@ void Worker::processPacket(std::shared_ptr<inet::Packet> pk)
     /************************************************************************
       Your application has received a data message from a task generator
     ************************************************************************/
-    EV << "Handling message" << std::endl;
-    // SECTION - When the host receive an help message
-    if (pk->hasData<HelpMessage>()) {
-        auto dataFromPacket = pk->peekData<HelpMessage>();
-        HelpMessage* helpMessage = dataFromPacket->dup();
-        handleHelpMessage(helpMessage);
-    }
+    try {
+        if (pk->hasData<BasePacket>()) {
+            auto packet = pk->peekData<BasePacket>();
+            BasePacket* data = packet->dup();
 
-    // SECTION - When the host receive the data message
-    if (pk->hasData<DataMessage>()) {
-        auto dataFromPacket = pk->peekData<DataMessage>();
-        DataMessage* dataMessage = dataFromPacket->dup();
-        handleDataMessage(dataMessage);
-    }
+            // SECTION - When the host receive an help message
+            if (data->getType() == HELP) {
+                auto dataFromPacket = pk->peekData<HelpMessage>();
+                HelpMessage* helpMessage = dataFromPacket->dup();
+                handleHelpMessage(helpMessage);
+            }
 
-    // SECTION - When the host receive the ACK message
-    if (pk->hasData<AckMessage>()) {
-        currentDataPartitionId = -1;
+            // SECTION - When the host receive the data message
+            if (data->getType() == DATA) {
+                auto dataFromPacket = pk->peekData<DataMessage>();
+                DataMessage* dataMessage = dataFromPacket->dup();
+                handleDataMessage(dataMessage);
+            }
 
-        // Color the vehicle in white when computation ends
-        getParentModule()->getDisplayString().setTagArg("i", 1, "white");
-    }
+            // SECTION - When the host receive the ACK message
+            if (data->getType() == ACK) {
+                currentDataPartitionId = -1;
 
-    if(pk->hasData<BeaconMessage>()) {
-        emit(stopBeaconMessages, simTime());
+                // Color the vehicle in white when computation ends
+                getParentModule()->getDisplayString().setTagArg("i", 1, "white");
+            }
+
+            if (data->getType() == BEACON) {
+                emit(stopBeaconMessages, simTime());
+            }
+        }
+    } catch (cException e) {
+        EV << "Package type not expected\nError: " << e.getFormattedMessage() << std::endl;
     }
 }
 
 void Worker::setTaskAvailabilityTimer(int taskId, int taskSize){
     //Set task availability timer
-    double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
+    // double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
+    // FIXME -> Get the correct value for bitrate -> now it is 6Mbps
+    double bitRate = 93750;
     double taskTransmissionTime = ceil(taskSize/bitRate);
     double taskTimer = (1 + taskTransmissionTime*1.1)*par("retryFactorTime").doubleValue();
 
@@ -137,14 +147,14 @@ void Worker::setTaskAvailabilityTimer(int taskId, int taskSize){
         availableLoad = par("commonVehicleLoad").doubleValue();  //Only with one task
     };
 
-    int64_t time = (int64_t) taskTimer;
+    double time = taskTimer;
 
     TotalComputationTimerMessage* tcm = new TotalComputationTimerMessage("taskAvailabilityTimerMessage");
     tcm->setTaskId(taskId);
     taskAvailabilityTimers.insert(std::pair<int,TotalComputationTimerMessage*>(taskId,tcm));
 
     // Start the timer
-    timerManager.create(veins::TimerSpecification(callback).oneshotIn(SimTime(time, SIMTIME_S)));
+    timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
 }
 
 void Worker::resetTaskAvailabilityTimer(int taskId) {
@@ -200,16 +210,17 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
         available->setCpuFreq(cpuFreq);
         available->setVehicleAngle(traciVehicle->getAngle());
         available->setVehicleSpeed(traciVehicle->getSpeed());
-        veins::TraCIMobility* mobilityMod = check_and_cast<veins::TraCIMobility*>(getModuleByPath("^.veinsmobility"));
-        double cx = mobilityMod->getPositionAt(simTime()).x;
-        double cy = mobilityMod->getPositionAt(simTime()).y;
+        // FIXME -> get the correct module for mobility
+        // veins::TraCIMobility* mobilityMod = check_and_cast<veins::TraCIMobility*>(findModuleByPath("^.veinsmobility"));
+        double cx = mobility->getCurrentPosition().x;
+        double cy = mobility->getCurrentPosition().y;
         available->setVehiclePositionX(cx);
         available->setVehiclePositionY(cy);
         available->setChunkLength(B(500));
 
         // Schedule the ok message
-        int64_t time = (int64_t) par("vehicleAvailabilityMessageTime").doubleValue();
-        timerManager.create(veins::TimerSpecification(simulateAvailabilityTime(available->dup())).oneshotIn(SimTime(time, SIMTIME_S)));
+        double time = par("vehicleAvailabilityMessageTime").doubleValue();
+        timerManager.create(veins::TimerSpecification(simulateAvailabilityTime(available->dup())).oneshotIn(time));
     }
 }
 
@@ -261,28 +272,30 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     responseMessage->setTaskID(dataMessage->getTaskId());
     responseMessage->setPartitionID(dataMessage->getPartitionId());
     responseMessage->setChunkLength(B(dataMessage->getLoadToProcess()));
-    L3Address worker = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
-    responseMessage->setSenderAddress(worker);
+    // L3Address worker = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
+    // responseMessage->setSenderAddress(worker);
 
     //Insert response message in response cache
     responseCache.insert(std::pair<std::pair<int, int>, ResponseMessage*>(key, responseMessage->dup()));
 
     // Schedule the response message
     // Create the computation timer to simulate the computation time
-    int64_t time = (int64_t) timeToCompute;
+    double time = timeToCompute;
 
     // Schedule the timer
-    timerManager.create(veins::TimerSpecification(simulateResponseTime(responseMessage->dup())).oneshotIn(SimTime(time, SIMTIME_S)));
+    timerManager.create(veins::TimerSpecification(simulateResponseTime(responseMessage->dup())).oneshotIn(time));
 
     // Generate ACK timer if parameter useAcks is false
     // to achieve secure protocol manually and if I'm not still available
     if (!(par("useAcks").boolValue()) && !(stillAvailableProbability)) {
         //Calculate bitrate conversion from megabit to megabyte
-        double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
+        // double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
+        // FIXME -> Get the correct value for bitrate -> now it is 6Mbps
+        double bitRate = 93750;
         double transferTime = dataMessage->getLoadToProcess()/bitRate;
 
-        time = (int64_t) (timeToCompute + transferTime + par("ackMessageThreshold").doubleValue());
-        timerManager.create(veins::TimerSpecification(sendAgainResponse(responseMessage->dup())).oneshotIn(SimTime(time, SIMTIME_S)));
+        time = (timeToCompute + transferTime + par("ackMessageThreshold").doubleValue());
+        timerManager.create(veins::TimerSpecification(sendAgainResponse(responseMessage->dup())).oneshotIn(time));
     }
 }
 
@@ -306,22 +319,24 @@ std::function<void()> Worker::sendAgainResponse(ResponseMessage* response)
         newResponse->setTaskID(response->getTaskID());
         newResponse->setPartitionID(response->getPartitionID());
         newResponse->setChunkLength(B(response->getChunkLength()));
-        L3Address worker = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
-        newResponse->setSenderAddress(worker);
+        // L3Address worker = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
+        // newResponse->setSenderAddress(worker);
 
         // Create the computation timer to simulate the computation time
-        int64_t time = (int64_t) response->getTimeToCompute();
+        double time = response->getTimeToCompute();
 
         // Schedule the new duplicate response message
-        timerManager.create(veins::TimerSpecification(simulateResponseTime(newResponse->dup())).oneshotIn(SimTime(time, SIMTIME_S)));
+        timerManager.create(veins::TimerSpecification(simulateResponseTime(newResponse->dup())).oneshotIn(time));
 
         // Restart the ACK timer
         double transferTime = 10.0;
 
-        time = (int64_t) (transferTime + response->getTimeToCompute() + par("ackMessageThreshold").doubleValue());
+        time = (transferTime + response->getTimeToCompute() + par("ackMessageThreshold").doubleValue());
 
-        timerManager.create(veins::TimerSpecification(sendAgainResponse(newResponse->dup())).oneshotIn(SimTime(time, SIMTIME_S)));
+        timerManager.create(veins::TimerSpecification(sendAgainResponse(newResponse->dup())).oneshotIn(time));
     }
+
+    return 0;
 }
 
 std::function<void()> Worker::simulateAvailabilityTime(AvailabilityMessage* availabilityMessage)
@@ -335,6 +350,8 @@ std::function<void()> Worker::simulateAvailabilityTime(AvailabilityMessage* avai
     auto availabilityPkt = createPacket("availability_duplicate");
     availabilityPkt->insertAtBack(availability);
     sendPacket(std::move(availabilityPkt));
+
+    return 0;
 }
 
 std::function<void()> Worker::simulateResponseTime(ResponseMessage* responseMessage) {
@@ -355,4 +372,6 @@ std::function<void()> Worker::simulateResponseTime(ResponseMessage* responseMess
     auto responsePkt = createPacket("response_duplicate");
     responsePkt->insertAtBack(response);
     sendPacket(std::move(responsePkt));
+
+    return 0;
 }
