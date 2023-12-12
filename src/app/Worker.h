@@ -88,9 +88,9 @@ protected:
 protected:
     void handleHelpMessage(HelpMessage* helpMsg);
     void handleDataMessage(DataMessage* dataMsg);
-    std::function<void()> sendAgainResponse(ResponseMessage* data);
-    std::function<void()> simulateAvailabilityTime(AvailabilityMessage* availabilityMessage);
-    std::function<void()> simulateResponseTime(ResponseMessage* responseMessage);
+    void sendAgainResponse(ResponseMessage* data);
+    void simulateAvailabilityTime(AvailabilityMessage* availabilityMessage);
+    void simulateResponseTime(ResponseMessage* responseMessage);
 
     void setTaskAvailabilityTimer(int taskId, int taskSize);
     void resetTaskAvailabilityTimer(int taskId);

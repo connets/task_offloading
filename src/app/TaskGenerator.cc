@@ -205,7 +205,12 @@ void TaskGenerator::balanceLoad()
 
                 double time = (timeToCompute + transferTime + par("dataComputationThreshold").doubleValue());
 
-                timerManager.create(veins::TimerSpecification(sendAgainData(dataMessage->dup())).oneshotIn(time));
+                // The & inside the square brackets tells to capture all local variable
+                // by value
+                auto callback = [=]() {
+                    sendAgainData(dataMessage->dup());
+                };
+                timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
             }
 
             // Schedule the data packet
@@ -504,7 +509,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
     }
 }
 
-std::function<void()> TaskGenerator::sendAgainData(DataMessage* data)
+void TaskGenerator::sendAgainData(DataMessage* data)
 {
     // Search the vehicle in the map
     auto found = helpers.find(data->getHostIndex());
@@ -550,9 +555,12 @@ std::function<void()> TaskGenerator::sendAgainData(DataMessage* data)
 
             double time = (transferTime + data->getComputationTime() + par("dataComputationThreshold").doubleValue());
 
-            timerManager.create(veins::TimerSpecification(sendAgainData(data->dup())).oneshotIn(time));
+            // The & inside the square brackets tells to capture all local variable
+            // by value
+            auto callback = [=]() {
+                sendAgainData(data->dup());
+            };
+            timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
         }
     }
-
-    return 0;
 }

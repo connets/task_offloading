@@ -220,7 +220,13 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
 
         // Schedule the ok message
         double time = par("vehicleAvailabilityMessageTime").doubleValue();
-        timerManager.create(veins::TimerSpecification(simulateAvailabilityTime(available->dup())).oneshotIn(time));
+
+        // The & inside the square brackets tells to capture all local variable
+        // by value
+        auto callback = [=]() {
+            simulateAvailabilityTime(available->dup());
+        };
+        timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
     }
 }
 
@@ -283,7 +289,12 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     double time = timeToCompute;
 
     // Schedule the timer
-    timerManager.create(veins::TimerSpecification(simulateResponseTime(responseMessage->dup())).oneshotIn(time));
+    // The & inside the square brackets tells to capture all local variable
+    // by value
+    auto callback = [=]() {
+        simulateResponseTime(responseMessage->dup());
+    };
+    timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
 
     // Generate ACK timer if parameter useAcks is false
     // to achieve secure protocol manually and if I'm not still available
@@ -295,11 +306,17 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
         double transferTime = dataMessage->getLoadToProcess()/bitRate;
 
         time = (timeToCompute + transferTime + par("ackMessageThreshold").doubleValue());
-        timerManager.create(veins::TimerSpecification(sendAgainResponse(responseMessage->dup())).oneshotIn(time));
+
+        // The & inside the square brackets tells to capture all local variable
+        // by value
+        auto sendAgainCallback = [=]() {
+            sendAgainResponse(responseMessage->dup());
+        };
+        timerManager.create(veins::TimerSpecification(sendAgainCallback).oneshotIn(time));
     }
 }
 
-std::function<void()> Worker::sendAgainResponse(ResponseMessage* response)
+void Worker::sendAgainResponse(ResponseMessage* response)
 {
     if (currentDataPartitionId == response->getPartitionID()) {
         auto newResponse = makeShared<ResponseMessage>();
@@ -326,20 +343,28 @@ std::function<void()> Worker::sendAgainResponse(ResponseMessage* response)
         double time = response->getTimeToCompute();
 
         // Schedule the new duplicate response message
-        timerManager.create(veins::TimerSpecification(simulateResponseTime(newResponse->dup())).oneshotIn(time));
+        // The & inside the square brackets tells to capture all local variable
+        // by value
+        auto callback = [=]() {
+            simulateResponseTime(newResponse->dup());
+        };
+        timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
 
         // Restart the ACK timer
         double transferTime = 10.0;
 
         time = (transferTime + response->getTimeToCompute() + par("ackMessageThreshold").doubleValue());
 
-        timerManager.create(veins::TimerSpecification(sendAgainResponse(newResponse->dup())).oneshotIn(time));
+        // The & inside the square brackets tells to capture all local variable
+        // by value
+        auto sendAgainCallBack = [=]() {
+            sendAgainResponse(newResponse->dup());
+        };
+        timerManager.create(veins::TimerSpecification(sendAgainCallBack).oneshotIn(time));
     }
-
-    return 0;
 }
 
-std::function<void()> Worker::simulateAvailabilityTime(AvailabilityMessage* availabilityMessage)
+void Worker::simulateAvailabilityTime(AvailabilityMessage* availabilityMessage)
 {
     // Emit the signal of ok message sent
     emit(availableMessageSent, simTime());
@@ -350,11 +375,9 @@ std::function<void()> Worker::simulateAvailabilityTime(AvailabilityMessage* avai
     auto availabilityPkt = createPacket("availability_duplicate");
     availabilityPkt->insertAtBack(availability);
     sendPacket(std::move(availabilityPkt));
-
-    return 0;
 }
 
-std::function<void()> Worker::simulateResponseTime(ResponseMessage* responseMessage) {
+void Worker::simulateResponseTime(ResponseMessage* responseMessage) {
     // Send signal for response message statistic with the host ID
     emit(startResponseMessages, responseMessage->getHostIndex());
     if(responseMessage->getStillAvailable()) {
@@ -372,6 +395,4 @@ std::function<void()> Worker::simulateResponseTime(ResponseMessage* responseMess
     auto responsePkt = createPacket("response_duplicate");
     responsePkt->insertAtBack(response);
     sendPacket(std::move(responsePkt));
-
-    return 0;
 }

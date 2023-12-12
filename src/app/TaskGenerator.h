@@ -92,7 +92,7 @@ protected:
 protected:
     void handleAvailabilityMessage(AvailabilityMessage* okMsg);
     void handleResponseMessage(ResponseMessage* responseMsg);
-    std::function<void()> sendAgainData(DataMessage* data);
+    void sendAgainData(DataMessage* data);
     void balanceLoad();
     void vehicleHandler();
     virtual void handleStartOperation(inet::LifecycleOperation* doneCallback) override;
