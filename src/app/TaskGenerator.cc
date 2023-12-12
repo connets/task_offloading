@@ -115,7 +115,11 @@ void TaskGenerator::processPacket(std::shared_ptr<inet::Packet> pk)
             if (data->getType() == RESPONSE) {
                 auto dataFromPacket = pk->peekData<ResponseMessage>();
                 ResponseMessage* responseMessage = dataFromPacket->dup();
-                handleResponseMessage(responseMessage);
+
+                // Check if the response message is for me
+                if (responseMessage->getHostIndex() == getParentModule()->getIndex()) {
+                    handleResponseMessage(responseMessage);
+                }
             }
 
             if (data->getType() == BEACON) {

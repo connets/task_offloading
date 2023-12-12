@@ -112,15 +112,25 @@ void Worker::processPacket(std::shared_ptr<inet::Packet> pk)
             if (data->getType() == DATA) {
                 auto dataFromPacket = pk->peekData<DataMessage>();
                 DataMessage* dataMessage = dataFromPacket->dup();
-                handleDataMessage(dataMessage);
+
+                // Check if the data message is for me
+                if (dataMessage->getHostIndex() == getParentModule()->getIndex()) {
+                    handleDataMessage(dataMessage);
+                }
             }
 
             // SECTION - When the host receive the ACK message
             if (data->getType() == ACK) {
-                currentDataPartitionId = -1;
+                auto dataFromPacket = pk->peekData<AckMessage>();
+                AckMessage* ackMessage = dataFromPacket->dup();
 
-                // Color the vehicle in white when computation ends
-                getParentModule()->getDisplayString().setTagArg("i", 1, "white");
+                // Check if the ack message is for me
+                if (ackMessage->getHostIndex() == getParentModule()->getIndex()) {
+                    currentDataPartitionId = -1;
+
+                    // Color the vehicle in white when computation ends
+                    getParentModule()->getDisplayString().setTagArg("i", 1, "white");
+                }
             }
 
             if (data->getType() == BEACON) {
