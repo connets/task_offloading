@@ -15,9 +15,9 @@
 
 package task_offloading.simulations.task_offloading;
 
-import task_offloading.app.Worker;
-import task_offloading.app.TaskGenerator;
-import task_offloading.app.Beaconer;
+import task_offloading.app.nodes.WorkerVehicle;
+import task_offloading.app.nodes.TaskGeneratorVehicle;
+import task_offloading.app.nodes.BeaconerVehicle;
 import task_offloading.app.loadBalancing.sortingAlgorithm.ISorting;
 import org.car2x.veins.base.connectionManager.ConnectionManager;
 import org.car2x.veins.base.modules.BaseWorldUtility;
@@ -73,15 +73,15 @@ network task_offloading
             @display("p=679.77594,329.37598");
         }
         
-        generator[0]: TaskGenerator {
+        generator[0]: TaskGeneratorVehicle {
             @display("p=532.608,490.55997");
         }
         
-        worker[0]: Worker {
+        worker[0]: WorkerVehicle {
             @display("p=469.53598,406.464");
         }
         
-        beaconer[0]: Beaconer {
+        beaconer[0]: BeaconerVehicle {
             @display("p=469.53598,406.464");
         }
 
