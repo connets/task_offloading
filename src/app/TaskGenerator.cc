@@ -422,6 +422,10 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         // If there's no more data then emit signal for task finished
         if (localData <= 0) {
             emit(stopTask, simTime());
+
+            // Color the bus in white
+            getParentModule()->getDisplayString().setTagArg("i", 1, "white");
+
             EV<<"END"<<helpers.size()<< endl;
         }
 
@@ -477,7 +481,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         }
 
         // If there are no more vehicles but still more data to compute then take the bus
-        // back in help status
+        // back in help status and restart vehicles handling to send again help request
         if (helpers.size() == 0 && localData > 0 && vehiclesAvailable == responseReceived) {
             // Color the bus in white when it has no more vehicles
             getParentModule()->getDisplayString().setTagArg("i", 1, "white");
@@ -490,6 +494,9 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
 
             // Change it's status in help
             busState.setState(new Help);
+
+            // Restart the vehicles handling
+            vehicleHandler();
         }
     } else if (tasks[0].getTotalData() <= 0) {
         // If data <= 0 and I receive a response then send ack to the vehicle
