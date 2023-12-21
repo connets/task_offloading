@@ -49,7 +49,7 @@ void TaskGenerator::initialize(int stage)
 
         // BUS SECTION
         // Set the BUS index
-        busIndex = getParentModule()->getIndex();
+        generatorIndex = getParentModule()->getIndex();
 
         // Initialize the BUS state
         busState = BusContext(new Help);
@@ -117,7 +117,7 @@ void TaskGenerator::processPacket(std::shared_ptr<inet::Packet> pk)
                 ResponseMessage* responseMessage = dataFromPacket->dup();
 
                 // Check if the response message is for me
-                if (responseMessage->getHostIndex() == getParentModule()->getIndex()) {
+                if (responseMessage->getGeneratorIndex() == getParentModule()->getIndex()) {
                     handleResponseMessage(responseMessage);
                 }
             }
@@ -261,7 +261,7 @@ void TaskGenerator::vehicleHandler()
 
         // Populate the message
         helpMessage->setId(tasks[0].getId());
-        helpMessage->setVehicleIndex(busIndex);
+        helpMessage->setGeneratorIndex(generatorIndex);
         helpMessage->setCpi(tasks[0].getComputingDensity());
         helpMessage->setTaskSize(tasks[0].getTotalData());
         helpMessage->setMinimumLoadRequested(tasks[0].getMinimumLoadRequested());
@@ -446,10 +446,11 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
                 ackMessage->setHostIndex(responseMessage->getHostIndex());
                 ackMessage->setTaskID(responseMessage->getTaskID());
                 ackMessage->setPartitionID(responseMessage->getPartitionID());
+                ackMessage->setChunkLength(B(100));
                 // L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
                 // ackMessage->setSenderAddress(generator);
 
-                auto ackPkt = createPacket("ACK");
+                auto ackPkt = createPacket("ack_message");
                 ackPkt->insertAtBack(ackMessage);
                 sendPacket(std::move(ackPkt));
             }
@@ -500,10 +501,11 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
             ackMessage->setHostIndex(responseMessage->getHostIndex());
             ackMessage->setTaskID(responseMessage->getTaskID());
             ackMessage->setPartitionID(responseMessage->getPartitionID());
+            ackMessage->setChunkLength(B(100));
             // L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
             // ackMessage->setSenderAddress(generator);
 
-            auto ackPkt = createPacket("ACK");
+            auto ackPkt = createPacket("ack_message");
             ackPkt->insertAtFront(ackMessage);
             sendPacket(std::move(ackPkt));
         }

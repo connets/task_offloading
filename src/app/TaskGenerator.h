@@ -85,7 +85,7 @@ protected:
     std::map<int, HelperVehicleInfo> helpers;
     std::map<int, Task> tasks;
     std::list<int> helpersOrderedList;
-    int busIndex;
+    int generatorIndex;
     BusContext busState;
     BaseSorting* loadBalancingAlgorithm;
 
