@@ -82,6 +82,7 @@ protected:
     int currentDataPartitionId;
     double availableLoad;
     bool stillAvailableProbability;
+    int generatorIndex;
     std::map<int, TotalComputationTimerMessage*> taskAvailabilityTimers;
     std::map<std::pair<int,int>, ResponseMessage*> responseCache;
 

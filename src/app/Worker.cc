@@ -59,6 +59,8 @@ void Worker::initialize(int stage)
         // Initialize the probability to be still available after computation
         stillAvailableProbability = false;
 
+        generatorIndex = 0;
+
         if(par("retryFactorTime").doubleValue()<1) {
             throw cRuntimeError("retryFactorTime cannot be lower than 1");
         }
@@ -213,6 +215,9 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
         // Prepare the availability message
         auto available = makeShared<AvailabilityMessage>();
 
+        // Save the ID of the host that generates the task
+        generatorIndex = helpMessage->getGeneratorIndex();
+
         // Populate the message
         available->setHostID(getParentModule()->getIndex());
         available->setIndex(getParentModule()->getName());
@@ -281,7 +286,8 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     auto responseMessage = makeShared<ResponseMessage>();
 
     // Populate the response message
-    responseMessage->setHostIndex(dataMessage->getHostIndex());
+    responseMessage->setHostIndex(getParentModule()->getIndex());
+    responseMessage->setGeneratorIndex(generatorIndex);
     responseMessage->setStillAvailable(stillAvailableProbability);
     responseMessage->setDataComputed(dataMessage->getLoadToProcess());
     responseMessage->setTimeToCompute(timeToCompute);
@@ -340,6 +346,7 @@ void Worker::sendAgainResponse(ResponseMessage* response)
          *************************************************************************/
 
         newResponse->setHostIndex(response->getHostIndex());
+        newResponse->setGeneratorIndex(response->getGeneratorIndex());
         newResponse->setStillAvailable(response->getStillAvailable());
         newResponse->setDataComputed(response->getDataComputed());
         newResponse->setTimeToCompute(response->getTimeToCompute());
@@ -382,7 +389,7 @@ void Worker::simulateAvailabilityTime(AvailabilityMessage* availabilityMessage)
     // Send the ok message
     auto availability = availabilityMessage->dupShared();
 
-    auto availabilityPkt = createPacket("availability_duplicate");
+    auto availabilityPkt = createPacket("availability_message");
     availabilityPkt->insertAtBack(availability);
     sendPacket(std::move(availabilityPkt));
 }
@@ -402,7 +409,7 @@ void Worker::simulateResponseTime(ResponseMessage* responseMessage) {
     // Send the response message
     auto response = responseMessage->dupShared();
 
-    auto responsePkt = createPacket("response_duplicate");
+    auto responsePkt = createPacket("response_message");
     responsePkt->insertAtBack(response);
     sendPacket(std::move(responsePkt));
 }
