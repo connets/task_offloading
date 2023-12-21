@@ -20,7 +20,7 @@ namespace task_offloading;
 
 class HelpMessage extends BasePacket {
     type = HELP;
-    int vehicleIndex;
+    int generatorIndex;
     int id;
     double cpi;
     double taskSize;
