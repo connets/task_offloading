@@ -22,11 +22,10 @@ HelperVehicleInfo::HelperVehicleInfo() {
     this->hostCurrentLoad = 0;
     this->hostCPUFreq = 0;
     this->createdAt = simTime();
-    this->address = 0;
     this->dataPartitionId = -1;
 }
 
-HelperVehicleInfo::HelperVehicleInfo(std::string index, double load, double freq, veins::LAddress::L2Type address) {
+HelperVehicleInfo::HelperVehicleInfo(std::string index, double load, double freq, inet::L3Address address) {
     this->index = index;
     this->hostCurrentLoad = load;
     this->hostCPUFreq = freq;
@@ -70,7 +69,7 @@ simtime_t HelperVehicleInfo::getCreatedAt() {
 /**
  * @returns The L2 address of a vehicle
  */
-veins::LAddress::L2Type HelperVehicleInfo::getAddress() {
+inet::L3Address HelperVehicleInfo::getAddress() {
     return this->address;
 }
 
@@ -119,7 +118,7 @@ double HelperVehicleInfo::getVehiclePositionY() {
 /**
  * @returns The pointer to the current vehicle computation timer
  */
-ComputationTimerMessage* HelperVehicleInfo::getVehicleComputationTimer() {
+double HelperVehicleInfo::getVehicleComputationTimer() {
     return this->vehicleComputationTimer;
 }
 
@@ -164,7 +163,7 @@ void HelperVehicleInfo::setCreatedAt(simtime_t newTime) {
  *
  * @param newAddress The new address of a vehicle
  */
-void HelperVehicleInfo::setAddress(veins::LAddress::L2Type newAddress) {
+void HelperVehicleInfo::setAddress(inet::L3Address newAddress) {
     this->address = newAddress;
 }
 
@@ -224,7 +223,7 @@ void HelperVehicleInfo::setVehicleSpeed(double newSpeed) {
  *
  * @param newVehicleComputationTimer The new pointer to the current computation timer message
  */
-void HelperVehicleInfo::setVehicleComputationTimer(ComputationTimerMessage* newVehicleComputationTimer) {
+void HelperVehicleInfo::setVehicleComputationTimer(double newVehicleComputationTimer) {
     this->vehicleComputationTimer = newVehicleComputationTimer;
 }
 
