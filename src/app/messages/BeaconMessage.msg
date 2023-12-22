@@ -13,13 +13,13 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-import veins.base.utils.Coord;
-import veins.modules.messages.BaseFrame1609_4;
-import veins.base.utils.SimpleAddress;
+import inet.networklayer.common.L3Address;
+import BasePacket;
 
 namespace task_offloading;
 
-packet BeaconMessage extends veins::BaseFrame1609_4 {
+class BeaconMessage extends BasePacket {
+    type = BEACON;
     int hostID;
-    veins::LAddress::L2Type senderAddress = -1;
+    inet::L3Address senderAddress;
 }

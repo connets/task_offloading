@@ -21,9 +21,9 @@
 //
 
 package task_offloading.app;
-import org.car2x.veins.modules.application.ieee80211p.DemoBaseApplLayer;
+import org.car2x.veins.subprojects.veins_inet.VeinsInetApplicationBase;
 
-simple TaskGenerator extends DemoBaseApplLayer 
+simple TaskGenerator extends VeinsInetApplicationBase 
 {
     parameters:
         // The random time for te first help message
@@ -63,7 +63,10 @@ simple TaskGenerator extends DemoBaseApplLayer
         double retryFactorTime = default(3);
                 
         // Override default veins data length bits
-        dataLengthBits = 0bit;
+        double dataLengthBits @unit(byte) = default(0bit);
+        
+        // Local port
+        int servicePort = default(10020);
         
         // General statistic for task time
         @signal[task_started](type = simtime_t);
@@ -93,6 +96,6 @@ simple TaskGenerator extends DemoBaseApplLayer
         @signal[stop_getting_response](type = int);
         @statistic[stopResponseMessages](source = stop_getting_response; record = vector,stats; interpolationmode = none);
 
-    @class(task_offloading::TaskGenerator);
-    @display("i=block/app2");
+    	@class(task_offloading::TaskGenerator);
+    	@display("i=block/app2");
 }

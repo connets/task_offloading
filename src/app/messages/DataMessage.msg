@@ -13,13 +13,13 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-import veins.base.utils.Coord;
-import veins.modules.messages.BaseFrame1609_4;
-import veins.base.utils.SimpleAddress;
+import inet.networklayer.common.L3Address;
+import BasePacket;
 
 namespace task_offloading;
 
-packet DataMessage extends veins::BaseFrame1609_4 {
+class DataMessage extends BasePacket {
+    type = DATA;
     double loadToProcess;
     double computationTime;
     int hostIndex;
@@ -28,5 +28,5 @@ packet DataMessage extends veins::BaseFrame1609_4 {
     double taskSize;
     int loadBalancingId;
     int cpi;
-    veins::LAddress::L2Type senderAddress = -1;
+    inet::L3Address senderAddress;
 }

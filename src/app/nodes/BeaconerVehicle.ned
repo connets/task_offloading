@@ -13,10 +13,10 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-import ResponseMessage;
+package task_offloading.app.nodes;
 
-namespace task_offloading;
+import org.car2x.veins.subprojects.veins_inet.VeinsInetCar;
 
-message AckTimerMessage extends cMessage {
-    ResponseMessage* data;
+module BeaconerVehicle extends VeinsInetCar
+{
 }

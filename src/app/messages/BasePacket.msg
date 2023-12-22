@@ -11,12 +11,24 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
+//
 
-import ResponseMessage;
+import inet.common.INETDefs;
+import inet.common.packet.chunk.Chunk;
+import inet.networklayer.common.L3Address;
 
 namespace task_offloading;
 
-message AckTimerMessage extends cMessage {
-    ResponseMessage* data;
+enum PacketType 
+{
+	ACK = 4;
+	AVAILABILITY = 1;
+	BEACON = 5;
+	DATA = 2;
+	HELP = 0;
+	RESPONSE = 3;
+};
+
+class BasePacket extends inet::FieldsChunk {
+	PacketType type;
 }
