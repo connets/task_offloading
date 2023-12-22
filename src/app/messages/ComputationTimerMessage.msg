@@ -13,13 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-import veins.base.utils.Coord;
-import veins.modules.messages.BaseFrame1609_4;
-import veins.base.utils.SimpleAddress;
 import DataMessage;
+import inet.common.packet.chunk.Chunk;
 
 namespace task_offloading;
-//TODO change to cMessage
-packet ComputationTimerMessage extends veins::BaseFrame1609_4 {
-    DataMessage* data;
+
+message ComputationTimerMessage extends cMessage {
+    inet::FieldsChunk* data;
 }

@@ -13,12 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-import veins.base.utils.Coord;
-import veins.modules.messages.BaseFrame1609_4;
-import veins.base.utils.SimpleAddress;
-
 namespace task_offloading;
 
-packet LoadBalanceTimerMessage extends veins::BaseFrame1609_4 {
+message LoadBalanceTimerMessage extends cMessage {
     simtime_t simulationTime;
 }

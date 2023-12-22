@@ -13,18 +13,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-import veins.base.utils.Coord;
-import veins.modules.messages.BaseFrame1609_4;
-import veins.base.utils.SimpleAddress;
+import inet.networklayer.common.L3Address;
+import BasePacket;
 
 namespace task_offloading;
 
-packet ResponseMessage extends veins::BaseFrame1609_4 {
+class ResponseMessage extends BasePacket {
+    type = RESPONSE;
     int hostIndex;
+    int generatorIndex;
     bool stillAvailable;
     double dataComputed;
     double timeToCompute;
     int taskID;
     int partitionID;
-    veins::LAddress::L2Type senderAddress = -1;
+    inet::L3Address senderAddress;
 }

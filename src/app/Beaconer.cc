@@ -23,13 +23,15 @@
 #include "Beaconer.h"
 
 #include "app/messages/BeaconMessage_m.h"
+
 using namespace task_offloading;
+using namespace inet;
 
 Define_Module(task_offloading::Beaconer);
 
 void Beaconer::initialize(int stage)
 {
-    veins::DemoBaseApplLayer::initialize(stage);
+    veins::VeinsInetApplicationBase::initialize(stage);
 
     if (stage == 0) {
        // Initializing members and pointers of your application goes here
@@ -42,7 +44,8 @@ void Beaconer::initialize(int stage)
     // Get the timer for the first help message
     bool timerForFirstBeaconMessage = simTime() > par("randomWarmupTime").doubleValue();
 
-    if(timerForFirstBeaconMessage && sendBeacons) {
+    // This if was in logical AND with `sendBeacons`... Maybe an error?
+    if(timerForFirstBeaconMessage) {
         // Emit signal for start beacon message
         emit(startBeaconMessages, simTime());
 
@@ -55,57 +58,69 @@ void Beaconer::initialize(int stage)
 
     }
 }
+
+void Beaconer::handleStartOperation(inet::LifecycleOperation* doneCallback)
+{
+    // Starting operations for this app
+}
+
+void Beaconer::handleStopOperation(inet::LifecycleOperation* doneCallback)
+{
+    // Close the socket
+    socket.close();
+}
+
 void Beaconer::finish()
 {
-    veins::DemoBaseApplLayer::finish();
+    veins::VeinsInetApplicationBase::finish();
 }
 
+/* This method doesn't exists in veins_inet
 void Beaconer::onBSM(veins::DemoSafetyMessage* bsm)
 {
-    emit(stopBeaconMessages, findHost()->getIndex());
+    emit(stopBeaconMessages, getParentModule()->getIndex());
 }
+*/
 
-void Beaconer::onWSM(veins::BaseFrame1609_4* wsm)
+void Beaconer::handleMessageWhenUp(inet::cMessage* msg)
 {
+    // Check if the message is a self message
+    if (msg->isSelfMessage()) {
+        switch (msg->getKind()) {
+            case SEND_BEACON_EVT: {
+                /*
+                if(msg->isScheduled()){
+                    cancelEvent(msg);
+                }
+                */
 
-}
+                if(simTime() >= par("randomWarmupTime").doubleValue()) {
+                    // Create payload
+                    auto bsm = makeShared<BeaconMessage>();
+                    bsm->setChunkLength(B(par("beaconByteLength").doubleValue()));
+                    timestampPayload(bsm);
 
-void Beaconer::onWSA(veins::DemoServiceAdvertisment* wsa)
-{
-    // Your application has received a service advertisement from a bus
-}
+                    // Create UDP header
+                    auto udpHeader = makeShared<UdpHeader>();
 
-void Beaconer::handleSelfMsg(cMessage* msg)
-{
-   switch (msg->getKind()) {
-   case SEND_BEACON_EVT: {
-//        if(msg->isScheduled()){
-//            cancelEvent(msg);
-//        }
-        BeaconMessage* bsm = new BeaconMessage();
-        if(simTime() >= par("randomWarmupTime").doubleValue()) {
-            bsm->addByteLength(par("beaconByteLength").doubleValue());
-            populateWSM(bsm);
-            sendDown(bsm);
-            // Emit signal for start beacon message
-            emit(startBeaconMessages, simTime());
+                    // Create packet
+                    auto packet = createPacket("bsm");
+                    packet->insertAtBack(bsm);
+                    packet->insertAtFront(udpHeader);
+                    sendPacket(std::move(packet));
 
+                    // Emit signal for start beacon message
+                    emit(startBeaconMessages, simTime());
+
+                }
+                // Schedule the message -> simTime + availability msgs threshold
+                //scheduleAt(simTime() + par("beaconIntervalTime").doubleValue(), sendBeaconEvt);
+                break;
+            }
+            default: {
+                if (msg) EV_WARN << "APP: Error: Got Self Message of unknown kind! Name: " << msg->getName() << endl;
+                break;
+            }
         }
-        // Schedule the message -> simTime + availability msgs threshold
-        //scheduleAt(simTime() + par("beaconIntervalTime").doubleValue(), sendBeaconEvt);
-        break;
     }
-    default: {
-        if (msg) EV_WARN << "APP: Error: Got Self Message of unknown kind! Name: " << msg->getName() << endl;
-        break;
-    }
-    }
-}
-void Beaconer::handlePositionUpdate(cObject* obj)
-{
-    // The vehicle has moved. Code that reacts to new positions goes here.
-    // Member variables such as currentPosition and currentSpeed are updated in the parent class
-    veins::DemoBaseApplLayer::handlePositionUpdate(obj);
-
-    lastDroveAt = simTime();
 }

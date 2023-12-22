@@ -13,12 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-import veins.base.utils.Coord;
-import veins.modules.messages.BaseFrame1609_4;
-import veins.base.utils.SimpleAddress;
+import inet.common.INETDefs;
+import inet.common.packet.chunk.Chunk;
 
 namespace task_offloading;
 
-packet UpdateAvailabilityMessage extends veins::BaseFrame1609_4 {
+class UpdateAvailabilityMessage extends inet::FieldsChunk {
     string availability;
 }
