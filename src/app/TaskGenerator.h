@@ -22,17 +22,22 @@
 
 #pragma once
 
-#include "veins/veins.h"
+#include "veins_inet/veins_inet.h"
 
 #include "app/Task.h"
 #include "app/messages/HelpMessage_m.h"
 #include "app/messages/AvailabilityMessage_m.h"
 #include "app/messages/DataMessage_m.h"
 #include "app/messages/ResponseMessage_m.h"
+#include "app/messages/BasePacket_m.h"
 #include "app/vehiclesHandling/HelperVehicleInfo.h"
 #include "app/loadBalancing/sortingAlgorithm/BaseSorting.h"
 #include "loadBalancing/BusState.h"
-#include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
+#include "veins_inet/VeinsInetApplicationBase.h"
+#include "inet/transportlayer/udp/UdpHeader_m.h"
+#include "inet/networklayer/ipv4/Ipv4InterfaceData.h"
+#include "inet/networklayer/common/L3AddressResolver.h"
+#include "inet/networklayer/ipv4/Ipv4.h"
 
 using namespace omnetpp;
 
@@ -48,7 +53,7 @@ namespace task_offloading {
  *
  */
 
-class VEINS_API TaskGenerator : public veins::DemoBaseApplLayer {
+class VEINS_INET_API TaskGenerator : public veins::VeinsInetApplicationBase {
 public:
     void initialize(int stage) override;
     void finish() override;
@@ -72,26 +77,26 @@ private:
     // SECTION - Response messages statistics
     simsignal_t stopResponseMessages;
 
+    // SECTION - Beaconing messages statistics
+    simsignal_t stopBeaconMessages;
+
 protected:
     simtime_t lastDroveAt;
     std::map<int, HelperVehicleInfo> helpers;
     std::map<int, Task> tasks;
     std::list<int> helpersOrderedList;
-    int busIndex;
+    int generatorIndex;
     BusContext busState;
     BaseSorting* loadBalancingAlgorithm;
 
 protected:
-    void onBSM(veins::DemoSafetyMessage* bsm) override;
-    void onWSM(veins::BaseFrame1609_4* wsm) override;
-    void onWSA(veins::DemoServiceAdvertisment* wsa) override;
-
-    void handleSelfMsg(cMessage* msg) override;
     void handleAvailabilityMessage(AvailabilityMessage* okMsg);
     void handleResponseMessage(ResponseMessage* responseMsg);
-    void sendAgainData(const DataMessage* data);
+    void sendAgainData(DataMessage* data);
     void balanceLoad();
     void vehicleHandler();
-    void handlePositionUpdate(cObject* obj) override;
+    virtual void handleStartOperation(inet::LifecycleOperation* doneCallback) override;
+    virtual void handleStopOperation(inet::LifecycleOperation* doneCallback) override;
+    virtual void processPacket(std::shared_ptr<inet::Packet> pk) override;
 };
 }

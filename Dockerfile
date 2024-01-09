@@ -22,7 +22,8 @@ RUN git clone -b v4.4.1 https://github.com/inet-framework/inet.git inet \
     && (wget http://veins.car2x.org/download/veins-5.2.zip && unzip veins-5.2.zip && rm veins-5.2.zip) \
     && bash -c "source /omnetpp-6.0.1/setenv && source inet/setenv \
         && (cd inet && make makefiles && make MODE=release all -j$(nproc)) \
-        && (cd veins-veins-5.2 && make makefiles && make MODE=release all -j$(nproc))"
+        && (cd veins-veins-5.2 && make makefiles && make MODE=release all -j$(nproc)) \
+        && (cd veins-veins-5.2/subprojects/veins_inet && make makefiles && make MODE=release all -j$(nproc))"
 
 COPY . /app/task_offloading
 

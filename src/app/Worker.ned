@@ -14,10 +14,10 @@
 // 
 
 package task_offloading.app;
-import org.car2x.veins.modules.application.ieee80211p.DemoBaseApplLayer;
+import org.car2x.veins.subprojects.veins_inet.VeinsInetApplicationBase;
 
-simple Worker extends DemoBaseApplLayer 
-{
+simple Worker extends VeinsInetApplicationBase
+{    
     parameters:
         // The random CPU frequency
         volatile double randomVehicleCpuFreq @unit(Hz) = default(uniform(1.20GHz, 2.70GHz));
@@ -43,12 +43,25 @@ simple Worker extends DemoBaseApplLayer
         // The threshold for the ack messages
         volatile double ackMessageThreshold @unit(s) = default(uniform(50ms, 100ms));
         
+        // The input/output ratio
+        double IOratio = default(1);
+        
+        //refactor time
+        double retryFactorTime = default(3);
+        
         // Override default veins data length bits
-        dataLengthBits = 0bit;
+        double dataLengthBits @unit(byte) = default(0bit);
+        
+        // Local port
+        int servicePort = default(10020);
         
         // Statistics for collecting help requests
         @signal[stop_bus_help_rq](type = simtime_t);
         @statistic[stopHelpRequests](source = stop_bus_help_rq; record = vector,stats; interpolationmode = none);
+        
+        // Statistics for collecting beacon messages
+        @signal[stopBeaconMessages](type = simtime_t);
+        @statistic[stopBeaconMessages](source = stopBeaconMessages; record = vector,stats; interpolationmode = none);
         
         // Statistics for sending data messages
         @signal[stop_sending_data](type = int);
@@ -63,7 +76,7 @@ simple Worker extends DemoBaseApplLayer
         @signal[available_message_load](type = double);
         @statistic[availableMessageSent](source = available_message_sent; record = vector,stats; interpolationmode = none);
         @statistic[availableMessageLoad](source = available_message_load; record = vector,stats; interpolationmode = none);
-
-    @class(task_offloading::Worker);
-    @display("i=block/app2");
+        
+        @class(task_offloading::Worker);
+    	@display("i=block/app2");
 }

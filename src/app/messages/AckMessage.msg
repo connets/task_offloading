@@ -13,14 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-import veins.base.utils.Coord;
-import veins.modules.messages.BaseFrame1609_4;
-import veins.base.utils.SimpleAddress;
+import inet.networklayer.common.L3Address;
+import BasePacket;
 
 namespace task_offloading;
 
-packet AckMessage extends veins::BaseFrame1609_4 {
+class AckMessage extends BasePacket {
+    type = ACK;
     int hostIndex;
     int taskID;
     int partitionID;
+    inet::L3Address senderAddress;
 }

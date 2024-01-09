@@ -22,16 +22,22 @@
 
 #pragma once
 
-#include "veins/veins.h"
+#include "veins_inet/veins_inet.h"
 
 #include "app/messages/HelpMessage_m.h"
+#include "app/messages/TotalComputationTimerMessage_m.h"
+#include "app/messages/ComputationTimerMessage_m.h"
 #include "app/messages/AvailabilityMessage_m.h"
 #include "app/messages/DataMessage_m.h"
 #include "app/messages/ResponseMessage_m.h"
+#include "app/messages/BasePacket_m.h"
 #include "app/vehiclesHandling/HelperVehicleInfo.h"
 #include "app/loadBalancing/sortingAlgorithm/BaseSorting.h"
 #include "loadBalancing/BusState.h"
-#include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
+#include "veins_inet/VeinsInetApplicationBase.h"
+#include "inet/transportlayer/udp/UdpHeader_m.h"
+#include "inet/networklayer/ipv4/Ipv4InterfaceData.h"
+#include "inet/networklayer/common/L3AddressTag_m.h"
 
 using namespace omnetpp;
 
@@ -47,7 +53,7 @@ namespace task_offloading {
  *
  */
 
-class VEINS_API Worker : public veins::DemoBaseApplLayer {
+class VEINS_INET_API Worker : public veins::VeinsInetApplicationBase {
 public:
     void initialize(int stage) override;
     void finish() override;
@@ -67,22 +73,34 @@ private:
     // SECTION - OK messages statistics
     simsignal_t availableMessageSent;
     simsignal_t availableMessageLoad;
+    // SECTION - Beaconing messages statistics
+    simsignal_t stopBeaconMessages;
 
 protected:
     simtime_t lastDroveAt;
     double cpuFreq;
     int currentDataPartitionId;
+    double availableLoad;
     bool stillAvailableProbability;
+    int generatorIndex;
+    std::map<int, TotalComputationTimerMessage*> taskAvailabilityTimers;
+    std::map<std::pair<int,int>, ResponseMessage*> responseCache;
 
 protected:
-    void onBSM(veins::DemoSafetyMessage* bsm) override;
-    void onWSM(veins::BaseFrame1609_4* wsm) override;
-    void onWSA(veins::DemoServiceAdvertisment* wsa) override;
-
-    void handleSelfMsg(cMessage* msg) override;
     void handleHelpMessage(HelpMessage* helpMsg);
     void handleDataMessage(DataMessage* dataMsg);
-    void sendAgainResponse(const ResponseMessage* data);
-    void handlePositionUpdate(cObject* obj) override;
+    void sendAgainResponse(ResponseMessage* data);
+    void simulateAvailabilityTime(AvailabilityMessage* availabilityMessage);
+    void simulateResponseTime(ResponseMessage* responseMessage);
+
+    void setTaskAvailabilityTimer(int taskId, int taskSize);
+    void resetTaskAvailabilityTimer(int taskId);
+
+    virtual void handleStartOperation(inet::LifecycleOperation* doneCallback) override;
+    virtual void handleStopOperation(inet::LifecycleOperation* doneCallback) override;
+    virtual void processPacket(std::shared_ptr<inet::Packet> pk) override;
+private:
+    bool isNewPartition(DataMessage* dataMsg);
+
 };
 }
