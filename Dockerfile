@@ -5,7 +5,9 @@ RUN apt-get update \
     && apt-get -y --no-install-recommends install software-properties-common \
         && apt-get update \
     && apt-get -y  --no-install-recommends install wget build-essential \
-        libzmq3-dev bison flex python3 python3-pip python3-dev git unzip libxerces-c-dev net-tools\
+        libzmq3-dev bison flex python3 python3-pip python3-dev git unzip libxerces-c-dev net-tools \
+        && apt-get update \
+    && apt-get -y --no-install-recommends install cmake g++ libxerces-c-dev libfox-1.6-dev libgdal-dev libproj-dev libgl2ps-dev swig \
     && rm -rf /var/lib/apt/lists/*
 
 # Clone omnetpp and set working directory
@@ -30,8 +32,7 @@ RUN git clone -b v4.4.1 https://github.com/inet-framework/inet.git inet \
         && (cd veins-veins-5.2/subprojects/veins_inet && make makefiles && make MODE=release all -j$(nproc))"
 
 # Install and build Sumo from src for compatibility with Veins and Veins_INET
-RUN apt-get -y --no-install-recommends install cmake g++ libxerces-c-dev libfox-1.6-dev libgdal-dev libproj-dev libgl2ps-dev swig  \
-    && wget https://sumo.dlr.de/releases/1.17.0/sumo-src-1.17.0.tar.gz \
+RUN wget https://sumo.dlr.de/releases/1.17.0/sumo-src-1.17.0.tar.gz \
     && tar xvzf sumo-src-1.17.0.tar.gz \
     && (cd sumo-1.17.0 && export SUMO_HOME=$(pwd) && cmake -B build . && cmake --build build -j$(nproc)) \
     && cd ..
