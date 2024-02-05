@@ -146,9 +146,7 @@ void Worker::processPacket(std::shared_ptr<inet::Packet> pk)
 
 void Worker::setTaskAvailabilityTimer(int taskId, int taskSize){
     //Set task availability timer
-    // double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
-    // FIXME -> Get the correct value for bitrate -> now it is 6Mbps
-    double bitRate = 93750;
+    double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
     double taskTransmissionTime = ceil(taskSize/bitRate);
     double taskTimer = (1 + taskTransmissionTime*1.1)*par("retryFactorTime").doubleValue();
 
@@ -225,8 +223,6 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
         available->setCpuFreq(cpuFreq);
         available->setVehicleAngle(traciVehicle->getAngle());
         available->setVehicleSpeed(traciVehicle->getSpeed());
-        // FIXME -> get the correct module for mobility
-        // veins::TraCIMobility* mobilityMod = check_and_cast<veins::TraCIMobility*>(findModuleByPath("^.veinsmobility"));
         double cx = mobility->getCurrentPosition().x;
         double cy = mobility->getCurrentPosition().y;
         available->setVehiclePositionX(cx);
@@ -316,9 +312,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     // to achieve secure protocol manually and if I'm not still available
     if (!(par("useAcks").boolValue()) && !(stillAvailableProbability)) {
         //Calculate bitrate conversion from megabit to megabyte
-        // double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
-        // FIXME -> Get the correct value for bitrate -> now it is 6Mbps
-        double bitRate = 93750;
+        double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;;
         double transferTime = dataMessage->getLoadToProcess()/bitRate;
 
         time = (timeToCompute + transferTime + par("ackMessageThreshold").doubleValue());
