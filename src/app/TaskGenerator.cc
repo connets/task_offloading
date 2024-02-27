@@ -198,10 +198,8 @@ void TaskGenerator::balanceLoad()
             // Create timer computation message for each host if auto ACKs are disabled
             if (par("useAcks").boolValue() == false) {
                 // Calculate time to file transmission
-                //Calculate bitrate conversion from megabit to megabyte
-                // double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
-                // FIXME -> Get the correct value for bitrate -> now it is 6Mbps
-                double bitRate = 93750;
+                // Calculate bitrate conversion from megabit to megabyte
+                double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
                 double transferTime = localData/bitRate;
 
                 // Save the computation timer into helpers map
@@ -320,12 +318,10 @@ void TaskGenerator::handleAvailabilityMessage(AvailabilityMessage* availabilityM
     double CPI = tasks[0].getComputingDensity();
     double CR = availabilityMessage->getCpuFreq();
 
-    //Calculate bitrate conversion from megabit to megabyte
-    // double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
-    // FIXME -> Get the correct value for bitrate -> now it is 6Mbps
-    double bitRate = 93750;
+    // Calculate bitrate conversion from megabit to megabyte
+    double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
 
-    //Calculate the available load for the car
+    // Calculate the available load for the car
     double localData = (availabilityMessage->getAvailableLoad());
 
     double IO = par("IOratio").doubleValue();
@@ -334,7 +330,6 @@ void TaskGenerator::handleAvailabilityMessage(AvailabilityMessage* availabilityM
     double transferTimeRes =(localData*IO)/bitRate;
     double timeToCompute = CPI * localData * (1 / CR);
 
-    // FIXME -> get the correct module for mobility
     if(aRt==-1.0) {
         // Generate the time that is used to check whether a car will be in the bus range in those next seconds
         aRt = (transferTime + timeToCompute + transferTimeRes)*par("retryFactorTime").doubleValue();
