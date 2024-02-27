@@ -37,7 +37,7 @@ void Beaconer::initialize(int stage)
        // Initializing members and pointers of your application goes here
        lastDroveAt = simTime();
 
-      //registering signal
+      // Registering signal
       startBeaconMessages = registerSignal("startBeaconMessages");
     }
     sendBeaconEvt = new cMessage("beacon_evt", SEND_BEACON_EVT);
@@ -114,7 +114,7 @@ void Beaconer::handleMessageWhenUp(inet::cMessage* msg)
 
                 }
                 // Schedule the message -> simTime + availability msgs threshold
-                //scheduleAt(simTime() + par("beaconIntervalTime").doubleValue(), sendBeaconEvt);
+                // scheduleAt(simTime() + par("beaconIntervalTime").doubleValue(), sendBeaconEvt);
                 break;
             }
             default: {

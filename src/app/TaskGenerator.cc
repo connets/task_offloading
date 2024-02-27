@@ -198,7 +198,7 @@ void TaskGenerator::balanceLoad()
             // Create timer computation message for each host if auto ACKs are disabled
             if (par("useAcks").boolValue() == false) {
                 // Calculate time to file transmission
-                //Calculate bitrate conversion from megabit to megabyte
+                // Calculate bitrate conversion from megabit to megabyte
                 double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
                 double transferTime = localData/bitRate;
 
@@ -318,10 +318,10 @@ void TaskGenerator::handleAvailabilityMessage(AvailabilityMessage* availabilityM
     double CPI = tasks[0].getComputingDensity();
     double CR = availabilityMessage->getCpuFreq();
 
-    //Calculate bitrate conversion from megabit to megabyte
+    // Calculate bitrate conversion from megabit to megabyte
     double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
 
-    //Calculate the available load for the car
+    // Calculate the available load for the car
     double localData = (availabilityMessage->getAvailableLoad());
 
     double IO = par("IOratio").doubleValue();
