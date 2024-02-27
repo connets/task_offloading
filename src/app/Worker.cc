@@ -145,17 +145,15 @@ void Worker::processPacket(std::shared_ptr<inet::Packet> pk)
 }
 
 void Worker::setTaskAvailabilityTimer(int taskId, int taskSize){
-    //Set task availability timer
-    // double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
-    // FIXME -> Get the correct value for bitrate -> now it is 6Mbps
-    double bitRate = 93750;
+    // Set task availability timer
+    double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
     double taskTransmissionTime = ceil(taskSize/bitRate);
     double taskTimer = (1 + taskTransmissionTime*1.1)*par("retryFactorTime").doubleValue();
 
     auto callback = [this]() {
-        //Color the vehicle in white when task availability timer runs out
+        // Color the vehicle in white when task availability timer runs out
         getParentModule()->getDisplayString().setTagArg("i", 1, "white");
-        //Reset common vehicle load
+        // Reset common vehicle load
         availableLoad = par("commonVehicleLoad").doubleValue();  //Only with one task
     };
 
@@ -170,11 +168,11 @@ void Worker::setTaskAvailabilityTimer(int taskId, int taskSize){
 }
 
 void Worker::resetTaskAvailabilityTimer(int taskId) {
-    //stop task availability timer
-//    if(taskAvailabilityTimers.find(taskId)!=taskAvailabilityTimers.end()){
+    // Stop task availability timer
+    // if(taskAvailabilityTimers.find(taskId)!=taskAvailabilityTimers.end()){
         cancelAndDelete(taskAvailabilityTimers.at(taskId));
         taskAvailabilityTimers.erase(taskId);
-//    }
+    // }
 }
 
 bool Worker::isNewPartition(DataMessage* dataMessage){
@@ -206,7 +204,7 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
 
     // If I met requirements send an available message
     if (currentVehicleLoad >= minimumLoadRequested) {
-        //start task availability timer
+        // Start task availability timer
         setTaskAvailabilityTimer(helpMessage->getId(),helpMessage->getTaskSize());
 
         // Color the vehicle icon in blue
@@ -225,8 +223,6 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
         available->setCpuFreq(cpuFreq);
         available->setVehicleAngle(traciVehicle->getAngle());
         available->setVehicleSpeed(traciVehicle->getSpeed());
-        // FIXME -> get the correct module for mobility
-        // veins::TraCIMobility* mobilityMod = check_and_cast<veins::TraCIMobility*>(findModuleByPath("^.veinsmobility"));
         double cx = mobility->getCurrentPosition().x;
         double cy = mobility->getCurrentPosition().y;
         available->setVehiclePositionX(cx);
@@ -260,13 +256,13 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
 
     auto key = std::pair<int,int>(dataMessage->getTaskId(),dataMessage->getPartitionId());
 
-    //if the cache is not empty it resends the response message tied to this data message
+    // If the cache is not empty it resends the response message tied to this data message
     if(!isNewPartition(dataMessage)){
         sendAgainResponse(responseCache.at(key));
         return;
     }
 
-    //reset the task availability timer
+    // Reset the task availability timer
     resetTaskAvailabilityTimer(dataMessage->getTaskId());
 
     // Color the vehicle in red when computing
@@ -297,7 +293,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     // L3Address worker = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
     // responseMessage->setSenderAddress(worker);
 
-    //Insert response message in response cache
+    // Insert response message in response cache
     responseCache.insert(std::pair<std::pair<int, int>, ResponseMessage*>(key, responseMessage->dup()));
 
     // Schedule the response message
@@ -315,10 +311,8 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     // Generate ACK timer if parameter useAcks is false
     // to achieve secure protocol manually and if I'm not still available
     if (!(par("useAcks").boolValue()) && !(stillAvailableProbability)) {
-        //Calculate bitrate conversion from megabit to megabyte
-        // double bitRate = getModuleByPath(".^.nic.mac1609_4")->par("bitrate").intValue() / 8.0;
-        // FIXME -> Get the correct value for bitrate -> now it is 6Mbps
-        double bitRate = 93750;
+        // Calculate bitrate conversion from megabit to megabyte
+        double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;;
         double transferTime = dataMessage->getLoadToProcess()/bitRate;
 
         time = (timeToCompute + transferTime + par("ackMessageThreshold").doubleValue());
@@ -402,7 +396,7 @@ void Worker::simulateResponseTime(ResponseMessage* responseMessage) {
     } else{
         // Color the vehicle in white when send down the response
         getParentModule()->getDisplayString().setTagArg("i", 1, "white");
-        //Reset common vehicle load
+        // Reset common vehicle load
         availableLoad = par("commonVehicleLoad").doubleValue();  //Only with one task
     }
 
