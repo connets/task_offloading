@@ -27,7 +27,7 @@ namespace task_offloading {
             int getId();
             double getTotalData();
             int getHelpReceivedCounter();
-            int getDataPartitionId();
+            long getDataPartitionId();
             int getLoadBalancingId();
             int getAvailableReceivedCounter();
             int getResponseReceivedCounter();
@@ -36,7 +36,7 @@ namespace task_offloading {
             void setId(int newId);
             void setTotalData(double newData);
             void setHelpReceivedCounter(int newCounter);
-            void setDataPartitionId(int newDataPartitionId);
+            void setDataPartitionId(long newDataPartitionId);
             void setLoadBalancingId(int newLoadBalancingId);
             void setAvailableReceivedCounter(int newCounter);
             void setResponseReceivedCounter(int newCounter);
@@ -50,7 +50,7 @@ namespace task_offloading {
             double minimumLoadRequested;
             int computingDensity;
             int helpReceivedCounter;
-            int dataPartitionId;
+            long dataPartitionId;
             int loadBalancingId;
             int availableReceivedCounter;
             int responseReceivedCounter;
