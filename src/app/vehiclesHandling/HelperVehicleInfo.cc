@@ -237,3 +237,14 @@ void HelperVehicleInfo::setVehicleComputationTimer(double newVehicleComputationT
 double HelperVehicleInfo::getTotalComputationTime(int CPI) {
     return (CPI * this->hostCurrentLoad * (1 / this->hostCPUFreq));
 }
+
+/**
+ * This method calculate the toal computation time of a task
+ * considering the current load and the CPU frequency of a vehicle
+ *
+ * @param CPI Clock per instructions
+ * @returns The total computation time for a task
+ */
+double HelperVehicleInfo::getTotalComputationTime(int CPI, double load) {
+    return (CPI * load * (1 / this->hostCPUFreq));
+}
