@@ -75,7 +75,9 @@ void Beaconer::finish()
     veins::VeinsInetApplicationBase::finish();
 }
 
-/* This method doesn't exists in veins_inet
+/*
+This method doesn't exists in veins_inet
+
 void Beaconer::onBSM(veins::DemoSafetyMessage* bsm)
 {
     emit(stopBeaconMessages, getParentModule()->getIndex());

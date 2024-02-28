@@ -66,6 +66,7 @@ namespace task_offloading {
         void setVehiclePositionY(double newVehiclePositionY);
         void setVehicleComputationTimer(double newComputationTimer);
         double getTotalComputationTime(int CPI);
+        double getTotalComputationTime(int CPI, double load);
     };
 }
 

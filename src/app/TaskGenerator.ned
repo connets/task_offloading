@@ -59,7 +59,7 @@ simple TaskGenerator extends VeinsInetApplicationBase
         // The input/output ratio
         double IOratio = default(1);
         
-        //refactor time
+        // Refactor time
         double retryFactorTime = default(3);
                 
         // Override default veins data length bits
@@ -67,6 +67,9 @@ simple TaskGenerator extends VeinsInetApplicationBase
         
         // Local port
         int servicePort = default(10020);
+        
+        // Maximum UDP byte length
+        double UDPMaxLength @unit(byte) = default(65535B);
         
         // General statistic for task time
         @signal[task_started](type = simtime_t);
