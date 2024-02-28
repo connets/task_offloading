@@ -115,6 +115,8 @@ void Worker::processPacket(std::shared_ptr<inet::Packet> pk)
                 auto dataFromPacket = pk->peekData<DataMessage>();
                 DataMessage* dataMessage = dataFromPacket->dup();
 
+                EV << "Message received with partition " << dataMessage->getPartitionId() << std::endl;
+
                 // Check if the data message is for me
                 if (dataMessage->getHostIndex() == getParentModule()->getIndex()) {
                     handleDataMessage(dataMessage);
@@ -169,10 +171,10 @@ void Worker::setTaskAvailabilityTimer(int taskId, int taskSize){
 
 void Worker::resetTaskAvailabilityTimer(int taskId) {
     // Stop task availability timer
-    // if(taskAvailabilityTimers.find(taskId)!=taskAvailabilityTimers.end()){
+    if(taskAvailabilityTimers.find(taskId) != taskAvailabilityTimers.end()){
         cancelAndDelete(taskAvailabilityTimers.at(taskId));
         taskAvailabilityTimers.erase(taskId);
-    // }
+    }
 }
 
 bool Worker::isNewPartition(DataMessage* dataMessage){
@@ -252,7 +254,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     double CR = cpuFreq;
 
     double timeToCompute = CPI * I * (1 / CR);
-    EV<<"TIME TO COMPUTE"<<timeToCompute<<endl;
+    EV << "TIME TO COMPUTE" << timeToCompute << endl;
 
     auto key = std::pair<int,int>(dataMessage->getTaskId(),dataMessage->getPartitionId());
 
@@ -276,7 +278,6 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     if(stillAvailableProbability) {
         setTaskAvailabilityTimer(dataMessage->getTaskId(), dataMessage->getTaskSize());
     }
-
 
     // Prepare the response message
     auto responseMessage = makeShared<ResponseMessage>();
@@ -313,7 +314,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     if (!(par("useAcks").boolValue()) && !(stillAvailableProbability)) {
         // Calculate bitrate conversion from megabit to megabyte
         double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;;
-        double transferTime = dataMessage->getLoadToProcess()/bitRate;
+        double transferTime = dataMessage->getLoadToProcess() / bitRate;
 
         time = (timeToCompute + transferTime + par("ackMessageThreshold").doubleValue());
 

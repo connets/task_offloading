@@ -84,7 +84,7 @@ int Task::getHelpReceivedCounter() {
  *
  * @return int
  */
-int Task::getDataPartitionId() {
+long Task::getDataPartitionId() {
     return this->dataPartitionId;
 }
 
@@ -169,7 +169,7 @@ void Task::setHelpReceivedCounter(int newCounter) {
  *
  * @return void
  */
-void Task::setDataPartitionId(int newDataPartitionId) {
+void Task::setDataPartitionId(long newDataPartitionId) {
     this->dataPartitionId = newDataPartitionId;
 }
 
