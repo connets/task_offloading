@@ -174,24 +174,22 @@ void TaskGenerator::balanceLoad()
                 // DataMessage* dataMessage = new DataMessage();
                 auto dataMessage = makeShared<DataMessage>();
 
-                // Check if the current vehicle availability for the vehicle minus
-                // the maximum amount is greater than 0, then set the length of this chunk
-                // to max value
-                if ((currentVehicleAvailability - UDPMaxVal) >= 0 && localData >= 0) {
+                // Calculate the chunk length between vehicle availability and max UDP packet size taken from NED
+                auto chunkLength = std::min((currentVehicleAvailability - UDPMaxVal), UDPMaxVal);
+
+                // If chunk length is > 0 then set it as data message chunk length
+                // otherwise set the chunk length as the remaining vehicle availability
+                if (chunkLength > 0) {
                     // Set the byte length
-                    dataMessage->setChunkLength(B(UDPMaxVal));
+                    dataMessage->setChunkLength(B(chunkLength));
 
                     // Set the message load to process
-                    dataMessage->setLoadToProcess(UDPMaxVal);
+                    dataMessage->setLoadToProcess(chunkLength);
 
                     // Update variables
                     currentVehicleAvailability = currentVehicleAvailability - UDPMaxVal;
                     localData = localData - UDPMaxVal;
-                }
-
-                // Otherwise set the chunk length to the remaining size of the vehicle
-                // availability
-                if ((currentVehicleAvailability - UDPMaxVal) < 0 && localData >= 0) {
+                } else {
                     // Set the byte length
                     dataMessage->setChunkLength(B(currentVehicleAvailability));
 
@@ -201,32 +199,6 @@ void TaskGenerator::balanceLoad()
                     // Update variables
                     currentVehicleAvailability = 0;
                     localData = localData - currentVehicleAvailability;
-                }
-
-                // Check on total local data to set it to zero
-                if ((localData - UDPMaxVal) < 0 && (currentVehicleAvailability - UDPMaxVal) >= 0) {
-                    // Set the byte length
-                    dataMessage->setChunkLength(B(UDPMaxVal));
-
-                    // Set the message load to process
-                    dataMessage->setLoadToProcess(UDPMaxVal);
-
-                    // Update variables
-                    currentVehicleAvailability = 0;
-                    localData = 0;
-                }
-
-                // Check on total local data to set it to zero
-                if ((localData - UDPMaxVal) < 0 && (currentVehicleAvailability - UDPMaxVal) < 0) {
-                    // Set the byte length
-                    dataMessage->setChunkLength(B(localData));
-
-                    // Set the message load to process
-                    dataMessage->setLoadToProcess(localData);
-
-                    // Update variables
-                    currentVehicleAvailability = 0;
-                    localData = 0;
                 }
 
                 // Populate the other fields
