@@ -83,7 +83,7 @@ private:
 protected:
     simtime_t lastDroveAt;
     std::map<int, HelperVehicleInfo> helpers;
-    std::map<int, Task> tasks;
+    std::map<int, Task*> tasks;
     std::list<int> helpersOrderedList;
     int generatorIndex;
     BusContext busState;
