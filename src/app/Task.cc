@@ -17,34 +17,24 @@
 
 using namespace task_offloading;
 
-/**
- * Constructors section
- */
+Define_Module(task_offloading::Task);
 
-Task::Task() {
-    this->id = 0;
-    this->totalData = 10e6;
-    this->helpReceivedCounter = 0;
-    this->dataPartitionId = 0;
-    this->loadBalancingId = 0;
-    this->availableReceivedCounter = 0;
-    this->responseReceivedCounter = 0;
-    this->computingDensity = 1;
+void Task::initialize() {
+    // Initialize operations
+    // Set all the parameters from NED file
+    this->id = par("id").intValue();
+    this->totalData = par("totalData").doubleValue();
+    this->minimumLoadRequested = par("minimumLoadRequested").doubleValue();
+    this->helpReceivedCounter = par("helpReceivedCounter").intValue();
+    this->dataPartitionId = par("dataPartitionId").intValue();
+    this->loadBalancingId = par("loadBalancingId").intValue();
+    this->availableReceivedCounter = par("availableReceivedCounter").intValue();
+    this->responseReceivedCounter = par("responseReceivedCounter").intValue();
+    this->computingDensity = par("computingDensity").intValue();
 }
 
-Task::Task(int id, double totalData, double loadRequested, int cpi) {
-    this->id = id;
-    this->totalData = totalData;
-    this->minimumLoadRequested = loadRequested;
-    this->helpReceivedCounter = 0;
-    this->dataPartitionId = 0;
-    this->loadBalancingId = 0;
-    this->availableReceivedCounter = 0;
-    this->responseReceivedCounter = 0;
-    this->computingDensity = cpi;
-}
-
-Task::~Task() {
+void Task::finish() {
+    // Finish operation
 }
 
 /**
