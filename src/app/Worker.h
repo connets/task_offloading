@@ -85,6 +85,7 @@ protected:
     int generatorIndex;
     std::map<int, TotalComputationTimerMessage*> taskAvailabilityTimers;
     std::map<std::pair<int,int>, ResponseMessage*> responseCache;
+    std::map<int, veins::TimerManager::TimerHandle> timers;
 
 protected:
     void handleHelpMessage(HelpMessage* helpMsg);
@@ -93,14 +94,15 @@ protected:
     void simulateAvailabilityTime(AvailabilityMessage* availabilityMessage);
     void simulateResponseTime(ResponseMessage* responseMessage);
 
+    void addTimer(int partitionID, veins::TimerManager::TimerHandle timer);
+    veins::TimerManager::TimerHandle getTimer(int partitionID);
+
     void setTaskAvailabilityTimer(int taskId, int taskSize);
     void resetTaskAvailabilityTimer(int taskId);
 
     virtual void handleStartOperation(inet::LifecycleOperation* doneCallback) override;
     virtual void handleStopOperation(inet::LifecycleOperation* doneCallback) override;
     virtual void processPacket(std::shared_ptr<inet::Packet> pk) override;
-private:
-    bool isNewPartition(DataMessage* dataMsg);
 
 };
 }
