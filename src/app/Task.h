@@ -13,17 +13,17 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef APP_TASK_H_
-#define APP_TASK_H_
+#pragma once
 
-#include "veins/veins.h"
-#include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
+#include "veins_inet/veins_inet.h"
+
+using namespace omnetpp;
 
 namespace task_offloading {
-    class Task {
+    class Task : public cSimpleModule {
         public:
-            Task();
-            Task(int id, double totalData, double loadRequested, int computingDensity);
+            void initialize() override;
+            void finish() override;
             int getId();
             double getTotalData();
             int getHelpReceivedCounter();
@@ -42,7 +42,6 @@ namespace task_offloading {
             void setResponseReceivedCounter(int newCounter);
             void setMinimumLoadRequested(double newMinimumLoad);
             void setComputingDensity(int newCpi);
-            virtual ~Task();
 
         private:
             int id;
@@ -56,4 +55,3 @@ namespace task_offloading {
             int responseReceivedCounter;
     };
 }
-#endif /* APP_TASK_H_ */
