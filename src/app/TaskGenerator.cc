@@ -152,128 +152,132 @@ void TaskGenerator::balanceLoad()
 
     // For each vehicle prepare the data message and send
     for (auto const &i: helpersOrderedList) {
-        // Check for the vehicle availability
-        // If it is greater than the maximum size of and UDP message (65535B)
-        // then divide the packet into more data fragments
-        int n_fragments = 1;
+        if (localData > 0) {
+            // Check for the vehicle availability
+            // If it is greater than the maximum size of and UDP message (65535B)
+            // then divide the packet into more data fragments
+            int n_fragments = 1;
 
-        if (B(helpers[i].getCurrentLoad()) >= B(65535)) {
-            n_fragments = ((int)(helpers[i].getCurrentLoad() / 65535)) + 1;
-        }
-
-        // Get the current data partition id
-        int currentPartitionId = tasks[0]->getDataPartitionId();
-
-        // Get the vehicle availablity
-        auto currentVehicleAvailability = helpers[i].getCurrentLoad();
-
-        // Get the maximum value for udp message
-        auto UDPMaxVal = par("UDPMaxLength").doubleValue();
-
-        // Set the responses I expect from this vehicle
-        int responsesExpectedFromVehicle = n_fragments;
-
-        helpers[i].setResponsesExpected(n_fragments);
-
-        for (int j = 0; j < n_fragments; ++j) {
-            // Check if there's data to load
-            if (localData > 0) {
-                // Prepare the data message
-                // DataMessage* dataMessage = new DataMessage();
-                auto dataMessage = makeShared<DataMessage>();
-
-                // Calculate the chunk length between vehicle availability and max UDP packet size taken from NED
-                auto chunkLength = std::min((currentVehicleAvailability - UDPMaxVal), UDPMaxVal);
-
-                // If chunk length is > 0 then set it as data message chunk length
-                // otherwise set the chunk length as the remaining vehicle availability
-                if (chunkLength > 0 && localData > 0) {
-                    // Set the byte length
-                    dataMessage->setChunkLength(B(chunkLength));
-
-                    // Set the message load to process
-                    dataMessage->setLoadToProcess(chunkLength);
-
-                    // Update variables
-                    currentVehicleAvailability = currentVehicleAvailability - UDPMaxVal;
-
-                    // Check for local data value
-                    if ((localData - UDPMaxVal) > 0) {
-                        localData = localData - UDPMaxVal;
-                    } else {
-                        localData = 0;
-                    }
-                } else if (localData > 0) {
-                    // Set the byte length
-                    dataMessage->setChunkLength(B(currentVehicleAvailability));
-
-                    // Set the message load to process
-                    dataMessage->setLoadToProcess(currentVehicleAvailability);
-
-                    // Update variables
-                    currentVehicleAvailability = 0;
-
-                    // Check for local data value
-                    if ((localData - currentVehicleAvailability) > 0) {
-                        localData = localData - currentVehicleAvailability;
-                    } else {
-                        localData = 0;
-                    }
-                }
-
-                // Populate the other fields
-                // L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
-                // dataMessage->setSenderAddress(generator);
-                dataMessage->setHostIndex(i);
-                dataMessage->setTaskId(tasks[0]->getId());
-                dataMessage->setTaskSize(tasks[0]->getTotalData());
-                dataMessage->setPartitionId(tasks[0]->getDataPartitionId());
-                dataMessage->setLoadBalancingId(tasks[0]->getLoadBalancingId());
-                dataMessage->setCpi(tasks[0]->getComputingDensity());
-                dataMessage->setResponsesExpected(responsesExpectedFromVehicle);
-
-                // Calculate time for timer
-                double CPI = tasks[0]->getComputingDensity();
-                double timeToCompute = helpers[i].getTotalComputationTime(CPI, currentVehicleAvailability);
-
-                dataMessage->setComputationTime(timeToCompute);
-
-                // Save into the helper the data partition ID
-                helpers[i].setDataPartitionId(currentPartitionId);
-
-                // Create timer computation message for each host if auto ACKs are disabled
-                if (par("useAcks").boolValue() == false) {
-                    // Calculate time to file transmission
-                    // Calculate bitrate conversion from megabit to megabyte
-                    double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
-                    double transferTime = localData / bitRate;
-
-                    double time = (timeToCompute + transferTime + par("dataComputationThreshold").doubleValue());
-
-                    // Save the computation timer into helpers map
-                    helpers[i].setVehicleComputationTimer(time);
-
-                    // The & inside the square brackets tells to capture all local variable
-                    // by value
-                    auto callback = [=]() {
-                        sendAgainData(dataMessage->dup());
-                    };
-                    // Create the timer and save it to the timers map into helpers object
-                    veins::TimerManager::TimerHandle timer = timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
-                    helpers[i].addTimer(currentPartitionId, timer);
-                }
-
-                // Schedule the data packet
-                auto dataPacket = createPacket("data_message");
-                dataPacket->insertAtBack(dataMessage);
-                sendPacket(std::move(dataPacket));
+            if (B(helpers[i].getCurrentLoad()) >= B(65535) && (localData - helpers[i].getCurrentLoad()) > 0) {
+                n_fragments = ((int)(helpers[i].getCurrentLoad() / 65535)) + 1;
+            } else {
+                n_fragments = ((int)(localData / 65535)) + 1;
             }
-            // Increment data partition ID
-            currentPartitionId++;
-            tasks[0]->setDataPartitionId(currentPartitionId);
 
-            // Increment the total number of responses I expect from vehicles
-            totalReponsesExpected++;
+            // Get the current data partition id
+            int currentPartitionId = tasks[0]->getDataPartitionId();
+
+            // Get the vehicle availablity
+            auto currentVehicleAvailability = helpers[i].getCurrentLoad();
+
+            // Get the maximum value for udp message
+            auto UDPMaxVal = par("UDPMaxLength").doubleValue();
+
+            // Set the responses I expect from this vehicle
+            int responsesExpectedFromVehicle = n_fragments;
+
+            helpers[i].setResponsesExpected(n_fragments);
+
+            for (int j = 0; j < n_fragments; ++j) {
+                // Check if there's data to load
+                if (localData > 0) {
+                    // Prepare the data message
+                    // DataMessage* dataMessage = new DataMessage();
+                    auto dataMessage = makeShared<DataMessage>();
+
+                    // Calculate the chunk length between vehicle availability and max UDP packet size taken from NED
+                    auto chunkLength = std::min((currentVehicleAvailability - UDPMaxVal), UDPMaxVal);
+
+                    // If chunk length is > 0 then set it as data message chunk length
+                    // otherwise set the chunk length as the remaining vehicle availability
+                    if (chunkLength > 0 && localData > 0) {
+                        // Set the byte length
+                        dataMessage->setChunkLength(B(chunkLength));
+
+                        // Set the message load to process
+                        dataMessage->setLoadToProcess(chunkLength);
+
+                        // Update variables
+                        currentVehicleAvailability = currentVehicleAvailability - UDPMaxVal;
+
+                        // Check for local data value
+                        if ((localData - UDPMaxVal) > 0) {
+                            localData = localData - UDPMaxVal;
+                        } else {
+                            localData = 0;
+                        }
+                    } else if (localData > 0) {
+                        // Set the byte length
+                        dataMessage->setChunkLength(B(currentVehicleAvailability));
+
+                        // Set the message load to process
+                        dataMessage->setLoadToProcess(currentVehicleAvailability);
+
+                        // Update variables
+                        currentVehicleAvailability = 0;
+
+                        // Check for local data value
+                        if ((localData - currentVehicleAvailability) > 0) {
+                            localData = localData - currentVehicleAvailability;
+                        } else {
+                            localData = 0;
+                        }
+                    }
+
+                    // Populate the other fields
+                    // L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
+                    // dataMessage->setSenderAddress(generator);
+                    dataMessage->setHostIndex(i);
+                    dataMessage->setTaskId(tasks[0]->getId());
+                    dataMessage->setTaskSize(tasks[0]->getTotalData());
+                    dataMessage->setPartitionId(tasks[0]->getDataPartitionId());
+                    dataMessage->setLoadBalancingId(tasks[0]->getLoadBalancingId());
+                    dataMessage->setCpi(tasks[0]->getComputingDensity());
+                    dataMessage->setResponsesExpected(responsesExpectedFromVehicle);
+
+                    // Calculate time for timer
+                    double CPI = tasks[0]->getComputingDensity();
+                    double timeToCompute = helpers[i].getTotalComputationTime(CPI, currentVehicleAvailability);
+
+                    dataMessage->setComputationTime(timeToCompute);
+
+                    // Save into the helper the data partition ID
+                    helpers[i].setDataPartitionId(currentPartitionId);
+
+                    // Create timer computation message for each host if auto ACKs are disabled
+                    if (par("useAcks").boolValue() == false) {
+                        // Calculate time to file transmission
+                        // Calculate bitrate conversion from megabit to megabyte
+                        double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
+                        double transferTime = localData / bitRate;
+
+                        double time = (timeToCompute + transferTime + par("dataComputationThreshold").doubleValue());
+
+                        // Save the computation timer into helpers map
+                        helpers[i].setVehicleComputationTimer(time);
+
+                        // The & inside the square brackets tells to capture all local variable
+                        // by value
+                        auto callback = [=]() {
+                            sendAgainData(dataMessage->dup());
+                        };
+                        // Create the timer and save it to the timers map into helpers object
+                        veins::TimerManager::TimerHandle timer = timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
+                        helpers[i].addTimer(currentPartitionId, timer);
+                    }
+
+                    // Schedule the data packet
+                    auto dataPacket = createPacket("data_message");
+                    dataPacket->insertAtBack(dataMessage);
+                    sendPacket(std::move(dataPacket));
+                }
+                // Increment data partition ID
+                currentPartitionId++;
+                tasks[0]->setDataPartitionId(currentPartitionId);
+
+                // Increment the total number of responses I expect from vehicles
+                totalReponsesExpected++;
+            }
         }
     }
 
