@@ -187,7 +187,7 @@ void TaskGenerator::balanceLoad()
 
                 // If chunk length is > 0 then set it as data message chunk length
                 // otherwise set the chunk length as the remaining vehicle availability
-                if (chunkLength > 0) {
+                if (chunkLength > 0 && localData > 0) {
                     // Set the byte length
                     dataMessage->setChunkLength(B(chunkLength));
 
@@ -203,7 +203,7 @@ void TaskGenerator::balanceLoad()
                     } else {
                         localData = 0;
                     }
-                } else {
+                } else if (localData > 0) {
                     // Set the byte length
                     dataMessage->setChunkLength(B(currentVehicleAvailability));
 
@@ -248,10 +248,10 @@ void TaskGenerator::balanceLoad()
                     double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
                     double transferTime = localData / bitRate;
 
-                    // Save the computation timer into helpers map
-                    helpers[i].setVehicleComputationTimer(timeToCompute + transferTime + par("dataComputationThreshold").doubleValue());
-
                     double time = (timeToCompute + transferTime + par("dataComputationThreshold").doubleValue());
+
+                    // Save the computation timer into helpers map
+                    helpers[i].setVehicleComputationTimer(time);
 
                     // The & inside the square brackets tells to capture all local variable
                     // by value
