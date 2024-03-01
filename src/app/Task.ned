@@ -13,21 +13,22 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-import inet.networklayer.common.L3Address;
-import BasePacket;
+package task_offloading.app;
 
-namespace task_offloading;
+simple Task
+{
+    parameters:
+        // Parameters of the task object
+        int id = default(0);
+        double totalData = default(10e6);
+        double minimumLoadRequested = default(64e3);
+        int computingDensity = default(1);
+        int helpReceivedCounter = default(0);
+        int dataPartitionId = default(0);
+        int loadBalancingId = default(0);
+        int availableReceivedCounter = default(0);
+        int responseReceivedCounter = default(0);
 
-class DataMessage extends BasePacket {
-    type = DATA;
-    double loadToProcess;
-    double computationTime;
-    int hostIndex;
-    int partitionId;
-    int taskId;
-    double taskSize;
-    int loadBalancingId;
-    int cpi;
-    int responsesExpected;
-    inet::L3Address senderAddress;
+    	@class(task_offloading::Task);
+    	@display("i=block/app2");
 }

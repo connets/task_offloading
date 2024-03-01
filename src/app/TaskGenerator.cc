@@ -57,6 +57,9 @@ void TaskGenerator::initialize(int stage)
         // Initialize the load balancing algorithm
         loadBalancingAlgorithm = check_and_cast<BaseSorting*>(findModuleByPath("task_offloading.loadBalancingAlgorithm"));
 
+        // Initialize the number of total responses I expect
+        totalReponsesExpected = 0;
+
         // Registering all signals
         startTask = registerSignal("task_started");
         stopTask = registerSignal("task_stopped");
@@ -142,7 +145,7 @@ void TaskGenerator::balanceLoad()
     helpersOrderedList = loadBalancingAlgorithm->sort(helpers);
 
     // Store the data into a local variable so can be used
-    double localData = tasks[0].getTotalData();
+    double localData = tasks[0]->getTotalData();
 
     // Emit the start of load balancing
     emit(startBalance, simTime());
@@ -159,13 +162,18 @@ void TaskGenerator::balanceLoad()
         }
 
         // Get the current data partition id
-        int currentPartitionId = tasks[0].getDataPartitionId();
+        int currentPartitionId = tasks[0]->getDataPartitionId();
 
         // Get the vehicle availablity
         auto currentVehicleAvailability = helpers[i].getCurrentLoad();
 
         // Get the maximum value for udp message
         auto UDPMaxVal = par("UDPMaxLength").doubleValue();
+
+        // Set the responses I expect from this vehicle
+        int responsesExpectedFromVehicle = n_fragments;
+
+        helpers[i].setResponsesExpected(n_fragments);
 
         for (int j = 0; j < n_fragments; ++j) {
             // Check if there's data to load
@@ -174,24 +182,28 @@ void TaskGenerator::balanceLoad()
                 // DataMessage* dataMessage = new DataMessage();
                 auto dataMessage = makeShared<DataMessage>();
 
-                // Check if the current vehicle availability for the vehicle minus
-                // the maximum amount is greater than 0, then set the length of this chunk
-                // to max value
-                if ((currentVehicleAvailability - UDPMaxVal) >= 0 && localData >= 0) {
+                // Calculate the chunk length between vehicle availability and max UDP packet size taken from NED
+                auto chunkLength = std::min((currentVehicleAvailability - UDPMaxVal), UDPMaxVal);
+
+                // If chunk length is > 0 then set it as data message chunk length
+                // otherwise set the chunk length as the remaining vehicle availability
+                if (chunkLength > 0) {
                     // Set the byte length
-                    dataMessage->setChunkLength(B(UDPMaxVal));
+                    dataMessage->setChunkLength(B(chunkLength));
 
                     // Set the message load to process
-                    dataMessage->setLoadToProcess(UDPMaxVal);
+                    dataMessage->setLoadToProcess(chunkLength);
 
                     // Update variables
                     currentVehicleAvailability = currentVehicleAvailability - UDPMaxVal;
-                    localData = localData - UDPMaxVal;
-                }
 
-                // Otherwise set the chunk length to the remaining size of the vehicle
-                // availability
-                if ((currentVehicleAvailability - UDPMaxVal) < 0 && localData >= 0) {
+                    // Check for local data value
+                    if ((localData - UDPMaxVal) > 0) {
+                        localData = localData - UDPMaxVal;
+                    } else {
+                        localData = 0;
+                    }
+                } else {
                     // Set the byte length
                     dataMessage->setChunkLength(B(currentVehicleAvailability));
 
@@ -200,47 +212,28 @@ void TaskGenerator::balanceLoad()
 
                     // Update variables
                     currentVehicleAvailability = 0;
-                    localData = localData - currentVehicleAvailability;
-                }
 
-                // Check on total local data to set it to zero
-                if ((localData - UDPMaxVal) < 0 && (currentVehicleAvailability - UDPMaxVal) >= 0) {
-                    // Set the byte length
-                    dataMessage->setChunkLength(B(UDPMaxVal));
-
-                    // Set the message load to process
-                    dataMessage->setLoadToProcess(UDPMaxVal);
-
-                    // Update variables
-                    currentVehicleAvailability = 0;
-                    localData = 0;
-                }
-
-                // Check on total local data to set it to zero
-                if ((localData - UDPMaxVal) < 0 && (currentVehicleAvailability - UDPMaxVal) < 0) {
-                    // Set the byte length
-                    dataMessage->setChunkLength(B(localData));
-
-                    // Set the message load to process
-                    dataMessage->setLoadToProcess(localData);
-
-                    // Update variables
-                    currentVehicleAvailability = 0;
-                    localData = 0;
+                    // Check for local data value
+                    if ((localData - currentVehicleAvailability) > 0) {
+                        localData = localData - currentVehicleAvailability;
+                    } else {
+                        localData = 0;
+                    }
                 }
 
                 // Populate the other fields
                 // L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
                 // dataMessage->setSenderAddress(generator);
                 dataMessage->setHostIndex(i);
-                dataMessage->setTaskId(tasks[0].getId());
-                dataMessage->setTaskSize(tasks[0].getTotalData());
-                dataMessage->setPartitionId(tasks[0].getDataPartitionId());
-                dataMessage->setLoadBalancingId(tasks[0].getLoadBalancingId());
-                dataMessage->setCpi(tasks[0].getComputingDensity());
+                dataMessage->setTaskId(tasks[0]->getId());
+                dataMessage->setTaskSize(tasks[0]->getTotalData());
+                dataMessage->setPartitionId(tasks[0]->getDataPartitionId());
+                dataMessage->setLoadBalancingId(tasks[0]->getLoadBalancingId());
+                dataMessage->setCpi(tasks[0]->getComputingDensity());
+                dataMessage->setResponsesExpected(responsesExpectedFromVehicle);
 
                 // Calculate time for timer
-                double CPI = tasks[0].getComputingDensity();
+                double CPI = tasks[0]->getComputingDensity();
                 double timeToCompute = helpers[i].getTotalComputationTime(CPI, currentVehicleAvailability);
 
                 dataMessage->setComputationTime(timeToCompute);
@@ -265,7 +258,9 @@ void TaskGenerator::balanceLoad()
                     auto callback = [=]() {
                         sendAgainData(dataMessage->dup());
                     };
-                    timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
+                    // Create the timer and save it to the timers map into helpers object
+                    veins::TimerManager::TimerHandle timer = timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
+                    helpers[i].addTimer(currentPartitionId, timer);
                 }
 
                 // Schedule the data packet
@@ -275,7 +270,10 @@ void TaskGenerator::balanceLoad()
             }
             // Increment data partition ID
             currentPartitionId++;
-            tasks[0].setDataPartitionId(currentPartitionId);
+            tasks[0]->setDataPartitionId(currentPartitionId);
+
+            // Increment the total number of responses I expect from vehicles
+            totalReponsesExpected++;
         }
     }
 
@@ -288,22 +286,36 @@ void TaskGenerator::balanceLoad()
 
 void TaskGenerator::vehicleHandler()
 {
+    if (tasks[0] == nullptr) {
+        // Create task module
+        cModuleType *moduleType = cModuleType::get("task_offloading.app.Task");
+        cModule *module = moduleType->create("task", findModuleByPath("<root>"));
+
+        // Initialize all parameters
+        module->par("id") = 0;
+        module->par("totalData") = par("computationLoad").doubleValue();
+        module->par("minimumLoadRequested") = par("minimumVehicleLoadRequested").doubleValue();
+        module->par("computingDensity") = 3;
+        module->finalizeParameters();
+
+        // Create internals and start module
+        module->buildInside();
+        module->callInitialize();
+        module->scheduleStart(simTime());
+
+        Task *task = check_and_cast<Task*>(module);
+        tasks[0] = std::move(task);
+    }
+
     // Get the timer for the first help message
     // bool timerForFirstHelpMessage = simTime() > par("randomTimeFirstHelpMessage").doubleValue();
     // Check the bus state
     int currentBusState = busState.getCurrentState();
     // Check if there's more data
-    bool moreDataToLoad = tasks[0].getTotalData() > 0;
-    // Check if it's the second (or more) help message
-    bool isFirstHelpMessage = tasks[0].getHelpReceivedCounter() ==  0;
+    bool moreDataToLoad = tasks[0]->getTotalData() > 0;
 
     // Check if we reach the time of the first help message
     if ((currentBusState == 0) && moreDataToLoad && helpers.size() == 0) {
-        // If it's the first message then initialize the task
-        if (isFirstHelpMessage) {
-            tasks[0] = Task(0, par("computationLoad").doubleValue(), par("minimumVehicleLoadRequested").doubleValue(), 3);
-        }
-
         // Color the bus icon in red
         getParentModule()->getDisplayString().setTagArg("i", 1, "red");
 
@@ -311,11 +323,11 @@ void TaskGenerator::vehicleHandler()
         auto helpMessage = makeShared<HelpMessage>();
 
         // Populate the message
-        helpMessage->setId(tasks[0].getId());
+        helpMessage->setId(tasks[0]->getId());
         helpMessage->setGeneratorIndex(generatorIndex);
-        helpMessage->setCpi(tasks[0].getComputingDensity());
-        helpMessage->setTaskSize(tasks[0].getTotalData());
-        helpMessage->setMinimumLoadRequested(tasks[0].getMinimumLoadRequested());
+        helpMessage->setCpi(tasks[0]->getComputingDensity());
+        helpMessage->setTaskSize(tasks[0]->getTotalData());
+        helpMessage->setMinimumLoadRequested(tasks[0]->getMinimumLoadRequested());
         helpMessage->setChunkLength(B(200));
 
         // Emit signal for start help message
@@ -326,7 +338,7 @@ void TaskGenerator::vehicleHandler()
         packet->insertAtBack(helpMessage);
         sendPacket(std::move(packet));
 
-        if (tasks[0].getHelpReceivedCounter() == 0) {
+        if (tasks[0]->getHelpReceivedCounter() == 0) {
             emit(startTask, simTime());
         }
 
@@ -334,9 +346,9 @@ void TaskGenerator::vehicleHandler()
         busState.setState(new LoadBalancing);
 
         // Increment the counter for help messages
-        int helpCounter = tasks[0].getHelpReceivedCounter();
+        int helpCounter = tasks[0]->getHelpReceivedCounter();
         helpCounter++;
-        tasks[0].setHelpReceivedCounter(helpCounter);
+        tasks[0]->setHelpReceivedCounter(helpCounter);
 
         double time = par("busWaitingTimeForAvailability").doubleValue();
 
@@ -356,7 +368,7 @@ void TaskGenerator::vehicleHandler()
 
         // Schedule the message -> simTime + availability msgs threshold
         timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
-    } else if (tasks[0].getTotalData() <= 0) {
+    } else if (tasks[0]->getTotalData() <= 0) {
         // Color the bus in white when computation ends
         getParentModule()->getDisplayString().setTagArg("i", 1, "white");
     }
@@ -368,7 +380,7 @@ void TaskGenerator::handleAvailabilityMessage(AvailabilityMessage* availabilityM
     double aRt = par("availabilityRangeTime").doubleValue();
 
     // Calculate time for computation
-    double CPI = tasks[0].getComputingDensity();
+    double CPI = tasks[0]->getComputingDensity();
     double CR = availabilityMessage->getCpuFreq();
 
     // Calculate bitrate conversion from megabit to megabyte
@@ -433,13 +445,13 @@ void TaskGenerator::handleAvailabilityMessage(AvailabilityMessage* availabilityM
         helpers[availabilityMessage->getHostID()] = HelperVehicleInfo(currentHostIndex, currentLoad, CPUFreq, address);
         helpers[availabilityMessage->getHostID()].setVehicleAngle(vehicleAngle);
         helpers[availabilityMessage->getHostID()].setVehicleSpeed(vehicleSpeed);
-        helpers[availabilityMessage->getHostID()].setTaskCpi(tasks[0].getComputingDensity());
+        helpers[availabilityMessage->getHostID()].setTaskCpi(tasks[0]->getComputingDensity());
         helpers[availabilityMessage->getHostID()].setVehiclePositionX(vehiclePosX);
         helpers[availabilityMessage->getHostID()].setVehiclePositionY(vehiclePosY);
 
-        int previousAvailability = tasks[0].getAvailableReceivedCounter();
+        int previousAvailability = tasks[0]->getAvailableReceivedCounter();
         previousAvailability++;
-        tasks[0].setAvailableReceivedCounter(previousAvailability);
+        tasks[0]->setAvailableReceivedCounter(previousAvailability);
     }
 }
 
@@ -448,9 +460,16 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
     // Search the vehicle in the map
     auto found = helpers.find(responseMessage->getHostIndex());
 
+    // Delete the timer for sending again data message since I've received the message
+    auto timer = helpers[responseMessage->getHostIndex()].getTimer(helpers[responseMessage->getHostIndex()].getDataPartitionId());
+
+    if (timer != -1) {
+        timerManager.cancel(timer);
+    }
+
     // If the auto is found in the map and the partition id coincide with response message then
     // handle the response otherwise get rid of it
-    if (found != helpers.end() && helpers[responseMessage->getHostIndex()].getDataPartitionId() == responseMessage->getPartitionID()) {
+    if (found != helpers.end()) {
         // Emit signal for having received response
         emit(stopResponseMessages, responseMessage->getHostIndex());
 
@@ -458,12 +477,13 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         // This timer should not be deleted because now is the timer manager that hanldes timers in application
         // cancelAndDelete(helpers[responseMessage->getHostIndex()].getVehicleComputationTimer());
 
-        // Update the data partiton id into the helpers map
-        helpers[responseMessage->getHostIndex()].setDataPartitionId(-1);
+        // Increment the responses I've received
+        int responsesReceived = helpers[responseMessage->getHostIndex()].getResponsesReceived();
+        helpers[responseMessage->getHostIndex()].setResponsesReceived(++responsesReceived);
 
         // Remove the data that the vehicle has computed
-        double localData = tasks[0].getTotalData() - responseMessage->getDataComputed();
-        tasks[0].setTotalData(localData);
+        double localData = tasks[0]->getTotalData() - responseMessage->getDataComputed();
+        tasks[0]->setTotalData(localData);
 
         EV<<"DATA TASK REMAINED "<<localData<< endl;
         EV<<"HELPERS REMAINED "<<helpers.size()<< endl;
@@ -474,71 +494,90 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
             // Color the bus in white
             getParentModule()->getDisplayString().setTagArg("i", 1, "white");
 
+            // Set the load balancing ID to 0
+            tasks[0]->setLoadBalancingId(0);
+
+            // Delete the vehicle from vehicles map
+            helpers.erase(responseMessage->getHostIndex());
+            helpersOrderedList.remove(responseMessage->getHostIndex());
+
+            // Clear the timers
+            helpers[responseMessage->getHostIndex()].clearTimers();
+
+            helpers.clear();
+
             EV<<"END"<<helpers.size()<< endl;
         }
 
         // Increment the task responses received
-        int responseReceived = tasks[0].getResponseReceivedCounter();
+        int responseReceived = tasks[0]->getResponseReceivedCounter();
         responseReceived++;
-        tasks[0].setResponseReceivedCounter(responseReceived);
-
-        // Get the availability received
-        int vehiclesAvailable = tasks[0].getAvailableReceivedCounter();
+        tasks[0]->setResponseReceivedCounter(responseReceived);
 
         // Get the load balancing id
-        int loadBalanceId = tasks[0].getLoadBalancingId();
+        int loadBalanceId = tasks[0]->getLoadBalancingId();
+
+        // Schedule the ack message for each data partition
+        if (!(par("useAcks").boolValue())) {
+            // Send ACK message to the host
+            auto ackMessage = makeShared<AckMessage>();
+            ackMessage->setHostIndex(responseMessage->getHostIndex());
+            ackMessage->setTaskID(responseMessage->getTaskID());
+            ackMessage->setPartitionID(responseMessage->getPartitionID());
+            ackMessage->setChunkLength(B(100));
+            // L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
+            // ackMessage->setSenderAddress(generator);
+
+            auto ackPkt = createPacket("ack_message");
+            ackPkt->insertAtBack(ackMessage);
+            sendPacket(std::move(ackPkt));
+        }
 
         // If the vehicle is not available anymore erase it from the map
         // and from the list
         if (responseMessage->getStillAvailable() == false) {
-            // Schedule the ack message
-            if (!(par("useAcks").boolValue())) {
-                // Send ACK message to the host
-                auto ackMessage = makeShared<AckMessage>();
-                ackMessage->setHostIndex(responseMessage->getHostIndex());
-                ackMessage->setTaskID(responseMessage->getTaskID());
-                ackMessage->setPartitionID(responseMessage->getPartitionID());
-                ackMessage->setChunkLength(B(100));
-                // L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
-                // ackMessage->setSenderAddress(generator);
-
-                auto ackPkt = createPacket("ack_message");
-                ackPkt->insertAtBack(ackMessage);
-                sendPacket(std::move(ackPkt));
-            }
-
             helpers.erase(responseMessage->getHostIndex());
             helpersOrderedList.remove(responseMessage->getHostIndex());
         }
 
         // If there are more vehicles available and I've received all responses
         // then restart load balancing
-        if (helpers.size() > 0 && localData > 0 && vehiclesAvailable == responseReceived) {
+        if (helpers.size() > 0 && localData > 0 && totalReponsesExpected == responseReceived) {
             // Increment load balance id
             loadBalanceId++;
-            tasks[0].setLoadBalancingId(loadBalanceId);
+            tasks[0]->setLoadBalancingId(loadBalanceId);
 
             // Set the new availability
             int newAvailability = helpers.size();
-            tasks[0].setAvailableReceivedCounter(newAvailability);
+            tasks[0]->setAvailableReceivedCounter(newAvailability);
 
-            // Set the responses received to 0
-            tasks[0].setResponseReceivedCounter(0);
+            // Set the responses received and expected to 0
+            tasks[0]->setResponseReceivedCounter(0);
+            totalReponsesExpected = 0;
+            helpers[responseMessage->getHostIndex()].setResponsesReceived(0);
+
+            // Clear the timers
+            helpers[responseMessage->getHostIndex()].clearTimers();
 
             balanceLoad();
         }
 
         // If there are no more vehicles but still more data to compute then take the bus
         // back in help status and restart vehicles handling to send again help request
-        if (helpers.size() == 0 && localData > 0 && vehiclesAvailable == responseReceived) {
+        if (helpers.size() == 0 && localData > 0 && totalReponsesExpected == responseReceived) {
             // Color the bus in white when it has no more vehicles
             getParentModule()->getDisplayString().setTagArg("i", 1, "white");
 
             // Set the new availability
-            tasks[0].setAvailableReceivedCounter(0);
+            tasks[0]->setAvailableReceivedCounter(0);
 
-            // Set the responses received to 0
-            tasks[0].setResponseReceivedCounter(0);
+            // Set the responses received and expected to 0
+            tasks[0]->setResponseReceivedCounter(0);
+            totalReponsesExpected = 0;
+            helpers[responseMessage->getHostIndex()].setResponsesReceived(0);
+
+            // Clear the timers
+            helpers[responseMessage->getHostIndex()].clearTimers();
 
             // Change it's status in help
             busState.setState(new Help);
@@ -546,8 +585,16 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
             // Restart the vehicles handling
             vehicleHandler();
         }
-    } else if (tasks[0].getTotalData() <= 0) {
+    } else if (tasks[0]->getTotalData() <= 0) {
         // If data <= 0 and I receive a response then send ack to the vehicle
+        // and delete all the timers
+        helpers[responseMessage->getHostIndex()].clearTimers();
+
+        // Set the load balancing ID to 0
+        tasks[0]->setLoadBalancingId(0);
+
+        // Set the responses received to 0
+        helpers[responseMessage->getHostIndex()].setResponsesReceived(0);
 
         // Schedule the ack message
         if (!(par("useAcks").boolValue())) {
@@ -576,14 +623,18 @@ void TaskGenerator::sendAgainData(DataMessage* data)
     auto found = helpers.find(data->getHostIndex());
 
     // Check load balancing id
-    bool loadBalancingIdCheck = tasks[0].getLoadBalancingId() == data->getLoadBalancingId();
+    bool loadBalancingIdCheck = tasks[0]->getLoadBalancingId() == data->getLoadBalancingId();
 
     // If the vehicle is found check if I've received the data from it
     if (found != helpers.end() && (loadBalancingIdCheck)) {
-        // Check the data partition id
-        bool checkDataPartitionId = helpers[data->getHostIndex()].getDataPartitionId() != -1;
+        // Get the total responses expected
+        int responsesExpected = helpers[data->getHostIndex()].getResponsesExpected();
+        int responsesReceived = helpers[data->getHostIndex()].getResponsesReceived();
 
-        if (checkDataPartitionId) {
+        // Check the responses
+        bool checkResponses = responsesExpected != responsesReceived;
+
+        if (checkResponses) {
             auto newData = makeShared<DataMessage>();
 
             // Fill fields of data message with previous data message
@@ -605,6 +656,7 @@ void TaskGenerator::sendAgainData(DataMessage* data)
             newData->setLoadBalancingId(data->getLoadBalancingId());
             newData->setCpi(data->getCpi());
             newData->setComputationTime(data->getComputationTime());
+            newData->setResponsesExpected(data->getResponsesExpected());
 
             auto newDataPkt = createPacket("send_again_data");
             newDataPkt->insertAtBack(newData);
@@ -621,7 +673,9 @@ void TaskGenerator::sendAgainData(DataMessage* data)
             auto callback = [=]() {
                 sendAgainData(data->dup());
             };
-            timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
+            // Rewrite the occurence of timer in the timer map
+            veins::TimerManager::TimerHandle timer = timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
+            helpers[data->getHostIndex()].addTimer(data->getPartitionId(), timer);
         }
     }
 }

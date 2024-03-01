@@ -123,6 +123,22 @@ double HelperVehicleInfo::getVehicleComputationTimer() {
 }
 
 /**
+ * @returns The total number of responses expected from this vehicle
+ */
+int HelperVehicleInfo::getResponsesExpected() {
+    return this->responsesExpected;
+}
+
+/**
+ * Set the total value of responses received from vehicle
+ *
+ * @param newTotal The new total of responses expected from this vehicle
+ */
+int HelperVehicleInfo::getResponsesReceived() {
+    return this->responsesReceived;
+}
+
+/**
  * Set the current index of a vehicle
  *
  * @param newIndex The new index of a vehicle
@@ -228,6 +244,24 @@ void HelperVehicleInfo::setVehicleComputationTimer(double newVehicleComputationT
 }
 
 /**
+ * Set the total value of responses expected from vehicle
+ *
+ * @param newTotal The new total of responses expected from this vehicle
+ */
+void HelperVehicleInfo::setResponsesExpected(int newTotal) {
+    this->responsesExpected = newTotal;
+}
+
+/**
+ * Set the total value of responses received from vehicle
+ *
+ * @param newTotal The new total of responses expected from this vehicle
+ */
+void HelperVehicleInfo::setResponsesReceived(int newTotal) {
+    this->responsesReceived = newTotal;
+}
+
+/**
  * This method calculate the toal computation time of a task
  * considering the current load and the CPU frequency of a vehicle
  *
@@ -247,4 +281,43 @@ double HelperVehicleInfo::getTotalComputationTime(int CPI) {
  */
 double HelperVehicleInfo::getTotalComputationTime(int CPI, double load) {
     return (CPI * load * (1 / this->hostCPUFreq));
+}
+
+/**
+ * This method adds a timer handler into the timers map.
+ * Has to be done to trace all timers setted for all vehicles
+ * to manage the add or removal of them
+ *
+ * @param partitionID the data partition id for this timer
+ * @param timer the timer to be setted
+ */
+void HelperVehicleInfo::addTimer(int partitionID, veins::TimerManager::TimerHandle timer) {
+    this->timers[partitionID] = timer;
+}
+
+/**
+ * This method gets the timers handle into the map if found,
+ * otherwise it returns -1.
+ * Has to be done to trace all timers setted for all vehicles
+ * to manage the add or removal of them
+ *
+ * @param partitionID the data partition id for this timer
+ * @returns the timer handler if found, -1 if not found
+ */
+veins::TimerManager::TimerHandle HelperVehicleInfo::getTimer(int partitionID) {
+    auto found = this->timers.find(partitionID);
+
+    if (found != this->timers.end()) {
+        return this->timers[partitionID];
+    } else {
+        return -1;
+    }
+}
+
+/**
+ * This method deletes all the timers setted for all the vehicles
+ * Is needed when, for example, the computation ends
+ */
+void HelperVehicleInfo::clearTimers() {
+    this->timers.clear();
 }
