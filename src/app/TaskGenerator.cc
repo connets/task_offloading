@@ -237,7 +237,9 @@ void TaskGenerator::balanceLoad()
                     auto callback = [=]() {
                         sendAgainData(dataMessage->dup());
                     };
-                    timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
+                    // Create the timer and save it to the timers map into helpers object
+                    veins::TimerManager::TimerHandle timer = timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
+                    helpers[i].addTimer(currentPartitionId, timer);
                 }
 
                 // Schedule the data packet
@@ -434,6 +436,13 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
     // Search the vehicle in the map
     auto found = helpers.find(responseMessage->getHostIndex());
 
+    // Delete the timer for sending again data message since I've received the message
+    auto timer = helpers[responseMessage->getHostIndex()].getTimer(helpers[responseMessage->getHostIndex()].getDataPartitionId());
+
+    if (timer != -1) {
+        timerManager.cancel(timer);
+    }
+
     // If the auto is found in the map and the partition id coincide with response message then
     // handle the response otherwise get rid of it
     if (found != helpers.end() && helpers[responseMessage->getHostIndex()].getDataPartitionId() == responseMessage->getPartitionID()) {
@@ -607,7 +616,9 @@ void TaskGenerator::sendAgainData(DataMessage* data)
             auto callback = [=]() {
                 sendAgainData(data->dup());
             };
-            timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
+            // Rewrite the occurence of timer in the timer map
+            veins::TimerManager::TimerHandle timer = timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
+            helpers[data->getHostIndex()].addTimer(data->getPartitionId(), timer);
         }
     }
 }
