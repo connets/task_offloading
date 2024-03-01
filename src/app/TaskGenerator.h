@@ -88,6 +88,7 @@ protected:
     int generatorIndex;
     BusContext busState;
     BaseSorting* loadBalancingAlgorithm;
+    int totalReponsesExpected;
 
 protected:
     void handleAvailabilityMessage(AvailabilityMessage* okMsg);
