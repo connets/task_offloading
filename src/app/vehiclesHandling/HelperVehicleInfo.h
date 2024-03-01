@@ -16,8 +16,9 @@
 #ifndef APP_VEHICLESHANDLING_HELPERVEHICLEINFO_H_
 #define APP_VEHICLESHANDLING_HELPERVEHICLEINFO_H_
 
+#include "veins_inet/veins_inet.h"
 #include "veins/veins.h"
-#include "veins/modules/application/ieee80211p/DemoBaseApplLayer.h"
+#include "veins_inet/VeinsInetApplicationBase.h"
 #include "app/messages/ComputationTimerMessage_m.h"
 #include "inet/networklayer/common/L3Address.h"
 
@@ -36,6 +37,7 @@ namespace task_offloading {
         int dataPartitionId;
         int taskCpi;
         double vehicleComputationTimer;
+        std::map<int, veins::TimerManager::TimerHandle> timers;
 
     public:
         HelperVehicleInfo();
@@ -67,6 +69,8 @@ namespace task_offloading {
         void setVehicleComputationTimer(double newComputationTimer);
         double getTotalComputationTime(int CPI);
         double getTotalComputationTime(int CPI, double load);
+        void addTimer(int partitionID, veins::TimerManager::TimerHandle timer);
+        veins::TimerManager::TimerHandle getTimer(int partitionID);
     };
 }
 

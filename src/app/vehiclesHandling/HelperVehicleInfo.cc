@@ -248,3 +248,34 @@ double HelperVehicleInfo::getTotalComputationTime(int CPI) {
 double HelperVehicleInfo::getTotalComputationTime(int CPI, double load) {
     return (CPI * load * (1 / this->hostCPUFreq));
 }
+
+/**
+ * This method adds a timer handler into the timers map.
+ * Has to be done to trace all timers setted for all vehicles
+ * to manage the add or removal of them
+ *
+ * @param partitionID the data partition id for this timer
+ * @param timer the timer to be setted
+ */
+void HelperVehicleInfo::addTimer(int partitionID, veins::TimerManager::TimerHandle timer) {
+    this->timers[partitionID] = timer;
+}
+
+/**
+ * This method gets the timers handle into the map if found,
+ * otherwise it returns -1.
+ * Has to be done to trace all timers setted for all vehicles
+ * to manage the add or removal of them
+ *
+ * @param partitionID the data partition id for this timer
+ * @returns the timer handler if found, -1 if not found
+ */
+veins::TimerManager::TimerHandle HelperVehicleInfo::getTimer(int partitionID) {
+    auto found = this->timers.find(partitionID);
+
+    if (found != this->timers.end()) {
+        return this->timers[partitionID];
+    } else {
+        return -1;
+    }
+}
