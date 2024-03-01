@@ -59,7 +59,11 @@ void Worker::initialize(int stage)
         // Initialize the probability to be still available after computation
         stillAvailableProbability = false;
 
+        // Initialize the index of the generator
         generatorIndex = 0;
+
+        // Initialize the total data partitions I've received
+        dataPartitionsReceived = 0;
 
         if(par("retryFactorTime").doubleValue()<1) {
             throw cRuntimeError("retryFactorTime cannot be lower than 1");
@@ -249,6 +253,9 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     // Emit the signal for have received data message
     emit(stopDataMessages, dataMessage->getHostIndex());
 
+    // Increment the number of data partitions I've received
+    dataPartitionsReceived++;
+
     // Calculate time for computation
     double CPI = dataMessage->getCpi();
     double I = dataMessage->getLoadToProcess();
@@ -274,9 +281,9 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     // Update the partition ID
     currentDataPartitionId = dataMessage->getPartitionId();
 
-    // Update if I'll be still available
+    // Update if I'll be still available and this is the last data message
     stillAvailableProbability = par("stillAvailableProbability").doubleValue() > par("stillAvailableThreshold").doubleValue();
-    if(stillAvailableProbability) {
+    if (stillAvailableProbability) {
         setTaskAvailabilityTimer(dataMessage->getTaskId(), dataMessage->getTaskSize());
     }
 
@@ -286,7 +293,16 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     // Populate the response message
     responseMessage->setHostIndex(getParentModule()->getIndex());
     responseMessage->setGeneratorIndex(generatorIndex);
-    responseMessage->setStillAvailable(stillAvailableProbability);
+
+    // If this is the last data partition then set the probability I'll
+    // be still available, otherwise set it to true to prevent the vehicle
+    // deletion by the TaskGenerator side
+    if (dataPartitionsReceived == dataMessage->getResponsesExpected()) {
+        responseMessage->setStillAvailable(stillAvailableProbability);
+    } else {
+        responseMessage->setStillAvailable(true);
+    }
+
     responseMessage->setDataComputed(dataMessage->getLoadToProcess());
     responseMessage->setTimeToCompute(timeToCompute);
     responseMessage->setTaskID(dataMessage->getTaskId());
@@ -397,7 +413,7 @@ void Worker::simulateResponseTime(ResponseMessage* responseMessage) {
     emit(startResponseMessages, responseMessage->getHostIndex());
     if(responseMessage->getStillAvailable()) {
         getParentModule()->getDisplayString().setTagArg("i", 1, "blue");
-    } else{
+    } else {
         // Color the vehicle in white when send down the response
         getParentModule()->getDisplayString().setTagArg("i", 1, "white");
         // Reset common vehicle load

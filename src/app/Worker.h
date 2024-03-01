@@ -86,6 +86,7 @@ protected:
     std::map<int, TotalComputationTimerMessage*> taskAvailabilityTimers;
     std::map<std::pair<int,int>, ResponseMessage*> responseCache;
     std::map<int, veins::TimerManager::TimerHandle> timers;
+    int dataPartitionsReceived;
 
 protected:
     void handleHelpMessage(HelpMessage* helpMsg);
