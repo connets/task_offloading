@@ -123,6 +123,22 @@ double HelperVehicleInfo::getVehicleComputationTimer() {
 }
 
 /**
+ * @returns The total number of responses expected from this vehicle
+ */
+int HelperVehicleInfo::getResponsesExpected() {
+    return this->responsesExpected;
+}
+
+/**
+ * Set the total value of responses received from vehicle
+ *
+ * @param newTotal The new total of responses expected from this vehicle
+ */
+int HelperVehicleInfo::getResponsesReceived() {
+    return this->responsesReceived;
+}
+
+/**
  * Set the current index of a vehicle
  *
  * @param newIndex The new index of a vehicle
@@ -228,6 +244,24 @@ void HelperVehicleInfo::setVehicleComputationTimer(double newVehicleComputationT
 }
 
 /**
+ * Set the total value of responses expected from vehicle
+ *
+ * @param newTotal The new total of responses expected from this vehicle
+ */
+void HelperVehicleInfo::setResponsesExpected(int newTotal) {
+    this->responsesExpected = newTotal;
+}
+
+/**
+ * Set the total value of responses received from vehicle
+ *
+ * @param newTotal The new total of responses expected from this vehicle
+ */
+void HelperVehicleInfo::setResponsesReceived(int newTotal) {
+    this->responsesReceived = newTotal;
+}
+
+/**
  * This method calculate the toal computation time of a task
  * considering the current load and the CPU frequency of a vehicle
  *
@@ -278,4 +312,12 @@ veins::TimerManager::TimerHandle HelperVehicleInfo::getTimer(int partitionID) {
     } else {
         return -1;
     }
+}
+
+/**
+ * This method deletes all the timers setted for all the vehicles
+ * Is needed when, for example, the computation ends
+ */
+void HelperVehicleInfo::clearTimers() {
+    this->timers.clear();
 }

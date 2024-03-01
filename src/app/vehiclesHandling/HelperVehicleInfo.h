@@ -37,6 +37,8 @@ namespace task_offloading {
         int dataPartitionId;
         int taskCpi;
         double vehicleComputationTimer;
+        int responsesExpected;
+        int responsesReceived;
         std::map<int, veins::TimerManager::TimerHandle> timers;
 
     public:
@@ -55,6 +57,8 @@ namespace task_offloading {
         double getVehiclePositionX();
         double getVehiclePositionY();
         double getVehicleComputationTimer();
+        int getResponsesExpected();
+        int getResponsesReceived();
         void setIndex(std::string index);
         void setCurrentLoad(double newLoad);
         void setCPUFreq(double newFreq);
@@ -67,10 +71,13 @@ namespace task_offloading {
         void setVehiclePositionX(double newVehiclePositionX);
         void setVehiclePositionY(double newVehiclePositionY);
         void setVehicleComputationTimer(double newComputationTimer);
+        void setResponsesExpected(int newTotal);
+        void setResponsesReceived(int newTotal);
         double getTotalComputationTime(int CPI);
         double getTotalComputationTime(int CPI, double load);
         void addTimer(int partitionID, veins::TimerManager::TimerHandle timer);
         veins::TimerManager::TimerHandle getTimer(int partitionID);
+        void clearTimers();
     };
 }
 
