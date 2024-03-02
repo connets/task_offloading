@@ -327,7 +327,7 @@ void TaskGenerator::vehicleHandler()
     if (tasks[0] == nullptr) {
         // Create task module
         cModuleType *moduleType = cModuleType::get("task_offloading.app.Task");
-        cModule *module = moduleType->create("task", findModuleByPath("<root>"));
+        cModule *module = moduleType->create("task", this);
 
         // Initialize all parameters
         module->par("id") = 0;
