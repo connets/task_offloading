@@ -34,6 +34,10 @@ void Task::initialize() {
 
     // Signals initialization
     totalTaskTime = registerSignal("totalTimeTaskSignal");
+    loadBalancingTime = registerSignal("loadBalancingTimeSignal");
+    loadBalancingRound = registerSignal("loadBalancingRoundSignal");
+    totalMessagesGenerator = registerSignal("totalMessagesGeneratorSignal");
+    totalRetransimissionsGenerator = registerSignal("totalRetransimissionsGeneratorSignal");
 }
 
 void Task::finish() {

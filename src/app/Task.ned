@@ -31,9 +31,17 @@ simple Task
 
 		// Signal section
 		@signal[totalTimeTaskSignal](type=simtime_t);
+		@signal[loadBalancingTimeSignal](type=simtime_t);
+		@signal[loadBalancingRoundSignal](type=int);
+		@signal[totalMessagesGeneratorSignal](type=int);
+		@signal[totalRetransimissionsGeneratorSignal](type=int);
 
 		// Statistics section
 		@statistic[totalTimeTask](title="Total time of task"; source="totalTimeTaskSignal"; record=vector; interpolationmode=none);
+		@statistic[loadBalancingTime](title="Load balancing time"; source="loadBalancingTimeSignal"; record=vector; interpolationmode=none);
+		@statistic[loadBalancingRound](title="Load balancing rounds"; source="loadBalancingRoundSignal"; record=vector; interpolationmode=none);
+		@statistic[totalMessagesGenerator](title="Total messages sent by generator"; source="totalMessagesGeneratorSignal"; record=vector; interpolationmode=none);
+		@statistic[totalRetransimissionsGenerator](title="Total messages retransmitted by generator"; source="totalRetransimissionsGeneratorSignal"; record=vector; interpolationmode=none);
 
     	@class(task_offloading::Task);
     	@display("i=block/app2");

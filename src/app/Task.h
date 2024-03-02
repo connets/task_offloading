@@ -45,6 +45,10 @@ namespace task_offloading {
 
             // Signals
             simsignal_t totalTaskTime;
+            simsignal_t loadBalancingTime;
+            simsignal_t loadBalancingRound;
+            simsignal_t totalMessagesGenerator;
+            simsignal_t totalRetransimissionsGenerator;
 
         private:
             int id;

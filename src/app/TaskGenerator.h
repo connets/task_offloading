@@ -73,6 +73,9 @@ protected:
     BaseSorting* loadBalancingAlgorithm;
     int totalReponsesExpected;
     simtime_t timeStartTask;
+    simtime_t loadBalancingTime;
+    int totalMessagesSent;
+    int totalMessagesRestransmitted;
 
 protected:
     void handleAvailabilityMessage(AvailabilityMessage* okMsg);

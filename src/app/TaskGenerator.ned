@@ -48,7 +48,7 @@ simple TaskGenerator extends VeinsInetApplicationBase
         double busWaitingTimeForAvailability @unit(s) = default(uniform(100ms, 200ms));
         
         // Extra time threshold for data computation
-        volatile double dataComputationThreshold @unit(s) = default(uniform(100ms, 200ms));
+        volatile double dataComputationThreshold @unit(s) = default(uniform(400ms, 500ms));
         
         // The load balancing sorting algorithm
         string sortingAlgorithm = default("FIFO");

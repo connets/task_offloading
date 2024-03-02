@@ -62,6 +62,9 @@ void TaskGenerator::initialize(int stage)
 
         // Total time task initialization
         timeStartTask = simTime();
+        loadBalancingTime = simTime();
+        totalMessagesSent = 0;
+        totalMessagesRestransmitted = 0;
 
         // Registering signals
         stopBeaconMessages = registerSignal("stopBeaconMessages");
@@ -133,6 +136,8 @@ void TaskGenerator::processPacket(std::shared_ptr<inet::Packet> pk)
 void TaskGenerator::balanceLoad()
 {
     // We have to do some work -> load balance!
+    // Save the start time for load balancing
+    loadBalancingTime = simTime();
 
     // But first change the bus state to load balancing
     busState.setState(new LoadBalancing);
@@ -303,10 +308,14 @@ void TaskGenerator::balanceLoad()
 
                     // Increment the total number of responses I expect from vehicles
                     totalReponsesExpected++;
+                    totalMessagesSent++;
                 }
             }
         }
     }
+
+    // Emit the signal for load balancing time
+    tasks[0]->emit(tasks[0]->loadBalancingTime, simTime() - loadBalancingTime);
 
     // Change the bus state to data transfer
     busState.setState(new DataTransfer);
@@ -515,8 +524,13 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
             // Color the bus in white
             getParentModule()->getDisplayString().setTagArg("i", 1, "white");
 
-            // Set the load balancing ID to 0
+            // Emit signal for load balancing rounds and set the load balancing ID to 0
+            tasks[0]->emit(tasks[0]->loadBalancingRound, tasks[0]->getLoadBalancingId());
             tasks[0]->setLoadBalancingId(0);
+
+            // Emit signal for total messages sent and retransmitted
+            tasks[0]->emit(tasks[0]->totalMessagesGenerator, totalMessagesSent);
+            tasks[0]->emit(tasks[0]->totalRetransimissionsGenerator, totalMessagesRestransmitted);
 
             // Delete the vehicle from vehicles map
             helpers.erase(responseMessage->getHostIndex());
@@ -648,6 +662,9 @@ void TaskGenerator::sendAgainData(DataMessage* data)
 
     // If the vehicle is found check if I've received the data from it
     if (found != helpers.end() && (loadBalancingIdCheck)) {
+        // Increment the retransmission timer
+        totalMessagesRestransmitted++;
+
         // Get the total responses expected
         int responsesExpected = helpers[data->getHostIndex()].getResponsesExpected();
         int responsesReceived = helpers[data->getHostIndex()].getResponsesReceived();
