@@ -70,12 +70,7 @@ void Worker::initialize(int stage)
         }
 
         // Registering all signals
-        stopHelp = registerSignal("stop_bus_help_rq");
-        stopDataMessages = registerSignal("stop_sending_data");
-        startResponseMessages = registerSignal("start_getting_response");
         stopBeaconMessages = registerSignal("stopBeaconMessages");
-        availableMessageSent = registerSignal("available_message_sent");
-        availableMessageLoad = registerSignal("available_message_load");
     }
 }
 
@@ -190,18 +185,12 @@ void Worker::resetTaskAvailabilityTimer(int taskId) {
 void Worker::handleHelpMessage(HelpMessage* helpMessage)
 {
     // I've received an help request from bus
-    // Emit the help message received
-    emit(stopHelp, simTime());
-
     // First check if I met requirements for the bus
     double minimumLoadRequested = helpMessage->getMinimumLoadRequested();
 
     // Check my current load
     double currentVehicleLoad = par("randomVehicleFreeLoadPercentage").doubleValue() * par("commonVehicleLoad").doubleValue();
     availableLoad = availableLoad - currentVehicleLoad;
-
-    // Emit the signal for my current load
-    emit(availableMessageLoad, currentVehicleLoad);
 
     // Check my current CPU freq
     double CPUFreq = par("randomVehicleCpuFreq").doubleValue();
@@ -250,9 +239,6 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
 
 void Worker::handleDataMessage(DataMessage* dataMessage)
 {
-    // Emit the signal for have received data message
-    emit(stopDataMessages, dataMessage->getHostIndex());
-
     // Increment the number of data partitions I've received
     dataPartitionsReceived++;
 
@@ -397,9 +383,6 @@ void Worker::sendAgainResponse(ResponseMessage* response)
 
 void Worker::simulateAvailabilityTime(AvailabilityMessage* availabilityMessage)
 {
-    // Emit the signal of ok message sent
-    emit(availableMessageSent, simTime());
-
     // Send the ok message
     auto availability = availabilityMessage->dupShared();
 
@@ -409,8 +392,6 @@ void Worker::simulateAvailabilityTime(AvailabilityMessage* availabilityMessage)
 }
 
 void Worker::simulateResponseTime(ResponseMessage* responseMessage) {
-    // Send signal for response message statistic with the host ID
-    emit(startResponseMessages, responseMessage->getHostIndex());
     if(responseMessage->getStillAvailable()) {
         getParentModule()->getDisplayString().setTagArg("i", 1, "blue");
     } else {

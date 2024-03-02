@@ -29,6 +29,12 @@ simple Task
         int availableReceivedCounter = default(0);
         int responseReceivedCounter = default(0);
 
+		// Signal section
+		@signal[totalTimeTaskSignal](type=simtime_t);
+
+		// Statistics section
+		@statistic[totalTimeTask](title="Total time of task"; source="totalTimeTaskSignal"; record=vector; interpolationmode=none);
+
     	@class(task_offloading::Task);
     	@display("i=block/app2");
 }

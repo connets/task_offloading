@@ -31,6 +31,9 @@ void Task::initialize() {
     this->availableReceivedCounter = par("availableReceivedCounter").intValue();
     this->responseReceivedCounter = par("responseReceivedCounter").intValue();
     this->computingDensity = par("computingDensity").intValue();
+
+    // Signals initialization
+    totalTaskTime = registerSignal("totalTimeTaskSignal");
 }
 
 void Task::finish() {

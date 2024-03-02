@@ -43,6 +43,9 @@ namespace task_offloading {
             void setMinimumLoadRequested(double newMinimumLoad);
             void setComputingDensity(int newCpi);
 
+            // Signals
+            simsignal_t totalTaskTime;
+
         private:
             int id;
             double totalData;

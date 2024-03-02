@@ -71,33 +71,9 @@ simple TaskGenerator extends VeinsInetApplicationBase
         // Maximum UDP byte length
         double UDPMaxLength @unit(byte) = default(65535B);
         
-        // General statistic for task time
-        @signal[task_started](type = simtime_t);
-        @signal[task_stopped](type = simtime_t);
-        @statistic[startTimeTask](source = task_started; record = vector,stats; interpolationmode = none);
-        @statistic[stopTimeTask](source = task_stopped; record = vector,stats; interpolationmode = none);
-        
         // Statistics for collecting beacon messages
         @signal[stopBeaconMessages](type = simtime_t);
         @statistic[stopBeaconMessages](source = stopBeaconMessages; record = vector,stats; interpolationmode = none);
-        
-        // Statistics for balance loading
-        @signal[start_balance_loading](type = simtime_t);
-        @signal[stop_balance_loading](type = simtime_t);
-        @statistic[startBalanceLoad](source = start_balance_loading; record = vector,stats; interpolationmode = none);
-        @statistic[stopBalanceLoad](source = stop_balance_loading; record = vector,stats; interpolationmode = none);
-        
-        // Statistics for collecting help requests
-        @signal[start_bus_help_rq](type = simtime_t);
-        @statistic[startHelpRequests](source = start_bus_help_rq; record = vector,stats; interpolationmode = none);
-        
-        // Statistics for sending data messages
-        @signal[start_sending_data](type = int);
-        @statistic[startDataMessages](source = start_sending_data; record = vector,stats; interpolationmode = none);
-        
-        // Statistics for sending response messages
-        @signal[stop_getting_response](type = int);
-        @statistic[stopResponseMessages](source = stop_getting_response; record = vector,stats; interpolationmode = none);
 
     	@class(task_offloading::TaskGenerator);
     	@display("i=block/app2");
