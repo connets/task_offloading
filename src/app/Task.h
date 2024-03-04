@@ -49,6 +49,7 @@ namespace task_offloading {
             simsignal_t loadBalancingRound;
             simsignal_t totalMessagesGenerator;
             simsignal_t totalRetransimissionsGenerator;
+            simsignal_t totalVehiclesAvailable;
 
         private:
             int id;

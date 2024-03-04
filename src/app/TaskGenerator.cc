@@ -152,6 +152,9 @@ void TaskGenerator::balanceLoad()
     // Store the data into a local variable so can be used
     double localData = tasks[0]->getTotalData();
 
+    // Emit how many vehicles available for each load balancing
+    tasks[0]->emit(tasks[0]->totalVehiclesAvailable, (int)helpersOrderedList.size());
+
     // For each vehicle prepare the data message and send
     for (auto const &i: helpersOrderedList) {
         if (localData > 0) {

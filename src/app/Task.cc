@@ -38,6 +38,7 @@ void Task::initialize() {
     loadBalancingRound = registerSignal("loadBalancingRoundSignal");
     totalMessagesGenerator = registerSignal("totalMessagesGeneratorSignal");
     totalRetransimissionsGenerator = registerSignal("totalRetransimissionsGeneratorSignal");
+    totalVehiclesAvailable = registerSignal("totalVehiclesAvailableSignal");
 }
 
 void Task::finish() {
