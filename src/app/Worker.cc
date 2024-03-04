@@ -267,12 +267,6 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     // Update the partition ID
     currentDataPartitionId = dataMessage->getPartitionId();
 
-    // Update if I'll be still available and this is the last data message
-    stillAvailableProbability = par("stillAvailableProbability").doubleValue() > par("stillAvailableThreshold").doubleValue();
-    if (stillAvailableProbability) {
-        setTaskAvailabilityTimer(dataMessage->getTaskId(), dataMessage->getTaskSize());
-    }
-
     // Prepare the response message
     auto responseMessage = makeShared<ResponseMessage>();
 
@@ -284,8 +278,16 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     // be still available, otherwise set it to true to prevent the vehicle
     // deletion by the TaskGenerator side
     if (dataPartitionsReceived == dataMessage->getResponsesExpected()) {
+        // Update if I'll be still available and this is the last data message
+        stillAvailableProbability = par("stillAvailableProbability").doubleValue() > par("stillAvailableThreshold").doubleValue();
+
+        if (stillAvailableProbability) {
+            setTaskAvailabilityTimer(dataMessage->getTaskId(), dataMessage->getTaskSize());
+        }
+
         responseMessage->setStillAvailable(stillAvailableProbability);
     } else {
+        stillAvailableProbability = true;
         responseMessage->setStillAvailable(true);
     }
 
@@ -314,7 +316,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
 
     // Generate ACK timer if parameter useAcks is false
     // to achieve secure protocol manually and if I'm not still available
-    if (!(par("useAcks").boolValue()) && !(stillAvailableProbability)) {
+    if (!(par("useAcks").boolValue()) && !(stillAvailableProbability) && (dataPartitionsReceived == dataMessage->getResponsesExpected())) {
         // Calculate bitrate conversion from megabit to megabyte
         double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;;
         double transferTime = dataMessage->getLoadToProcess() / bitRate;
