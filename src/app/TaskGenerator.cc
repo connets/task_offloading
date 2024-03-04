@@ -166,10 +166,10 @@ void TaskGenerator::balanceLoad()
             // Get the maximum value for udp message
             auto UDPMaxVal = par("UDPMaxLength").doubleValue();
 
-            if (B(helpers[i].getCurrentLoad()) >= B(UDPMaxVal) && (localData - helpers[i].getCurrentLoad()) > 0) {
-                n_fragments = ((int)(helpers[i].getCurrentLoad() / UDPMaxVal)) + 1;
-            } else if (B(helpers[i].getCurrentLoad()) >= B(UDPMaxVal) && (localData - helpers[i].getCurrentLoad()) <= 0) {
-                n_fragments = ((int)(localData / UDPMaxVal)) + 1;
+            if ((localData - helpers[i].getCurrentLoad()) > 0) {
+                n_fragments = std::ceil(helpers[i].getCurrentLoad() / UDPMaxVal);
+            } else {
+                n_fragments = std::ceil(localData / UDPMaxVal);
             }
 
             // Get the current data partition id
@@ -514,7 +514,8 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
 
         // Increment the responses I've received
         int responsesReceived = helpers[responseMessage->getHostIndex()].getResponsesReceived();
-        helpers[responseMessage->getHostIndex()].setResponsesReceived(++responsesReceived);
+        responsesReceived++;
+        helpers[responseMessage->getHostIndex()].setResponsesReceived(responsesReceived);
 
         // Remove the data that the vehicle has computed
         double localData = tasks[0]->getTotalData() - responseMessage->getDataComputed();
