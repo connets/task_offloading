@@ -31,6 +31,14 @@ void Task::initialize() {
     this->availableReceivedCounter = par("availableReceivedCounter").intValue();
     this->responseReceivedCounter = par("responseReceivedCounter").intValue();
     this->computingDensity = par("computingDensity").intValue();
+
+    // Signals initialization
+    totalTaskTime = registerSignal("totalTimeTaskSignal");
+    loadBalancingTime = registerSignal("loadBalancingTimeSignal");
+    loadBalancingRound = registerSignal("loadBalancingRoundSignal");
+    totalMessagesGenerator = registerSignal("totalMessagesGeneratorSignal");
+    totalRetransimissionsGenerator = registerSignal("totalRetransimissionsGeneratorSignal");
+    totalVehiclesAvailable = registerSignal("totalVehiclesAvailableSignal");
 }
 
 void Task::finish() {

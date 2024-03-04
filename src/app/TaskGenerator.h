@@ -60,23 +60,6 @@ public:
 
 private:
     // Simulations signals
-    // SECTION - Task
-    simsignal_t startTask;
-    simsignal_t stopTask;
-
-    // SECTION - BalanceLoad
-    simsignal_t startBalance;
-    simsignal_t stopBalance;
-
-    // SECTION - Help requests collection
-    simsignal_t startHelp;
-
-    // SECTION - Data messages statistics
-    simsignal_t startDataMessages;
-
-    // SECTION - Response messages statistics
-    simsignal_t stopResponseMessages;
-
     // SECTION - Beaconing messages statistics
     simsignal_t stopBeaconMessages;
 
@@ -89,6 +72,11 @@ protected:
     BusContext busState;
     BaseSorting* loadBalancingAlgorithm;
     int totalReponsesExpected;
+    simtime_t timeStartTask;
+    simtime_t loadBalancingTime;
+    int totalMessagesSent;
+    int totalMessagesRestransmitted;
+    int totalRoundsOfLoadBalancing;
 
 protected:
     void handleAvailabilityMessage(AvailabilityMessage* okMsg);

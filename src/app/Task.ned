@@ -29,6 +29,22 @@ simple Task
         int availableReceivedCounter = default(0);
         int responseReceivedCounter = default(0);
 
+		// Signal section
+		@signal[totalTimeTaskSignal](type=simtime_t);
+		@signal[loadBalancingTimeSignal](type=simtime_t);
+		@signal[loadBalancingRoundSignal](type=int);
+		@signal[totalMessagesGeneratorSignal](type=int);
+		@signal[totalVehiclesAvailableSignal](type=int);
+		@signal[totalRetransimissionsGeneratorSignal](type=int);
+
+		// Statistics section
+		@statistic[totalTimeTask](title="Total time of task"; source="totalTimeTaskSignal"; record=vector; interpolationmode=none);
+		@statistic[loadBalancingTime](title="Load balancing time"; source="loadBalancingTimeSignal"; record=vector; interpolationmode=none);
+		@statistic[loadBalancingRound](title="Load balancing rounds"; source="loadBalancingRoundSignal"; record=vector; interpolationmode=none);
+		@statistic[totalMessagesGenerator](title="Total messages sent by generator"; source="totalMessagesGeneratorSignal"; record=vector; interpolationmode=none);
+		@statistic[totalRetransimissionsGenerator](title="Total messages retransmitted by generator"; source="totalRetransimissionsGeneratorSignal"; record=vector; interpolationmode=none);
+		@statistic[totalVehiclesAvailable](title="Total vehicles available each load balancing"; source="totalVehiclesAvailableSignal"; record=vector; interpolationmode=none);
+
     	@class(task_offloading::Task);
     	@display("i=block/app2");
 }

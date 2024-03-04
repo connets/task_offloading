@@ -60,15 +60,15 @@ void TaskGenerator::initialize(int stage)
         // Initialize the number of total responses I expect
         totalReponsesExpected = 0;
 
-        // Registering all signals
-        startTask = registerSignal("task_started");
-        stopTask = registerSignal("task_stopped");
-        startBalance = registerSignal("start_balance_loading");
-        stopBalance = registerSignal("stop_balance_loading");
-        startHelp = registerSignal("start_bus_help_rq");
-        startDataMessages = registerSignal("start_sending_data");
+        // Total time task initialization
+        timeStartTask = simTime();
+        loadBalancingTime = simTime();
+        totalMessagesSent = 0;
+        totalMessagesRestransmitted = 0;
+        totalRoundsOfLoadBalancing = 0;
+
+        // Registering signals
         stopBeaconMessages = registerSignal("stopBeaconMessages");
-        stopResponseMessages = registerSignal("stop_getting_response");
     }
 }
 
@@ -137,6 +137,11 @@ void TaskGenerator::processPacket(std::shared_ptr<inet::Packet> pk)
 void TaskGenerator::balanceLoad()
 {
     // We have to do some work -> load balance!
+    // Save the start time for load balancing
+    loadBalancingTime = simTime();
+
+    // Increment the rounds of load balancing
+    totalRoundsOfLoadBalancing++;
 
     // But first change the bus state to load balancing
     busState.setState(new LoadBalancing);
@@ -147,8 +152,8 @@ void TaskGenerator::balanceLoad()
     // Store the data into a local variable so can be used
     double localData = tasks[0]->getTotalData();
 
-    // Emit the start of load balancing
-    emit(startBalance, simTime());
+    // Emit how many vehicles available for each load balancing
+    tasks[0]->emit(tasks[0]->totalVehiclesAvailable, (int)helpersOrderedList.size());
 
     // For each vehicle prepare the data message and send
     for (auto const &i: helpersOrderedList) {
@@ -310,16 +315,17 @@ void TaskGenerator::balanceLoad()
 
                     // Increment the total number of responses I expect from vehicles
                     totalReponsesExpected++;
+                    totalMessagesSent++;
                 }
             }
         }
     }
 
+    // Emit the signal for load balancing time
+    tasks[0]->emit(tasks[0]->loadBalancingTime, simTime() - loadBalancingTime);
+
     // Change the bus state to data transfer
     busState.setState(new DataTransfer);
-
-    // Emit the stop of load balancing
-    emit(stopBalance, simTime());
 }
 
 void TaskGenerator::vehicleHandler()
@@ -327,7 +333,7 @@ void TaskGenerator::vehicleHandler()
     if (tasks[0] == nullptr) {
         // Create task module
         cModuleType *moduleType = cModuleType::get("task_offloading.app.Task");
-        cModule *module = moduleType->create("task", findModuleByPath("<root>"));
+        cModule *module = moduleType->create("task", this);
 
         // Initialize all parameters
         module->par("id") = 0;
@@ -343,6 +349,9 @@ void TaskGenerator::vehicleHandler()
 
         Task *task = check_and_cast<Task*>(module);
         tasks[0] = std::move(task);
+
+        // Start the task timer
+        timeStartTask = simTime();
     }
 
     // Get the timer for the first help message
@@ -368,17 +377,10 @@ void TaskGenerator::vehicleHandler()
         helpMessage->setMinimumLoadRequested(tasks[0]->getMinimumLoadRequested());
         helpMessage->setChunkLength(B(200));
 
-        // Emit signal for start help message
-        emit(startHelp, simTime());
-
         // Send the packet in broadcast
         auto packet = createPacket("help_message");
         packet->insertAtBack(helpMessage);
         sendPacket(std::move(packet));
-
-        if (tasks[0]->getHelpReceivedCounter() == 0) {
-            emit(startTask, simTime());
-        }
 
         // Change the load balancing state
         busState.setState(new LoadBalancing);
@@ -508,9 +510,6 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
     // If the auto is found in the map and the partition id coincide with response message then
     // handle the response otherwise get rid of it
     if (found != helpers.end()) {
-        // Emit signal for having received response
-        emit(stopResponseMessages, responseMessage->getHostIndex());
-
         // Cancel and delete the timer message of this vehicle
         // This timer should not be deleted because now is the timer manager that hanldes timers in application
         // cancelAndDelete(helpers[responseMessage->getHostIndex()].getVehicleComputationTimer());
@@ -527,13 +526,18 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         EV<<"HELPERS REMAINED "<<helpers.size()<< endl;
         // If there's no more data then emit signal for task finished
         if (localData <= 0) {
-            emit(stopTask, simTime());
+            tasks[0]->emit(tasks[0]->totalTaskTime, simTime() - timeStartTask);
 
             // Color the bus in white
             getParentModule()->getDisplayString().setTagArg("i", 1, "white");
 
-            // Set the load balancing ID to 0
+            // Emit signal for load balancing rounds and set the load balancing ID to 0
+            tasks[0]->emit(tasks[0]->loadBalancingRound, totalRoundsOfLoadBalancing);
             tasks[0]->setLoadBalancingId(0);
+
+            // Emit signal for total messages sent and retransmitted
+            tasks[0]->emit(tasks[0]->totalMessagesGenerator, totalMessagesSent);
+            tasks[0]->emit(tasks[0]->totalRetransimissionsGenerator, totalMessagesRestransmitted);
 
             // Delete the vehicle from vehicles map
             helpers.erase(responseMessage->getHostIndex());
@@ -702,9 +706,14 @@ void TaskGenerator::sendAgainData(DataMessage* data)
             // Send the duplicate data message
             sendPacket(std::move(newDataPkt));
 
-            double transferTime = 10.0;
+            // Increment the retransmission timer
+            totalMessagesRestransmitted++;
 
-            double time = (transferTime + data->getComputationTime() + par("dataComputationThreshold").doubleValue());
+            // Calculate bitrate conversion from megabit to megabyte
+            double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
+            double transferTime = data->getLoadToProcess() / bitRate;
+
+            double time = (transferTime + data->getComputationTime() + (par("dataComputationThreshold").doubleValue() * 2));
 
             // The & inside the square brackets tells to capture all local variable
             // by value

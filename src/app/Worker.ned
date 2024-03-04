@@ -55,27 +55,9 @@ simple Worker extends VeinsInetApplicationBase
         // Local port
         int servicePort = default(10020);
         
-        // Statistics for collecting help requests
-        @signal[stop_bus_help_rq](type = simtime_t);
-        @statistic[stopHelpRequests](source = stop_bus_help_rq; record = vector,stats; interpolationmode = none);
-        
         // Statistics for collecting beacon messages
         @signal[stopBeaconMessages](type = simtime_t);
         @statistic[stopBeaconMessages](source = stopBeaconMessages; record = vector,stats; interpolationmode = none);
-        
-        // Statistics for sending data messages
-        @signal[stop_sending_data](type = int);
-        @statistic[stopDataMessages](source = stop_sending_data; record = vector,stats; interpolationmode = none);
-        
-        // Statistics for sending response messages
-        @signal[start_getting_response](type = int);
-        @statistic[startResponseMessages](source = start_getting_response; record = vector,stats; interpolationmode = none);
-        
-        // Statistics for sending and load of OK messages
-        @signal[available_message_sent](type = simtime_t);
-        @signal[available_message_load](type = double);
-        @statistic[availableMessageSent](source = available_message_sent; record = vector,stats; interpolationmode = none);
-        @statistic[availableMessageLoad](source = available_message_load; record = vector,stats; interpolationmode = none);
         
         @class(task_offloading::Worker);
     	@display("i=block/app2");

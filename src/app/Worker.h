@@ -60,19 +60,6 @@ public:
 
 private:
     // Simulations signals
-
-    // SECTION - Help requests collection
-    simsignal_t stopHelp;
-
-    // SECTION - Data messages statistics
-    simsignal_t stopDataMessages;
-
-    // SECTION - Response messages statistics
-    simsignal_t startResponseMessages;
-
-    // SECTION - OK messages statistics
-    simsignal_t availableMessageSent;
-    simsignal_t availableMessageLoad;
     // SECTION - Beaconing messages statistics
     simsignal_t stopBeaconMessages;
 

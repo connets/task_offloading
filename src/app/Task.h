@@ -43,6 +43,14 @@ namespace task_offloading {
             void setMinimumLoadRequested(double newMinimumLoad);
             void setComputingDensity(int newCpi);
 
+            // Signals
+            simsignal_t totalTaskTime;
+            simsignal_t loadBalancingTime;
+            simsignal_t loadBalancingRound;
+            simsignal_t totalMessagesGenerator;
+            simsignal_t totalRetransimissionsGenerator;
+            simsignal_t totalVehiclesAvailable;
+
         private:
             int id;
             double totalData;
