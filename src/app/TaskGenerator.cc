@@ -65,6 +65,7 @@ void TaskGenerator::initialize(int stage)
         loadBalancingTime = simTime();
         totalMessagesSent = 0;
         totalMessagesRestransmitted = 0;
+        totalRoundsOfLoadBalancing = 0;
 
         // Registering signals
         stopBeaconMessages = registerSignal("stopBeaconMessages");
@@ -138,6 +139,9 @@ void TaskGenerator::balanceLoad()
     // We have to do some work -> load balance!
     // Save the start time for load balancing
     loadBalancingTime = simTime();
+
+    // Increment the rounds of load balancing
+    totalRoundsOfLoadBalancing++;
 
     // But first change the bus state to load balancing
     busState.setState(new LoadBalancing);
@@ -525,7 +529,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
             getParentModule()->getDisplayString().setTagArg("i", 1, "white");
 
             // Emit signal for load balancing rounds and set the load balancing ID to 0
-            tasks[0]->emit(tasks[0]->loadBalancingRound, tasks[0]->getLoadBalancingId());
+            tasks[0]->emit(tasks[0]->loadBalancingRound, totalRoundsOfLoadBalancing);
             tasks[0]->setLoadBalancingId(0);
 
             // Emit signal for total messages sent and retransmitted
@@ -662,9 +666,6 @@ void TaskGenerator::sendAgainData(DataMessage* data)
 
     // If the vehicle is found check if I've received the data from it
     if (found != helpers.end() && (loadBalancingIdCheck)) {
-        // Increment the retransmission timer
-        totalMessagesRestransmitted++;
-
         // Get the total responses expected
         int responsesExpected = helpers[data->getHostIndex()].getResponsesExpected();
         int responsesReceived = helpers[data->getHostIndex()].getResponsesReceived();
@@ -702,9 +703,14 @@ void TaskGenerator::sendAgainData(DataMessage* data)
             // Send the duplicate data message
             sendPacket(std::move(newDataPkt));
 
-            double transferTime = 10.0;
+            // Increment the retransmission timer
+            totalMessagesRestransmitted++;
 
-            double time = (transferTime + data->getComputationTime() + par("dataComputationThreshold").doubleValue());
+            // Calculate bitrate conversion from megabit to megabyte
+            double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
+            double transferTime = data->getLoadToProcess() / bitRate;
+
+            double time = (transferTime + data->getComputationTime() + (par("dataComputationThreshold").doubleValue() * 2));
 
             // The & inside the square brackets tells to capture all local variable
             // by value

@@ -76,6 +76,7 @@ protected:
     simtime_t loadBalancingTime;
     int totalMessagesSent;
     int totalMessagesRestransmitted;
+    int totalRoundsOfLoadBalancing;
 
 protected:
     void handleAvailabilityMessage(AvailabilityMessage* okMsg);
