@@ -168,7 +168,7 @@ void Worker::setTaskAvailabilityTimer(int taskId, int taskSize){
 
     TotalComputationTimerMessage* tcm = new TotalComputationTimerMessage("taskAvailabilityTimerMessage");
     tcm->setTaskId(taskId);
-    taskAvailabilityTimers.insert(std::pair<int,TotalComputationTimerMessage*>(taskId,tcm));
+    taskAvailabilityTimers.insert(std::pair<int,TotalComputationTimerMessage*>(taskId, tcm));
 
     // Start the timer
     timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
@@ -201,7 +201,7 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
     // If I met requirements send an available message
     if (currentVehicleLoad >= minimumLoadRequested) {
         // Start task availability timer
-        setTaskAvailabilityTimer(helpMessage->getId(),helpMessage->getTaskSize());
+        setTaskAvailabilityTimer(helpMessage->getId(), helpMessage->getTaskSize());
 
         // Color the vehicle icon in blue
         getParentModule()->getDisplayString().setTagArg("i", 1, "blue");
@@ -286,6 +286,9 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
         }
 
         responseMessage->setStillAvailable(stillAvailableProbability);
+
+        // Reset the number of data partitions
+        dataPartitionsReceived = 0;
     } else {
         stillAvailableProbability = true;
         responseMessage->setStillAvailable(true);
