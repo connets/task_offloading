@@ -508,8 +508,18 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
             timerManager.cancel(timer);
         }
 
-        // Increment the responses I've received
+        // Get the total responses expected and received for this vehicle
+        int responsesExpectedFromVehicle = helpers[responseMessage->getHostIndex()].getResponsesExpected();
         int responsesReceivedFromVehicle = helpers[responseMessage->getHostIndex()].getResponsesReceived();
+
+        // If the vehicle is not available anymore erase it from the map
+        // and from the list
+        if (responseMessage->getStillAvailable() == false && responsesExpectedFromVehicle == responsesReceivedFromVehicle) {
+            helpers.erase(responseMessage->getHostIndex());
+            helpersOrderedList.remove(responseMessage->getHostIndex());
+        }
+
+        // Increment the responses I've received
         responsesReceivedFromVehicle++;
         helpers[responseMessage->getHostIndex()].setResponsesReceived(responsesReceivedFromVehicle);
 
@@ -568,13 +578,6 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
             auto ackPkt = createPacket("ack_message");
             ackPkt->insertAtBack(ackMessage);
             sendPacket(std::move(ackPkt));
-        }
-
-        // If the vehicle is not available anymore erase it from the map
-        // and from the list
-        if (responseMessage->getStillAvailable() == false) {
-            helpers.erase(responseMessage->getHostIndex());
-            helpersOrderedList.remove(responseMessage->getHostIndex());
         }
 
         // If there are more vehicles available and I've received all responses
