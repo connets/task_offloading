@@ -239,9 +239,6 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
 
 void Worker::handleDataMessage(DataMessage* dataMessage)
 {
-    // Increment the number of data partitions I've received
-    dataPartitionsReceived++;
-
     // Calculate time for computation
     double CPI = dataMessage->getCpi();
     double I = dataMessage->getLoadToProcess();
@@ -253,9 +250,13 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     auto key = std::pair<int,int>(dataMessage->getTaskId(), dataMessage->getPartitionId());
 
     // If the cache is not empty it resends the response message tied to this data message
-    if(!(responseCache.find(key) == responseCache.end())){
+    if(responseCache.find(key) != responseCache.end()){
         sendAgainResponse(responseCache.at(key));
         return;
+    } else {
+        // Increment the number of data partitions I've received only when
+        // is a new partition
+        dataPartitionsReceived++;
     }
 
     // Reset the task availability timer
@@ -285,9 +286,10 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
             setTaskAvailabilityTimer(dataMessage->getTaskId(), dataMessage->getTaskSize());
         }
 
+        // Set the still available property
         responseMessage->setStillAvailable(stillAvailableProbability);
 
-        // Reset the number of data partitions
+        // Reset the data partitions I've received
         dataPartitionsReceived = 0;
     } else {
         stillAvailableProbability = true;
@@ -319,7 +321,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
 
     // Generate ACK timer if parameter useAcks is false
     // to achieve secure protocol manually and if I'm not still available
-    if (!(par("useAcks").boolValue()) && !(stillAvailableProbability)) {
+    if (!(par("useAcks").boolValue())) {
         // Calculate bitrate conversion from megabit to megabyte
         double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;;
         double transferTime = dataMessage->getLoadToProcess() / bitRate;
