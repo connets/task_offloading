@@ -455,11 +455,11 @@ void TaskGenerator::handleAvailabilityMessage(AvailabilityMessage* availabilityM
 
     // Radius for both the car and bus reach in their next aRt seconds
     // double radiusCar = sqrt(pow((nextCx - cx),2.0) + pow((nextCy - cy),2.0));
-    double radiusBus = sqrt(pow((nextBx - bx),2.0) + pow((nextBy - by),2.0));
+    double radiusBus = sqrt(pow((nextBx - bx), 2.0) + pow((nextBy - by), 2.0));
 
     // Check if both the bus and the car will be in each other reach in the next aRt seconds
     // ((x-center_x)^2 + (y-center_y)^2 < radius^2)
-    if(!(pow(nextCx-nextBx,2.0) + pow(nextCy-nextBy,2.0) < pow(radiusBus,2.0))) {
+    if(!(pow(nextCx-nextBx,2.0) + pow(nextCy-nextBy, 2.0) < pow(radiusBus, 2.0))) {
         // remove vehicle availability due to projected long distance
         helpers.erase(availabilityMessage->getHostID());
         helpersOrderedList.remove(availabilityMessage->getHostID());
@@ -498,24 +498,20 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
     // Search the vehicle in the map
     auto found = helpers.find(responseMessage->getHostIndex());
 
-    // Delete the timer for sending again data message since I've received the message
-    auto timer = helpers[responseMessage->getHostIndex()].getTimer(helpers[responseMessage->getHostIndex()].getDataPartitionId());
-
-    if (timer != -1) {
-        timerManager.cancel(timer);
-    }
-
     // If the auto is found in the map and the partition id coincide with response message then
     // handle the response otherwise get rid of it
     if (found != helpers.end()) {
-        // Cancel and delete the timer message of this vehicle
-        // This timer should not be deleted because now is the timer manager that hanldes timers in application
-        // cancelAndDelete(helpers[responseMessage->getHostIndex()].getVehicleComputationTimer());
+        // Delete the timer for sending again data message since I've received the message
+        auto timer = helpers[responseMessage->getHostIndex()].getTimer(helpers[responseMessage->getHostIndex()].getDataPartitionId());
+
+        if (timer != -1) {
+            timerManager.cancel(timer);
+        }
 
         // Increment the responses I've received
-        int responsesReceived = helpers[responseMessage->getHostIndex()].getResponsesReceived();
-        responsesReceived++;
-        helpers[responseMessage->getHostIndex()].setResponsesReceived(responsesReceived);
+        int responsesReceivedFromVehicle = helpers[responseMessage->getHostIndex()].getResponsesReceived();
+        responsesReceivedFromVehicle++;
+        helpers[responseMessage->getHostIndex()].setResponsesReceived(responsesReceivedFromVehicle);
 
         // Remove the data that the vehicle has computed
         double localData = tasks[0]->getTotalData() - responseMessage->getDataComputed();
@@ -551,15 +547,15 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         }
 
         // Increment the task responses received
-        int responseReceived = tasks[0]->getResponseReceivedCounter();
-        responseReceived++;
-        tasks[0]->setResponseReceivedCounter(responseReceived);
+        int totalResponsesReceived = tasks[0]->getResponseReceivedCounter();
+        totalResponsesReceived++;
+        tasks[0]->setResponseReceivedCounter(totalResponsesReceived);
 
         // Get the load balancing id
         int loadBalanceId = tasks[0]->getLoadBalancingId();
 
         // Schedule the ack message for each data partition
-        if (!(par("useAcks").boolValue())) {
+        if (!(par("useAcks").boolValue()) && responseMessage->getStillAvailable() == false) {
             // Send ACK message to the host
             auto ackMessage = makeShared<AckMessage>();
             ackMessage->setHostIndex(responseMessage->getHostIndex());
@@ -583,7 +579,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
 
         // If there are more vehicles available and I've received all responses
         // then restart load balancing
-        if (helpers.size() > 0 && localData > 0 && totalReponsesExpected == responseReceived) {
+        if (helpers.size() > 0 && localData > 0 && totalReponsesExpected == totalResponsesReceived) {
             // Increment load balance id
             loadBalanceId++;
             tasks[0]->setLoadBalancingId(loadBalanceId);
@@ -605,7 +601,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
 
         // If there are no more vehicles but still more data to compute then take the bus
         // back in help status and restart vehicles handling to send again help request
-        if (helpers.size() == 0 && localData > 0 && totalReponsesExpected == responseReceived) {
+        if (helpers.size() == 0 && localData > 0 && totalReponsesExpected == totalResponsesReceived) {
             // Color the bus in white when it has no more vehicles
             getParentModule()->getDisplayString().setTagArg("i", 1, "white");
 
