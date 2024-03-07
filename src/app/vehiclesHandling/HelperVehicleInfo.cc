@@ -280,7 +280,7 @@ double HelperVehicleInfo::getTotalComputationTime(int CPI) {
  * @returns The total computation time for a task
  */
 double HelperVehicleInfo::getTotalComputationTime(int CPI, double load) {
-    double const exp_dist_mean = 1;
+    double const exp_dist_mean = (CPI * load * (1 / this->hostCPUFreq));
     double const exp_dist_lambda = 1 / exp_dist_mean;
 
     std::random_device rd;
@@ -288,7 +288,7 @@ double HelperVehicleInfo::getTotalComputationTime(int CPI, double load) {
     std::exponential_distribution<> rng(exp_dist_lambda);
     std::mt19937 rnd_gen(rd());
 
-    return 0.001 + (rng(rnd_gen) * (CPI * load * (1 / this->hostCPUFreq)));
+    return 0.001 + rng(rnd_gen);
 }
 
 /**
