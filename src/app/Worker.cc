@@ -244,7 +244,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     double I = dataMessage->getLoadToProcess();
     double CR = cpuFreq;
 
-    double const exp_dist_mean = 1;
+    double const exp_dist_mean = (CPI * I * (1 / CR));
     double const exp_dist_lambda = 1 / exp_dist_mean;
 
     std::random_device rd;
@@ -252,7 +252,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     std::exponential_distribution<> rng(exp_dist_lambda);
     std::mt19937 rnd_gen(rd());
 
-    double timeToCompute = 0.001 + (rng(rnd_gen) * (CPI * I * (1 / CR)));
+    double timeToCompute = 0.001 + rng(rnd_gen);
     EV << "TIME TO COMPUTE" << timeToCompute << endl;
 
     auto key = std::pair<int,int>(dataMessage->getTaskId(), dataMessage->getPartitionId());
