@@ -21,6 +21,10 @@
 #include "veins_inet/VeinsInetApplicationBase.h"
 #include "app/messages/ComputationTimerMessage_m.h"
 #include "inet/networklayer/common/L3Address.h"
+#include <iomanip>
+#include <random>
+#include <map>
+#include <iostream>
 
 namespace task_offloading {
     class HelperVehicleInfo {
