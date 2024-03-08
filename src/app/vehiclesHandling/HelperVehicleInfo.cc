@@ -268,8 +268,8 @@ void HelperVehicleInfo::setResponsesReceived(int newTotal) {
  * @param CPI Clock per instructions
  * @returns The total computation time for a task
  */
-double HelperVehicleInfo::getTotalComputationTime(int CPI) {
-    return (CPI * this->hostCurrentLoad * (1 / this->hostCPUFreq));
+double HelperVehicleInfo::getTotalComputationTime(int CPI, double load) {
+    return (CPI * load * (1 / this->hostCPUFreq));
 }
 
 /**
@@ -279,8 +279,8 @@ double HelperVehicleInfo::getTotalComputationTime(int CPI) {
  * @param CPI Clock per instructions
  * @returns The total computation time for a task
  */
-double HelperVehicleInfo::getTotalComputationTime(int CPI, double load) {
-    return (CPI * load * (1 / this->hostCPUFreq));
+double HelperVehicleInfo::getTotalComputationTime(int CPI) {
+    return this->getTotalComputationTime(CPI, this->hostCurrentLoad);
 }
 
 /**
