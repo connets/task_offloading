@@ -276,6 +276,10 @@ void TaskGenerator::balanceLoad()
                 dataMessage->setLoadBalancingId(tasks[0]->getLoadBalancingId());
                 dataMessage->setCpi(tasks[0]->getComputingDensity());
                 dataMessage->setResponsesExpected(responsesExpectedFromVehicle);
+
+                // Set the time to compute as reverse of CDF of an exponential
+                // random variable to match the worst possible case
+                timeToCompute = -log(1 - 0.99) * timeToCompute;
                 dataMessage->setComputationTime(timeToCompute);
 
                 // Save into the helper the data partition ID
@@ -432,6 +436,9 @@ void TaskGenerator::handleAvailabilityMessage(AvailabilityMessage* availabilityM
     double transferTime = localData/bitRate;
     double transferTimeRes =(localData*IO)/bitRate;
     double timeToCompute = CPI * localData * (1 / CR);
+
+    // Update the time to compute to the worst possible case
+    timeToCompute = -log(1 - 0.99) * timeToCompute;
 
     if(aRt==-1.0) {
         // Generate the time that is used to check whether a car will be in the bus range in those next seconds

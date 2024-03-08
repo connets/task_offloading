@@ -268,8 +268,8 @@ void HelperVehicleInfo::setResponsesReceived(int newTotal) {
  * @param CPI Clock per instructions
  * @returns The total computation time for a task
  */
-double HelperVehicleInfo::getTotalComputationTime(int CPI) {
-    return this->getTotalComputationTime(CPI, this->hostCurrentLoad);
+double HelperVehicleInfo::getTotalComputationTime(int CPI, double load) {
+    return (CPI * load * (1 / this->hostCPUFreq));
 }
 
 /**
@@ -279,16 +279,8 @@ double HelperVehicleInfo::getTotalComputationTime(int CPI) {
  * @param CPI Clock per instructions
  * @returns The total computation time for a task
  */
-double HelperVehicleInfo::getTotalComputationTime(int CPI, double load) {
-    double const exp_dist_mean = (CPI * load * (1 / this->hostCPUFreq));
-    double const exp_dist_lambda = 1 / exp_dist_mean;
-
-    std::random_device rd;
-
-    std::exponential_distribution<> rng(exp_dist_lambda);
-    std::mt19937 rnd_gen(rd());
-
-    return 0.001 + rng(rnd_gen);
+double HelperVehicleInfo::getTotalComputationTime(int CPI) {
+    return this->getTotalComputationTime(CPI, this->hostCurrentLoad);
 }
 
 /**
