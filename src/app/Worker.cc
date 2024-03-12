@@ -75,6 +75,7 @@ void Worker::initialize(int stage)
         // Registering all signals
         stopBeaconMessages = registerSignal("stopBeaconMessages");
         totalRetransmissions = registerSignal("totalRetransmissionsSignal");
+        transmissionTime = registerSignal("transmissionTimePacketSignal");
     }
 }
 
@@ -122,6 +123,9 @@ void Worker::processPacket(std::shared_ptr<inet::Packet> pk)
 
                 // Check if the data message is for me
                 if (dataMessage->getHostIndex() == getParentModule()->getIndex()) {
+                    // Emit signal of transmission time
+                    emit(transmissionTime, simTime() - dataMessage->getTimeOfCreation());
+
                     handleDataMessage(dataMessage);
                 }
             }

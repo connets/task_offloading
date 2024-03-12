@@ -77,6 +77,7 @@ protected:
     int dataPartitionsReceived;
     int totalNumberOfRetransmissions;
     simsignal_t totalRetransmissions;
+    simsignal_t transmissionTime;
 
 protected:
     void handleHelpMessage(HelpMessage* helpMsg);

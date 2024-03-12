@@ -69,6 +69,7 @@ void TaskGenerator::initialize(int stage)
 
         // Registering signals
         stopBeaconMessages = registerSignal("stopBeaconMessages");
+        endOfLoadBalancing = registerSignal("endLoadBalancingTimeSignal");
     }
 }
 
@@ -307,6 +308,9 @@ void TaskGenerator::balanceLoad()
                     helpers[i].addTimer(currentPartitionId, timer);
                 }
 
+                // Set the creation time of the packet
+                dataMessage->setTimeOfCreation(simTime());
+
                 // Schedule the data packet
                 auto dataPacket = createPacket("data_message");
                 dataPacket->insertAtBack(dataMessage);
@@ -325,6 +329,9 @@ void TaskGenerator::balanceLoad()
 
     // Emit the signal for load balancing time
     tasks[0]->emit(tasks[0]->loadBalancingTime, simTime() - loadBalancingTime);
+
+    // Emit signal of end of load balancing
+    emit(endOfLoadBalancing, simTime());
 
     // Change the bus state to data transfer
     busState.setState(new DataTransfer);

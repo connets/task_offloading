@@ -63,6 +63,10 @@ simple Worker extends VeinsInetApplicationBase
         @signal[totalRetransmissionsSignal](type = int);
 		@statistic[totalRetransmissions](title="Total number of retransmissions"; source="totalRetransmissionsSignal"; record=vector; interpolationmode=none);
         
+        // Statistics for transmission time of each packet
+        @signal[transmissionTimePacketSignal](type = simtime_t);
+		@statistic[transmissionTimePacket](title="Transmission time of a packet"; source="transmissionTimePacketSignal"; record=vector; interpolationmode=none);
+        
         @class(task_offloading::Worker);
     	@display("i=block/app2");
 }

@@ -29,5 +29,6 @@ class DataMessage extends BasePacket {
     int loadBalancingId;
     int cpi;
     int responsesExpected;
+    simtime_t timeOfCreation;
     inet::L3Address senderAddress;
 }
