@@ -141,11 +141,8 @@ void Worker::processPacket(std::shared_ptr<inet::Packet> pk)
                     auto key = std::pair<int, int>(ackMessage->getTaskID(), ackMessage->getPartitionID());
                     responseCache.erase(key);
 
-                    // If I'm not anymore available emit the signal of total retransmissions and reset the counter
-                    if (!stillAvailableProbability) {
-                        emit(totalRetransmissions, totalNumberOfRetransmissions);
-                        totalNumberOfRetransmissions = 0;
-                    }
+                    emit(totalRetransmissions, totalNumberOfRetransmissions);
+                    totalNumberOfRetransmissions = 0;
 
                     // Color the vehicle in white when computation ends
                     getParentModule()->getDisplayString().setTagArg("i", 1, "white");
@@ -355,7 +352,7 @@ void Worker::sendAgainResponse(ResponseMessage* response, double newTime)
     auto key = std::pair<int, int>(response->getTaskID(), response->getPartitionID());
 
     // If it is in cache and the data partition ID is different I've not received the ack for this data partition
-    if (responseCache.find(key) != responseCache.end() && response->getPartitionID() == currentDataPartitionId) {
+    if (responseCache.find(key) != responseCache.end()) {
         // Increment the counter of retransmissions
         totalNumberOfRetransmissions++;
 
