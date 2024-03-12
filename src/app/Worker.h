@@ -24,6 +24,7 @@
 
 #include "veins_inet/veins_inet.h"
 
+#include "app/Task.h"
 #include "app/messages/HelpMessage_m.h"
 #include "app/messages/TotalComputationTimerMessage_m.h"
 #include "app/messages/ComputationTimerMessage_m.h"
@@ -74,11 +75,13 @@ protected:
     std::map<std::pair<int,int>, ResponseMessage*> responseCache;
     std::map<int, veins::TimerManager::TimerHandle> timers;
     int dataPartitionsReceived;
+    int totalNumberOfRetransmissions;
+    simsignal_t totalRetransmissions;
 
 protected:
     void handleHelpMessage(HelpMessage* helpMsg);
     void handleDataMessage(DataMessage* dataMsg);
-    void sendAgainResponse(ResponseMessage* data);
+    void sendAgainResponse(ResponseMessage* data, double newTime);
     void simulateAvailabilityTime(AvailabilityMessage* availabilityMessage);
     void simulateResponseTime(ResponseMessage* responseMessage);
 

@@ -59,6 +59,10 @@ simple Worker extends VeinsInetApplicationBase
         @signal[stopBeaconMessages](type = simtime_t);
         @statistic[stopBeaconMessages](source = stopBeaconMessages; record = vector,stats; interpolationmode = none);
         
+        // Statistics for collecting retransmissions
+        @signal[totalRetransmissionsSignal](type = int);
+		@statistic[totalRetransmissions](title="Total number of retransmissions"; source="totalRetransmissionsSignal"; record=vector; interpolationmode=none);
+        
         @class(task_offloading::Worker);
     	@display("i=block/app2");
 }

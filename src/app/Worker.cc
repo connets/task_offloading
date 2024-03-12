@@ -65,12 +65,16 @@ void Worker::initialize(int stage)
         // Initialize the total data partitions I've received
         dataPartitionsReceived = 0;
 
+        // Initialize the total number of retransmissions
+        totalNumberOfRetransmissions = 0;
+
         if(par("retryFactorTime").doubleValue()<1) {
             throw cRuntimeError("retryFactorTime cannot be lower than 1");
         }
 
         // Registering all signals
         stopBeaconMessages = registerSignal("stopBeaconMessages");
+        totalRetransmissions = registerSignal("totalRetransmissionsSignal");
     }
 }
 
@@ -134,8 +138,14 @@ void Worker::processPacket(std::shared_ptr<inet::Packet> pk)
                     timerManager.cancel(timer);
 
                     // Remove the entry from the cache
-                    auto key = std::pair<int,int>(ackMessage->getTaskID(), ackMessage->getPartitionID());
+                    auto key = std::pair<int, int>(ackMessage->getTaskID(), ackMessage->getPartitionID());
                     responseCache.erase(key);
+
+                    // If I'm not anymore available emit the signal of total retransmissions and reset the counter
+                    if (!stillAvailableProbability) {
+                        emit(totalRetransmissions, totalNumberOfRetransmissions);
+                        totalNumberOfRetransmissions = 0;
+                    }
 
                     // Color the vehicle in white when computation ends
                     getParentModule()->getDisplayString().setTagArg("i", 1, "white");
@@ -247,11 +257,11 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     double timeToCompute = exponential(CPI * I * (1 / CR));
     EV << "TIME TO COMPUTE" << timeToCompute << endl;
 
-    auto key = std::pair<int,int>(dataMessage->getTaskId(), dataMessage->getPartitionId());
+    auto key = std::pair<int, int>(dataMessage->getTaskId(), dataMessage->getPartitionId());
 
     // If the cache is not empty it resends the response message tied to this data message
     if(responseCache.find(key) != responseCache.end()){
-        sendAgainResponse(responseCache.at(key));
+        sendAgainResponse(responseCache.at(key), dataMessage->getComputationTime());
         return;
     } else {
         // Increment the number of data partitions I've received only when
@@ -323,15 +333,15 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     // to achieve secure protocol manually and if I'm not still available
     if (!(par("useAcks").boolValue())) {
         // Calculate bitrate conversion from megabit to megabyte
-        double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;;
+        double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
         double transferTime = dataMessage->getLoadToProcess() / bitRate;
 
-        time = (timeToCompute + transferTime + par("ackMessageThreshold").doubleValue());
+        time = (dataMessage->getComputationTime() + transferTime + par("ackMessageThreshold").doubleValue());
 
         // The & inside the square brackets tells to capture all local variable
         // by value
         auto sendAgainCallback = [=]() {
-            sendAgainResponse(responseMessage->dup());
+            sendAgainResponse(responseMessage->dup(), time);
         };
         // Save the timer in the timers map
         veins::TimerManager::TimerHandle timer = timerManager.create(veins::TimerSpecification(sendAgainCallback).oneshotIn(time));
@@ -339,53 +349,60 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     }
 }
 
-void Worker::sendAgainResponse(ResponseMessage* response)
+void Worker::sendAgainResponse(ResponseMessage* response, double newTime)
 {
-    auto newResponse = makeShared<ResponseMessage>();
+    // Check if the response is still in cache
+    auto key = std::pair<int, int>(response->getTaskID(), response->getPartitionID());
 
-    // Fill fields of response message with previous response message
+    // If it is in cache and the data partition ID is different I've not received the ack for this data partition
+    if (responseCache.find(key) != responseCache.end() && response->getPartitionID() == currentDataPartitionId) {
+        // Increment the counter of retransmissions
+        totalNumberOfRetransmissions++;
 
-    /**************************************************************************
-     * This has to be done because in veins if you send a message duplicate   *
-     * it will be discarded from MAC L2 because it's a message that the       *
-     * single node "read" as already received                                 *
-     *************************************************************************/
+        auto newResponse = makeShared<ResponseMessage>();
 
-    newResponse->setHostIndex(response->getHostIndex());
-    newResponse->setGeneratorIndex(response->getGeneratorIndex());
-    newResponse->setStillAvailable(response->getStillAvailable());
-    newResponse->setDataComputed(response->getDataComputed());
-    newResponse->setTimeToCompute(response->getTimeToCompute());
-    newResponse->setTaskID(response->getTaskID());
-    newResponse->setPartitionID(response->getPartitionID());
-    newResponse->setChunkLength(B(response->getChunkLength()));
-    // L3Address worker = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
-    // newResponse->setSenderAddress(worker);
+        // Fill fields of response message with previous response message
 
-    // Create the computation timer to simulate the computation time
-    double time = response->getTimeToCompute();
+        /**************************************************************************
+         * This has to be done because in veins if you send a message duplicate   *
+         * it will be discarded from MAC L2 because it's a message that the       *
+         * single node "read" as already received                                 *
+         *************************************************************************/
 
-    // Schedule the new duplicate response message
-    // The & inside the square brackets tells to capture all local variable
-    // by value
-    auto callback = [=]() {
-        simulateResponseTime(newResponse->dup());
-    };
-    timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
+        newResponse->setHostIndex(response->getHostIndex());
+        newResponse->setGeneratorIndex(response->getGeneratorIndex());
+        newResponse->setStillAvailable(response->getStillAvailable());
+        newResponse->setDataComputed(response->getDataComputed());
+        newResponse->setTimeToCompute(response->getTimeToCompute());
+        newResponse->setTaskID(response->getTaskID());
+        newResponse->setPartitionID(response->getPartitionID());
+        newResponse->setChunkLength(B(response->getChunkLength()));
+        // L3Address worker = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
+        // newResponse->setSenderAddress(worker);
 
-    // Restart the ACK timer
-    double transferTime = 10.0;
+        // Create the computation timer to simulate the computation time
+        double time = response->getTimeToCompute();
 
-    time = (transferTime + response->getTimeToCompute() + par("ackMessageThreshold").doubleValue());
+        // Schedule the new duplicate response message
+        // The & inside the square brackets tells to capture all local variable
+        // by value
+        auto callback = [=]() {
+            simulateResponseTime(newResponse->dup());
+        };
+        timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
 
-    // The & inside the square brackets tells to capture all local variable
-    // by value
-    auto sendAgainCallBack = [=]() {
-        sendAgainResponse(newResponse->dup());
-    };
-    // Rewrite the value of the timer in timers map
-    veins::TimerManager::TimerHandle timer = timerManager.create(veins::TimerSpecification(sendAgainCallBack).oneshotIn(time));
-    addTimer(response->getPartitionID(), timer);
+        // Restart the ACK timer
+        time = (newTime + response->getTimeToCompute() + par("ackMessageThreshold").doubleValue());
+
+        // The & inside the square brackets tells to capture all local variable
+        // by value
+        auto sendAgainCallBack = [=]() {
+            sendAgainResponse(newResponse->dup(), time);
+        };
+        // Rewrite the value of the timer in timers map
+        veins::TimerManager::TimerHandle timer = timerManager.create(veins::TimerSpecification(sendAgainCallBack).oneshotIn(time));
+        addTimer(response->getPartitionID(), timer);
+    }
 }
 
 void Worker::simulateAvailabilityTime(AvailabilityMessage* availabilityMessage)
