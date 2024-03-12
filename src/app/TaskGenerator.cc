@@ -308,6 +308,9 @@ void TaskGenerator::balanceLoad()
                     helpers[i].addTimer(currentPartitionId, timer);
                 }
 
+                // Set the creation time of the packet
+                dataMessage->setTimeOfCreation(simTime());
+
                 // Schedule the data packet
                 auto dataPacket = createPacket("data_message");
                 dataPacket->insertAtBack(dataMessage);
