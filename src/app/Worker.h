@@ -81,7 +81,7 @@ protected:
 protected:
     void handleHelpMessage(HelpMessage* helpMsg);
     void handleDataMessage(DataMessage* dataMsg);
-    void sendAgainResponse(ResponseMessage* data);
+    void sendAgainResponse(ResponseMessage* data, double newTime);
     void simulateAvailabilityTime(AvailabilityMessage* availabilityMessage);
     void simulateResponseTime(ResponseMessage* responseMessage);
 

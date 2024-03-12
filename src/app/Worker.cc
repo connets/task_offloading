@@ -138,11 +138,14 @@ void Worker::processPacket(std::shared_ptr<inet::Packet> pk)
                     timerManager.cancel(timer);
 
                     // Remove the entry from the cache
-                    auto key = std::pair<int,int>(ackMessage->getTaskID(), ackMessage->getPartitionID());
+                    auto key = std::pair<int, int>(ackMessage->getTaskID(), ackMessage->getPartitionID());
                     responseCache.erase(key);
 
-                    // Emit the signal of total retransmissions
-                    emit(totalRetransmissions, totalNumberOfRetransmissions);
+                    // If I'm not anymore available emit the signal of total retransmissions and reset the counter
+                    if (!stillAvailableProbability) {
+                        emit(totalRetransmissions, totalNumberOfRetransmissions);
+                        totalNumberOfRetransmissions = 0;
+                    }
 
                     // Color the vehicle in white when computation ends
                     getParentModule()->getDisplayString().setTagArg("i", 1, "white");
@@ -254,11 +257,11 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     double timeToCompute = exponential(CPI * I * (1 / CR));
     EV << "TIME TO COMPUTE" << timeToCompute << endl;
 
-    auto key = std::pair<int,int>(dataMessage->getTaskId(), dataMessage->getPartitionId());
+    auto key = std::pair<int, int>(dataMessage->getTaskId(), dataMessage->getPartitionId());
 
     // If the cache is not empty it resends the response message tied to this data message
     if(responseCache.find(key) != responseCache.end()){
-        sendAgainResponse(responseCache.at(key));
+        sendAgainResponse(responseCache.at(key), dataMessage->getComputationTime());
         return;
     } else {
         // Increment the number of data partitions I've received only when
@@ -338,7 +341,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
         // The & inside the square brackets tells to capture all local variable
         // by value
         auto sendAgainCallback = [=]() {
-            sendAgainResponse(responseMessage->dup());
+            sendAgainResponse(responseMessage->dup(), time);
         };
         // Save the timer in the timers map
         veins::TimerManager::TimerHandle timer = timerManager.create(veins::TimerSpecification(sendAgainCallback).oneshotIn(time));
@@ -346,9 +349,13 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     }
 }
 
-void Worker::sendAgainResponse(ResponseMessage* response)
+void Worker::sendAgainResponse(ResponseMessage* response, double newTime)
 {
-    if (response->getPartitionID() == currentDataPartitionId) {
+    // Check if the response is still in cache
+    auto key = std::pair<int, int>(response->getTaskID(), response->getPartitionID());
+
+    // If it is in cache and the data partition ID is different I've not received the ack for this data partition
+    if (responseCache.find(key) != responseCache.end() && response->getPartitionID() == currentDataPartitionId) {
         // Increment the counter of retransmissions
         totalNumberOfRetransmissions++;
 
@@ -385,14 +392,12 @@ void Worker::sendAgainResponse(ResponseMessage* response)
         timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
 
         // Restart the ACK timer
-        double transferTime = 10.0;
-
-        time = (transferTime + response->getTimeToCompute() + par("ackMessageThreshold").doubleValue());
+        time = (newTime + response->getTimeToCompute() + par("ackMessageThreshold").doubleValue());
 
         // The & inside the square brackets tells to capture all local variable
         // by value
         auto sendAgainCallBack = [=]() {
-            sendAgainResponse(newResponse->dup());
+            sendAgainResponse(newResponse->dup(), time);
         };
         // Rewrite the value of the timer in timers map
         veins::TimerManager::TimerHandle timer = timerManager.create(veins::TimerSpecification(sendAgainCallBack).oneshotIn(time));
