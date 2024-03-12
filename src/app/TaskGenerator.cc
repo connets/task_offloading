@@ -69,6 +69,7 @@ void TaskGenerator::initialize(int stage)
 
         // Registering signals
         stopBeaconMessages = registerSignal("stopBeaconMessages");
+        endOfLoadBalancing = registerSignal("endLoadBalancingTimeSignal");
     }
 }
 
@@ -325,6 +326,9 @@ void TaskGenerator::balanceLoad()
 
     // Emit the signal for load balancing time
     tasks[0]->emit(tasks[0]->loadBalancingTime, simTime() - loadBalancingTime);
+
+    // Emit signal of end of load balancing
+    emit(endOfLoadBalancing, simTime());
 
     // Change the bus state to data transfer
     busState.setState(new DataTransfer);

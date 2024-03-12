@@ -75,6 +75,10 @@ simple TaskGenerator extends VeinsInetApplicationBase
         @signal[stopBeaconMessages](type = simtime_t);
         @statistic[stopBeaconMessages](source = stopBeaconMessages; record = vector,stats; interpolationmode = none);
 
+		// Statistics for collecting load balancing end times
+        @signal[endLoadBalancingTimeSignal](type = simtime_t);
+		@statistic[endLoadBalancingTime](title="End time of load balancing"; source="endLoadBalancingTimeSignal"; record=vector; interpolationmode=none);
+
     	@class(task_offloading::TaskGenerator);
     	@display("i=block/app2");
 }

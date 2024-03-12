@@ -77,6 +77,7 @@ protected:
     int totalMessagesSent;
     int totalMessagesRestransmitted;
     int totalRoundsOfLoadBalancing;
+    simsignal_t endOfLoadBalancing;
 
 protected:
     void handleAvailabilityMessage(AvailabilityMessage* okMsg);
