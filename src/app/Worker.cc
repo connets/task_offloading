@@ -124,7 +124,7 @@ void Worker::processPacket(std::shared_ptr<inet::Packet> pk)
                 // Check if the data message is for me
                 if (dataMessage->getHostIndex() == getParentModule()->getIndex()) {
                     // Emit signal of transmission time
-                    emit(transmissionTime, simTime() - dataMessage->getTimeOfCreation());
+                    emit(transmissionTime, (simTime() - dataMessage->getTimeOfCreation()).dbl());
 
                     handleDataMessage(dataMessage);
                 }
