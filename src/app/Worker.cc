@@ -426,6 +426,9 @@ void Worker::simulateResponseTime(ResponseMessage* responseMessage) {
         availableLoad = par("commonVehicleLoad").doubleValue();  //Only with one task
     }
 
+    // Set creation time
+    responseMessage->setTimeOfCreation(simTime());
+
     // Send the response message
     auto response = responseMessage->dupShared();
 
