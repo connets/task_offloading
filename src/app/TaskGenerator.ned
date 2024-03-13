@@ -79,6 +79,10 @@ simple TaskGenerator extends VeinsInetApplicationBase
         @signal[endLoadBalancingTimeSignal](type = simtime_t);
 		@statistic[endLoadBalancingTime](title="End time of load balancing"; source="endLoadBalancingTimeSignal"; record=vector; interpolationmode=none);
 
+		// Statistics for transmission time of each packet
+        @signal[transmissionTimePacketSignal](type = double);
+		@statistic[transmissionTimePacket](title="Transmission time of a packet"; source="transmissionTimePacketSignal"; record=vector; interpolationmode=none);
+
     	@class(task_offloading::TaskGenerator);
     	@display("i=block/app2");
 }

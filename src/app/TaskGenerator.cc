@@ -70,6 +70,7 @@ void TaskGenerator::initialize(int stage)
         // Registering signals
         stopBeaconMessages = registerSignal("stopBeaconMessages");
         endOfLoadBalancing = registerSignal("endLoadBalancingTimeSignal");
+        transmissionTime = registerSignal("transmissionTimePacketSignal");
     }
 }
 
@@ -523,6 +524,9 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         if (timer != -1) {
             timerManager.cancel(timer);
         }
+
+        // Emit signal for transmission time
+        emit(transmissionTime, (simTime() - responseMessage->getTimeOfCreation()).dbl());
 
         // Get the total responses expected and received for this vehicle
         int responsesExpectedFromVehicle = helpers[responseMessage->getHostIndex()].getResponsesExpected();
