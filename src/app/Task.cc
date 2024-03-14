@@ -215,3 +215,36 @@ void Task::setMinimumLoadRequested(double newMinimumLoad) {
 void Task::setComputingDensity(int newCpi) {
     this->computingDensity = newCpi;
 }
+
+/**
+ * Insert the data partition into the map
+ *
+ * @return void
+ */
+void Task::insertDataPartition(int partitionId) {
+    this->dataPartitions[partitionId] = partitionId;
+}
+
+/**
+ * Get the data partition from the map
+ *
+ * @return partitionId if found, -1 if not
+ */
+int Task::getDataPartition(int partitionId) {
+    auto found = this->dataPartitions.find(partitionId);
+
+    if (found != this->dataPartitions.end()) {
+        return this->dataPartitions[partitionId];
+    } else {
+        return -1;
+    }
+}
+
+/**
+ * Removes the data partition from the map
+ *
+ * @return void
+ */
+void Task::removeDataPartition(int partitionId) {
+    this->dataPartitions.erase(partitionId);
+}

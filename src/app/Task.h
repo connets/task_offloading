@@ -42,6 +42,9 @@ namespace task_offloading {
             void setResponseReceivedCounter(int newCounter);
             void setMinimumLoadRequested(double newMinimumLoad);
             void setComputingDensity(int newCpi);
+            void insertDataPartition(int partitionId);
+            int getDataPartition(int partitionId);
+            void removeDataPartition(int partitionId);
 
             // Signals
             simsignal_t totalTaskTime;
@@ -61,5 +64,6 @@ namespace task_offloading {
             int loadBalancingId;
             int availableReceivedCounter;
             int responseReceivedCounter;
+            std::map<int, int> dataPartitions;
     };
 }

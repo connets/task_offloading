@@ -70,7 +70,8 @@ void TaskGenerator::initialize(int stage)
         // Registering signals
         stopBeaconMessages = registerSignal("stopBeaconMessages");
         endOfLoadBalancing = registerSignal("endLoadBalancingTimeSignal");
-        transmissionTime = registerSignal("transmissionTimePacketSignal");
+        transmissionTimePacket = registerSignal("transmissionTimePacketSignal");
+        transmissionTimeChunk = registerSignal("transmissionTimeChunkSignal");
     }
 }
 
@@ -123,6 +124,13 @@ void TaskGenerator::processPacket(std::shared_ptr<inet::Packet> pk)
 
                 // Check if the response message is for me
                 if (responseMessage->getGeneratorIndex() == getParentModule()->getIndex()) {
+                    // Delete the timer for sending again data message since I've received the message
+                    auto timer = helpers[responseMessage->getHostIndex()].getTimer(responseMessage->getPartitionID());
+                    timerManager.cancel(timer);
+
+                    // Removes the data partition from the map
+                    tasks[0]->removeDataPartition(responseMessage->getPartitionID());
+
                     handleResponseMessage(responseMessage);
                 }
             }
@@ -189,6 +197,7 @@ void TaskGenerator::balanceLoad()
 
             // Calculate time for timer
             double CPI = tasks[0]->getComputingDensity();
+            double estimateTimeToCompute = 10.0;
             double timeToCompute = 10.0;
 
             for (int j = 0; j < n_fragments; ++j) {
@@ -212,7 +221,7 @@ void TaskGenerator::balanceLoad()
                             dataMessage->setLoadToProcess(UDPMaxVal);
 
                             // Update time to compute
-                            timeToCompute = helpers[i].getTotalComputationTime(CPI, UDPMaxVal);
+                            estimateTimeToCompute = helpers[i].getTotalComputationTime(CPI, UDPMaxVal);
 
                             // Update variables
                             currentVehicleAvailability = currentVehicleAvailability - UDPMaxVal;
@@ -225,7 +234,7 @@ void TaskGenerator::balanceLoad()
                             dataMessage->setLoadToProcess(currentVehicleAvailability);
 
                             // Update time to compute
-                            timeToCompute = helpers[i].getTotalComputationTime(CPI, currentVehicleAvailability);
+                            estimateTimeToCompute = helpers[i].getTotalComputationTime(CPI, currentVehicleAvailability);
 
                             // Update variables
                             localData = localData - currentVehicleAvailability;
@@ -243,7 +252,7 @@ void TaskGenerator::balanceLoad()
                             dataMessage->setLoadToProcess(UDPMaxVal);
 
                             // Update time to compute
-                            timeToCompute = helpers[i].getTotalComputationTime(CPI, UDPMaxVal);
+                            estimateTimeToCompute = helpers[i].getTotalComputationTime(CPI, UDPMaxVal);
 
                             // Update variables
                             if ((currentVehicleAvailability - UDPMaxVal) > 0) {
@@ -261,7 +270,7 @@ void TaskGenerator::balanceLoad()
                             dataMessage->setLoadToProcess(localData);
 
                             // Update time to compute
-                            timeToCompute = helpers[i].getTotalComputationTime(CPI, localData);
+                            estimateTimeToCompute = helpers[i].getTotalComputationTime(CPI, localData);
 
                             // Update variables
                             localData = 0;
@@ -282,7 +291,7 @@ void TaskGenerator::balanceLoad()
 
                     // Set the time to compute as reverse of CDF of an exponential
                     // random variable to match the worst possible case
-                    timeToCompute = 0.001 + (-log(1 - 0.99) * timeToCompute);
+                    timeToCompute = (0.001 + (-log(1 - 0.99) * estimateTimeToCompute)) * n_fragments;
                     dataMessage->setComputationTime(timeToCompute);
 
                     // Save into the helper the data partition ID
@@ -310,13 +319,17 @@ void TaskGenerator::balanceLoad()
                         helpers[i].addTimer(currentPartitionId, timer);
                     }
 
-                    // Set the creation time of the packet
-                    dataMessage->setTimeOfCreation(simTime());
+                    // Set the creation time of the packet and the chunk
+                    dataMessage->setTimeOfPacketCreation(simTime());
+                    dataMessage->setTimeOfChunkCreation(simTime());
 
                     // Schedule the data packet
                     auto dataPacket = createPacket("data_message");
                     dataPacket->insertAtBack(dataMessage);
                     sendPacket(std::move(dataPacket));
+
+                    // Save the data partition ID into the task map
+                    tasks[0]->insertDataPartition(currentPartitionId);
 
                     // Increment data partition ID
                     currentPartitionId++;
@@ -447,9 +460,6 @@ void TaskGenerator::handleAvailabilityMessage(AvailabilityMessage* availabilityM
     double transferTimeRes =(localData*IO)/bitRate;
     double timeToCompute = CPI * localData * (1 / CR);
 
-    // Update the time to compute to the worst possible case
-    timeToCompute = 0.001 + (-log(1 - 0.99) * timeToCompute);
-
     if(aRt==-1.0) {
         // Generate the time that is used to check whether a car will be in the bus range in those next seconds
         aRt = (transferTime + timeToCompute + transferTimeRes)*par("retryFactorTime").doubleValue();
@@ -515,18 +525,21 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
     // Search the vehicle in the map
     auto found = helpers.find(responseMessage->getHostIndex());
 
+    // Check if I've not already received this data partition
+    auto dataCheck = tasks[0]->getDataPartition(responseMessage->getPartitionID());
+
     // If the auto is found in the map and the partition id coincide with response message then
     // handle the response otherwise get rid of it
-    if (found != helpers.end()) {
-        // Delete the timer for sending again data message since I've received the message
-        auto timer = helpers[responseMessage->getHostIndex()].getTimer(helpers[responseMessage->getHostIndex()].getDataPartitionId());
+    if (found != helpers.end() && (dataCheck == -1)) {
+        // Emit signal for transmission time of packet and chunk
+        emit(transmissionTimePacket, (simTime() - responseMessage->getTimeOfPacketCreation()).dbl());
+        emit(transmissionTimeChunk, (simTime() - responseMessage->getTimeOfChunkCreation()).dbl());
 
-        if (timer != -1) {
-            timerManager.cancel(timer);
-        }
-
-        // Emit signal for transmission time
-        emit(transmissionTime, (simTime() - responseMessage->getTimeOfCreation()).dbl());
+        // Get the total responses received
+        int totalResponsesReceived = tasks[0]->getResponseReceivedCounter();
+        // Increment the task responses received
+        totalResponsesReceived++;
+        tasks[0]->setResponseReceivedCounter(totalResponsesReceived);
 
         // Get the total responses expected and received for this vehicle
         int responsesExpectedFromVehicle = helpers[responseMessage->getHostIndex()].getResponsesExpected();
@@ -575,11 +588,6 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
 
             EV<<"END"<<helpers.size()<< endl;
         }
-
-        // Increment the task responses received
-        int totalResponsesReceived = tasks[0]->getResponseReceivedCounter();
-        totalResponsesReceived++;
-        tasks[0]->setResponseReceivedCounter(totalResponsesReceived);
 
         // Get the load balancing id
         int loadBalanceId = tasks[0]->getLoadBalancingId();
@@ -656,8 +664,11 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         // Set the responses received to 0
         helpers[responseMessage->getHostIndex()].setResponsesReceived(0);
 
+        // Clear the timers
+        helpers[responseMessage->getHostIndex()].clearTimers();
+
         // Schedule the ack message
-        if (!(par("useAcks").boolValue())) {
+        if (par("useAcks").boolValue() == false) {
             // Send ACK message to the host
             auto ackMessage = makeShared<AckMessage>();
             ackMessage->setHostIndex(responseMessage->getHostIndex());
@@ -682,11 +693,14 @@ void TaskGenerator::sendAgainData(DataMessage* data)
     // Search the vehicle in the map
     auto found = helpers.find(data->getHostIndex());
 
+    // Check if I've not received this data partition
+    auto dataCheck = tasks[0]->getDataPartition(data->getPartitionId());
+
     // Check load balancing id
     bool loadBalancingIdCheck = tasks[0]->getLoadBalancingId() == data->getLoadBalancingId();
 
     // If the vehicle is found check if I've received the data from it
-    if (found != helpers.end() && (loadBalancingIdCheck)) {
+    if ((found != helpers.end()) && (loadBalancingIdCheck) && (dataCheck != -1)) {
         // Get the total responses expected
         int responsesExpected = helpers[data->getHostIndex()].getResponsesExpected();
         int responsesReceived = helpers[data->getHostIndex()].getResponsesReceived();
@@ -718,8 +732,9 @@ void TaskGenerator::sendAgainData(DataMessage* data)
             newData->setComputationTime(data->getComputationTime());
             newData->setResponsesExpected(data->getResponsesExpected());
 
-            // Set the new data time of creation
-            newData->setTimeOfCreation(simTime());
+            // Set the new data packet and chunk time of creation
+            newData->setTimeOfPacketCreation(data->getTimeOfPacketCreation());
+            newData->setTimeOfChunkCreation(simTime());
 
             auto newDataPkt = createPacket("send_again_data");
             newDataPkt->insertAtBack(newData);
@@ -739,7 +754,7 @@ void TaskGenerator::sendAgainData(DataMessage* data)
             // The & inside the square brackets tells to capture all local variable
             // by value
             auto callback = [=]() {
-                sendAgainData(data->dup());
+                sendAgainData(newData->dup());
             };
             // Rewrite the occurence of timer in the timer map
             veins::TimerManager::TimerHandle timer = timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));

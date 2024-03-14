@@ -77,14 +77,15 @@ protected:
     int dataPartitionsReceived;
     int totalNumberOfRetransmissions;
     simsignal_t totalRetransmissions;
-    simsignal_t transmissionTime;
+    simsignal_t transmissionTimePacket;
+    simsignal_t transmissionTimeChunk;
 
 protected:
     void handleHelpMessage(HelpMessage* helpMsg);
     void handleDataMessage(DataMessage* dataMsg);
     void sendAgainResponse(ResponseMessage* data, double newTime);
     void simulateAvailabilityTime(AvailabilityMessage* availabilityMessage);
-    void simulateResponseTime(ResponseMessage* responseMessage);
+    void simulateResponseTime(ResponseMessage* responseMessage, bool sendAgain);
 
     void addTimer(int partitionID, veins::TimerManager::TimerHandle timer);
     veins::TimerManager::TimerHandle getTimer(int partitionID);
