@@ -27,6 +27,7 @@ class ResponseMessage extends BasePacket {
     double timeToCompute;
     int taskID;
     int partitionID;
-    simtime_t timeOfCreation;
+    simtime_t timeOfPacketCreation;
+    simtime_t timeOfChunkCreation;
     inet::L3Address senderAddress;
 }

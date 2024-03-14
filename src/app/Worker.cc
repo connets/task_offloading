@@ -75,7 +75,8 @@ void Worker::initialize(int stage)
         // Registering all signals
         stopBeaconMessages = registerSignal("stopBeaconMessages");
         totalRetransmissions = registerSignal("totalRetransmissionsSignal");
-        transmissionTime = registerSignal("transmissionTimePacketSignal");
+        transmissionTimePacket = registerSignal("transmissionTimePacketSignal");
+        transmissionTimeChunk = registerSignal("transmissionTimeChunkSignal");
     }
 }
 
@@ -124,7 +125,8 @@ void Worker::processPacket(std::shared_ptr<inet::Packet> pk)
                 // Check if the data message is for me
                 if (dataMessage->getHostIndex() == getParentModule()->getIndex()) {
                     // Emit signal of transmission time
-                    emit(transmissionTime, (simTime() - dataMessage->getTimeOfCreation()).dbl());
+                    emit(transmissionTimePacket, (simTime() - dataMessage->getTimeOfPacketCreation()).dbl());
+                    emit(transmissionTimeChunk, (simTime() - dataMessage->getTimeOfChunkCreation()).dbl());
 
                     handleDataMessage(dataMessage);
                 }
@@ -326,7 +328,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     // The & inside the square brackets tells to capture all local variable
     // by value
     auto callback = [=]() {
-        simulateResponseTime(responseMessage->dup());
+        simulateResponseTime(responseMessage->dup(), false);
     };
     timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
 
@@ -388,7 +390,7 @@ void Worker::sendAgainResponse(ResponseMessage* response, double newTime)
         // The & inside the square brackets tells to capture all local variable
         // by value
         auto callback = [=]() {
-            simulateResponseTime(newResponse->dup());
+            simulateResponseTime(newResponse->dup(), true);
         };
         timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
 
@@ -416,7 +418,7 @@ void Worker::simulateAvailabilityTime(AvailabilityMessage* availabilityMessage)
     sendPacket(std::move(availabilityPkt));
 }
 
-void Worker::simulateResponseTime(ResponseMessage* responseMessage) {
+void Worker::simulateResponseTime(ResponseMessage* responseMessage, bool sendAgain) {
     if(responseMessage->getStillAvailable()) {
         getParentModule()->getDisplayString().setTagArg("i", 1, "blue");
     } else {
@@ -426,8 +428,14 @@ void Worker::simulateResponseTime(ResponseMessage* responseMessage) {
         availableLoad = par("commonVehicleLoad").doubleValue();  //Only with one task
     }
 
-    // Set creation time
-    responseMessage->setTimeOfCreation(simTime());
+    // Set the correct creation time of chunk and packet
+    if (sendAgain) {
+        responseMessage->setTimeOfPacketCreation(responseMessage->getTimeOfPacketCreation());
+    } else {
+        responseMessage->setTimeOfPacketCreation(simTime());
+    }
+
+    responseMessage->setTimeOfChunkCreation(simTime());
 
     // Send the response message
     auto response = responseMessage->dupShared();

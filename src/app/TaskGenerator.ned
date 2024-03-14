@@ -83,6 +83,10 @@ simple TaskGenerator extends VeinsInetApplicationBase
         @signal[transmissionTimePacketSignal](type = double);
 		@statistic[transmissionTimePacket](title="Transmission time of a packet"; source="transmissionTimePacketSignal"; record=vector; interpolationmode=none);
 
+		// Statistics for transmission time of each packet
+        @signal[transmissionTimeChunkSignal](type = double);
+		@statistic[transmissionTimeChunk](title="Transmission time of a chunk"; source="transmissionTimeChunkSignal"; record=vector; interpolationmode=none);
+
     	@class(task_offloading::TaskGenerator);
     	@display("i=block/app2");
 }

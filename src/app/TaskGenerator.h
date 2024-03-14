@@ -78,7 +78,8 @@ protected:
     int totalMessagesRestransmitted;
     int totalRoundsOfLoadBalancing;
     simsignal_t endOfLoadBalancing;
-    simsignal_t transmissionTime;
+    simsignal_t transmissionTimePacket;
+    simsignal_t transmissionTimeChunk;
 
 protected:
     void handleAvailabilityMessage(AvailabilityMessage* okMsg);
