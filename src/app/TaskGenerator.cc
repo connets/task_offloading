@@ -185,6 +185,12 @@ void TaskGenerator::balanceLoad()
             // then divide the packet into more data fragments
             int n_fragments = std::floor(helpers[i].getCurrentLoad() / UDPMaxVal);
 
+            if ((localData - helpers[i].getCurrentLoad()) > 0) {
+                n_fragments = std::ceil(helpers[i].getCurrentLoad() / UDPMaxVal);
+            } else {
+                n_fragments = std::ceil(localData / UDPMaxVal);
+            }
+
             // Get the current data partition id
             int currentPartitionId = tasks[0]->getDataPartitionId();
 
@@ -294,7 +300,7 @@ void TaskGenerator::balanceLoad()
 
                     // Set the time to compute as reverse of CDF of an exponential
                     // random variable to match the worst possible case
-                    timeToCompute = 0.001 + (-log(1 - 0.99) * exponential(estimateTimeToCompute));
+                    timeToCompute = 0.001 + (-log(1 - 0.99) * estimateTimeToCompute);
                     dataMessage->setComputationTime(timeToCompute);
 
                     // Save into the helper the data partition ID
