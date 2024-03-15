@@ -257,14 +257,19 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     double I = dataMessage->getLoadToProcess();
     double CR = cpuFreq;
 
-    double timeToCompute = exponential(CPI * I * (1 / CR));
+    double timeToCompute = CPI * I * (1 / CR);
     EV << "TIME TO COMPUTE" << timeToCompute << endl;
 
     auto key = std::pair<int, int>(dataMessage->getTaskId(), dataMessage->getPartitionId());
 
     // If the cache is not empty it resends the response message tied to this data message
     if(responseCache.find(key) != responseCache.end()){
-        sendAgainResponse(responseCache.at(key), dataMessage->getComputationTime());
+        // Calculate bitrate conversion from megabit to megabyte
+        int dataPartitionFragments = std::ceil(dataMessage->getLoadToProcess() / 1500);
+        double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
+        double transferTime = (((1500 / bitRate) + 0.1) * dataPartitionFragments);
+
+        sendAgainResponse(responseCache.at(key), (dataMessage->getComputationTime() + transferTime + par("ackMessageThreshold").doubleValue()));
         return;
     } else {
         // Increment the number of data partitions I've received only when
@@ -336,8 +341,9 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     // to achieve secure protocol manually and if I'm not still available
     if (par("useAcks").boolValue() == false) {
         // Calculate bitrate conversion from megabit to megabyte
+        int dataPartitionFragments = std::ceil(dataMessage->getLoadToProcess() / 1500);
         double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
-        double transferTime = dataMessage->getLoadToProcess() / bitRate;
+        double transferTime = (((1500 / bitRate) + 0.1) * dataPartitionFragments);
 
         time = (dataMessage->getComputationTime() + transferTime + par("ackMessageThreshold").doubleValue());
 
@@ -395,7 +401,7 @@ void Worker::sendAgainResponse(ResponseMessage* response, double newTime)
         timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
 
         // Restart the ACK timer
-        time = (newTime + response->getTimeToCompute() + par("ackMessageThreshold").doubleValue());
+        time = (newTime + par("ackMessageThreshold").doubleValue());
 
         // The & inside the square brackets tells to capture all local variable
         // by value
