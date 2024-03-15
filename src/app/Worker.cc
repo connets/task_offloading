@@ -267,9 +267,9 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
         // Calculate bitrate conversion from megabit to megabyte
         int dataPartitionFragments = std::ceil(dataMessage->getLoadToProcess() / 1500);
         double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
-        double transferTime = (((1500 / bitRate) + 0.1) * dataPartitionFragments);
+        double transferTime = (((1500 / bitRate) + par("ackMessageThreshold").doubleValue()) * dataPartitionFragments);
 
-        sendAgainResponse(responseCache.at(key), (dataMessage->getComputationTime() + transferTime + par("ackMessageThreshold").doubleValue()));
+        sendAgainResponse(responseCache.at(key), (dataMessage->getComputationTime() + transferTime));
         return;
     } else {
         // Increment the number of data partitions I've received only when
@@ -343,9 +343,9 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
         // Calculate bitrate conversion from megabit to megabyte
         int dataPartitionFragments = std::ceil(dataMessage->getLoadToProcess() / 1500);
         double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
-        double transferTime = (((1500 / bitRate) + 0.1) * dataPartitionFragments);
+        double transferTime = (((1500 / bitRate) + par("ackMessageThreshold").doubleValue()) * dataPartitionFragments);
 
-        time = (dataMessage->getComputationTime() + transferTime + par("ackMessageThreshold").doubleValue());
+        time = (dataMessage->getComputationTime() + transferTime);
 
         // The & inside the square brackets tells to capture all local variable
         // by value
