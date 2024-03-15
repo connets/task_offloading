@@ -81,7 +81,7 @@ void TaskGenerator::handleStartOperation(inet::LifecycleOperation* doneCallback)
     // Start the timer for the first help message
     double time = par("randomTimeFirstHelpMessage").doubleValue();
 
-    auto callback = [this]() {
+    auto callback = [=]() {
         vehicleHandler();
     };
 
@@ -124,12 +124,21 @@ void TaskGenerator::processPacket(std::shared_ptr<inet::Packet> pk)
 
                 // Check if the response message is for me
                 if (responseMessage->getGeneratorIndex() == getParentModule()->getIndex()) {
-                    // Delete the timer for sending again data message since I've received the message
-                    auto timer = helpers[responseMessage->getHostIndex()].getTimer(responseMessage->getPartitionID());
-                    timerManager.cancel(timer);
+                    // Schedule the ack message for each data partition
+                    if (par("useAcks").boolValue() == false) {
+                        // Send ACK message to the host
+                        auto ackMessage = makeShared<AckMessage>();
+                        ackMessage->setHostIndex(responseMessage->getHostIndex());
+                        ackMessage->setTaskID(responseMessage->getTaskID());
+                        ackMessage->setPartitionID(responseMessage->getPartitionID());
+                        ackMessage->setChunkLength(B(100));
+                        // L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
+                        // ackMessage->setSenderAddress(generator);
 
-                    // Removes the data partition from the map
-                    tasks[0]->removeDataPartition(responseMessage->getPartitionID());
+                        auto ackPkt = createPacket("ack_message");
+                        ackPkt->insertAtBack(ackMessage);
+                        sendPacket(std::move(ackPkt));
+                    }
 
                     handleResponseMessage(responseMessage);
                 }
@@ -168,19 +177,13 @@ void TaskGenerator::balanceLoad()
     // For each vehicle prepare the data message and send
     for (auto const &i: helpersOrderedList) {
         if (localData > 0) {
-            // Check for the vehicle availability
-            // If it is greater than the maximum size of and UDP message (65535B)
-            // then divide the packet into more data fragments
-            int n_fragments = 1;
-
             // Get the maximum value for udp message
             auto UDPMaxVal = par("UDPMaxLength").doubleValue();
 
-            if ((localData - helpers[i].getCurrentLoad()) > 0) {
-                n_fragments = std::ceil(helpers[i].getCurrentLoad() / UDPMaxVal);
-            } else {
-                n_fragments = std::ceil(localData / UDPMaxVal);
-            }
+            // Check for the vehicle availability
+            // If it is greater than the maximum size of and UDP message (65535B)
+            // then divide the packet into more data fragments
+            int n_fragments = std::floor(helpers[i].getCurrentLoad() / UDPMaxVal);
 
             // Get the current data partition id
             int currentPartitionId = tasks[0]->getDataPartitionId();
@@ -291,7 +294,7 @@ void TaskGenerator::balanceLoad()
 
                     // Set the time to compute as reverse of CDF of an exponential
                     // random variable to match the worst possible case
-                    timeToCompute = (0.001 + (-log(1 - 0.99) * estimateTimeToCompute)) * n_fragments;
+                    timeToCompute = 0.001 + (-log(1 - 0.99) * exponential(estimateTimeToCompute));
                     dataMessage->setComputationTime(timeToCompute);
 
                     // Save into the helper the data partition ID
@@ -302,7 +305,7 @@ void TaskGenerator::balanceLoad()
                         // Calculate time to file transmission
                         // Calculate bitrate conversion from megabit to megabyte
                         double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
-                        double transferTime = localData / bitRate;
+                        double transferTime = dataMessage->getLoadToProcess() / bitRate;
 
                         double time = (timeToCompute + transferTime + par("dataComputationThreshold").doubleValue());
 
@@ -530,7 +533,14 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
 
     // If the auto is found in the map and the partition id coincide with response message then
     // handle the response otherwise get rid of it
-    if (found != helpers.end() && (dataCheck == -1)) {
+    if (found != helpers.end() && (dataCheck != -1)) {
+        // Delete the timer for sending again data message since I've received the message
+        auto timer = helpers[responseMessage->getHostIndex()].getTimer(responseMessage->getPartitionID());
+        timerManager.cancel(timer);
+
+        // Removes the data partition from the map
+        tasks[0]->removeDataPartition(responseMessage->getPartitionID());
+
         // Emit signal for transmission time of packet and chunk
         emit(transmissionTimePacket, (simTime() - responseMessage->getTimeOfPacketCreation()).dbl());
         emit(transmissionTimeChunk, (simTime() - responseMessage->getTimeOfChunkCreation()).dbl());
@@ -591,22 +601,6 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
 
         // Get the load balancing id
         int loadBalanceId = tasks[0]->getLoadBalancingId();
-
-        // Schedule the ack message for each data partition
-        if (par("useAcks").boolValue() == false) {
-            // Send ACK message to the host
-            auto ackMessage = makeShared<AckMessage>();
-            ackMessage->setHostIndex(responseMessage->getHostIndex());
-            ackMessage->setTaskID(responseMessage->getTaskID());
-            ackMessage->setPartitionID(responseMessage->getPartitionID());
-            ackMessage->setChunkLength(B(100));
-            // L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
-            // ackMessage->setSenderAddress(generator);
-
-            auto ackPkt = createPacket("ack_message");
-            ackPkt->insertAtBack(ackMessage);
-            sendPacket(std::move(ackPkt));
-        }
 
         // If there are more vehicles available and I've received all responses
         // then restart load balancing
