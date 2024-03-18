@@ -148,7 +148,6 @@ void Worker::processPacket(std::shared_ptr<inet::Packet> pk)
                     responseCache.erase(key);
 
                     emit(totalRetransmissions, totalNumberOfRetransmissions);
-                    totalNumberOfRetransmissions = 0;
 
                     // Color the vehicle in white when computation ends
                     getParentModule()->getDisplayString().setTagArg("i", 1, "white");
