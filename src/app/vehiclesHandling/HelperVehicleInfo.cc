@@ -23,6 +23,7 @@ HelperVehicleInfo::HelperVehicleInfo() {
     this->hostCPUFreq = 0;
     this->createdAt = simTime();
     this->dataPartitionId = -1;
+    this->vehicleComputationTimer = 0;
 }
 
 HelperVehicleInfo::HelperVehicleInfo(std::string index, double load, double freq, inet::L3Address address) {
@@ -32,6 +33,7 @@ HelperVehicleInfo::HelperVehicleInfo(std::string index, double load, double freq
     this->createdAt = simTime();
     this->address = address;
     this->dataPartitionId = -1;
+    this->vehicleComputationTimer = 0;
 }
 
 HelperVehicleInfo::~HelperVehicleInfo() {

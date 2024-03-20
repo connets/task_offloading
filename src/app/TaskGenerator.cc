@@ -297,6 +297,7 @@ void TaskGenerator::balanceLoad()
                     dataMessage->setLoadBalancingId(tasks[0]->getLoadBalancingId());
                     dataMessage->setCpi(tasks[0]->getComputingDensity());
                     dataMessage->setResponsesExpected(responsesExpectedFromVehicle);
+                    dataMessage->setNumberOfVehicles(helpers.size());
 
                     // Set the time to compute as reverse of CDF of an exponential
                     // random variable to match the worst possible case
@@ -312,15 +313,23 @@ void TaskGenerator::balanceLoad()
                         // Calculate bitrate conversion from megabit to megabyte
                         int dataPartitionFragments = std::ceil(dataMessage->getLoadToProcess() / 1500);
                         double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
-                        double transferTime = ((1500 / bitRate) * dataPartitionFragments * n_fragments) * 2;
+                        double transferTime = ((1500 / bitRate) * dataPartitionFragments * n_fragments * helpers.size()) * 2;
 
                         // Set the transfer time in data message
                         dataMessage->setTransferTime(transferTime);
 
-                        double time = (timeToCompute + transferTime) * helpers.size();
+                        double time;
 
-                        // Save the computation timer into helpers map
-                        helpers[i].setVehicleComputationTimer(time);
+                        // If the worst case I've got of the timer is bigger than the worst case of this partition
+                        // in load balancing mantain the same time, otherwise set new time to new worst case
+                        if (helpers[i].getVehicleComputationTimer() != 0 && helpers[i].getVehicleComputationTimer() > (timeToCompute + transferTime)) {
+                            time = helpers[i].getVehicleComputationTimer();
+                        } else {
+                            time = timeToCompute + transferTime;
+
+                            // Save the computation timer into helpers map
+                            helpers[i].setVehicleComputationTimer(time);
+                        }
 
                         // The & inside the square brackets tells to capture all local variable
                         // by value
@@ -740,6 +749,15 @@ void TaskGenerator::sendAgainData(DataMessage* data)
             newData->setTimeOfPacketCreation(data->getTimeOfPacketCreation());
             newData->setTimeOfChunkCreation(simTime());
 
+            // Calculate time to file transmission
+            // Calculate bitrate conversion from megabit to megabyte
+            int dataPartitionFragments = std::ceil(data->getLoadToProcess() / 1500);
+            double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
+            double transferTime = ((1500 / bitRate) * dataPartitionFragments * data->getResponsesExpected()) * 2;
+
+            // Set new transfer time into data packet
+            newData->setTransferTime(transferTime);
+
             auto newDataPkt = createPacket("send_again_data");
             newDataPkt->insertAtBack(newData);
 
@@ -749,7 +767,7 @@ void TaskGenerator::sendAgainData(DataMessage* data)
             // Increment the retransmission timer
             totalMessagesRestransmitted++;
 
-            double time = (data->getTransferTime() + data->getComputationTime() + par("dataComputationThreshold").doubleValue()) * helpers.size();
+            double time = (transferTime + data->getComputationTime() + par("dataComputationThreshold").doubleValue());
 
             // The & inside the square brackets tells to capture all local variable
             // by value
