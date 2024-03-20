@@ -313,23 +313,12 @@ void TaskGenerator::balanceLoad()
                         // Calculate bitrate conversion from megabit to megabyte
                         int dataPartitionFragments = std::ceil(dataMessage->getLoadToProcess() / 1500);
                         double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
-                        double transferTime = ((1500 / bitRate) * dataPartitionFragments * n_fragments * helpers.size()) * 2;
+                        double transferTime = ((1500 / bitRate) * dataPartitionFragments) * 2;
 
                         // Set the transfer time in data message
                         dataMessage->setTransferTime(transferTime);
 
-                        double time;
-
-                        // If the worst case I've got of the timer is bigger than the worst case of this partition
-                        // in load balancing mantain the same time, otherwise set new time to new worst case
-                        if (helpers[i].getVehicleComputationTimer() != 0 && helpers[i].getVehicleComputationTimer() > (timeToCompute + transferTime)) {
-                            time = helpers[i].getVehicleComputationTimer();
-                        } else {
-                            time = timeToCompute + transferTime;
-
-                            // Save the computation timer into helpers map
-                            helpers[i].setVehicleComputationTimer(time);
-                        }
+                        double time = timeToCompute + transferTime;
 
                         // The & inside the square brackets tells to capture all local variable
                         // by value
@@ -752,7 +741,7 @@ void TaskGenerator::sendAgainData(DataMessage* data)
             // Calculate bitrate conversion from megabit to megabyte
             int dataPartitionFragments = std::ceil(data->getLoadToProcess() / 1500);
             double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
-            double transferTime = ((1500 / bitRate) * dataPartitionFragments * data->getResponsesExpected()) * 2;
+            double transferTime = ((1500 / bitRate) * dataPartitionFragments) * 2;
 
             // Set new transfer time into data packet
             newData->setTransferTime(transferTime);
