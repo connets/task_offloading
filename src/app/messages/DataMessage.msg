@@ -22,6 +22,7 @@ class DataMessage extends BasePacket {
     type = DATA;
     double loadToProcess;
     double computationTime;
+    double transferTime;
     int hostIndex;
     int partitionId;
     int taskId;
