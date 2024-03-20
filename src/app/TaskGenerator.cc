@@ -312,12 +312,12 @@ void TaskGenerator::balanceLoad()
                         // Calculate bitrate conversion from megabit to megabyte
                         int dataPartitionFragments = std::ceil(dataMessage->getLoadToProcess() / 1500);
                         double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
-                        double transferTime = ((1500 / bitRate) * dataPartitionFragments * n_fragments * helpers.size()) * 2;
+                        double transferTime = ((1500 / bitRate) * dataPartitionFragments * n_fragments) * 2;
 
                         // Set the transfer time in data message
                         dataMessage->setTransferTime(transferTime);
 
-                        double time = (timeToCompute + transferTime);
+                        double time = (timeToCompute + transferTime) * helpers.size();
 
                         // Save the computation timer into helpers map
                         helpers[i].setVehicleComputationTimer(time);
@@ -749,7 +749,7 @@ void TaskGenerator::sendAgainData(DataMessage* data)
             // Increment the retransmission timer
             totalMessagesRestransmitted++;
 
-            double time = (data->getTransferTime() + data->getComputationTime() + par("dataComputationThreshold").doubleValue());
+            double time = (data->getTransferTime() + data->getComputationTime() + par("dataComputationThreshold").doubleValue()) * helpers.size();
 
             // The & inside the square brackets tells to capture all local variable
             // by value

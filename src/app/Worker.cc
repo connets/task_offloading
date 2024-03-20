@@ -256,7 +256,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     double I = dataMessage->getLoadToProcess();
     double CR = cpuFreq;
 
-    double timeToCompute = CPI * I * (1 / CR);
+    double timeToCompute = 0.001 + exponential(CPI * I * (1 / CR));
     EV << "TIME TO COMPUTE" << timeToCompute << endl;
 
     auto key = std::pair<int, int>(dataMessage->getTaskId(), dataMessage->getPartitionId());
