@@ -298,6 +298,7 @@ void TaskGenerator::balanceLoad()
                     dataMessage->setCpi(tasks[0]->getComputingDensity());
                     dataMessage->setResponsesExpected(responsesExpectedFromVehicle);
                     dataMessage->setNumberOfVehicles(helpers.size());
+                    dataMessage->setTotalFragments(n_fragments);
 
                     // Set the time to compute as reverse of CDF of an exponential
                     // random variable to match the worst possible case

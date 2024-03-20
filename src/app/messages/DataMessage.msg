@@ -33,5 +33,6 @@ class DataMessage extends BasePacket {
     simtime_t timeOfPacketCreation;
     simtime_t timeOfChunkCreation;
     int numberOfVehicles;
+    int totalFragments;
     inet::L3Address senderAddress;
 }
