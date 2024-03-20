@@ -28,7 +28,7 @@ class DataMessage extends BasePacket {
     int taskId;
     double taskSize;
     int loadBalancingId;
-    int cpi;
+    double cpi;
     int responsesExpected;
     simtime_t timeOfPacketCreation;
     simtime_t timeOfChunkCreation;

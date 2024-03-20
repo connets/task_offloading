@@ -22,7 +22,7 @@ simple Task
         int id = default(0);
         double totalData = default(10e6);
         double minimumLoadRequested = default(64e3);
-        int computingDensity = default(1);
+        double computingDensity = default(10e4 * 2);
         int helpReceivedCounter = default(0);
         int dataPartitionId = default(0);
         int loadBalancingId = default(0);

@@ -92,7 +92,7 @@ int HelperVehicleInfo::getDataPartitionId() {
 /**
  * @returns The current task cpi -> useful when calculating total compute time
  */
-int HelperVehicleInfo::getTaskCpi() {
+double HelperVehicleInfo::getTaskCpi() {
     return this->taskCpi;
 }
 
@@ -223,7 +223,7 @@ void HelperVehicleInfo::setDataPartitionId(int newPartitionId) {
  *
  * @param newCpi The new cpi of the task -> useful when calculating total compute time
  */
-void HelperVehicleInfo::setTaskCpi(int newCpi) {
+void HelperVehicleInfo::setTaskCpi(double newCpi) {
     this->taskCpi = newCpi;
 }
 

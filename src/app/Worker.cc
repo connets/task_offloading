@@ -263,8 +263,8 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
 
     // If the cache is not empty it resends the response message tied to this data message
     if(responseCache.find(key) != responseCache.end()){
-        double time = timeToCompute + dataMessage->getTransferTime() + dataMessage->getComputationTime() + par("ackMessageThreshold").doubleValue();
-        sendAgainResponse(responseCache.at(key), time);
+        double time = dataMessage->getComputationTime() + dataMessage->getTransferTime() + par("ackMessageThreshold").doubleValue();
+        sendAgainResponse(responseCache.at(key), dataMessage->dup(), time);
         return;
     } else {
         // Increment the number of data partitions I've received only when
@@ -328,27 +328,12 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     // The & inside the square brackets tells to capture all local variable
     // by value
     auto callback = [=]() {
-        simulateResponseTime(responseMessage->dup(), false);
+        simulateResponseTime(responseMessage->dup(), dataMessage->dup(), false);
     };
     timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
-
-    // Generate ACK timer if parameter useAcks is false
-    // to achieve secure protocol manually and if I'm not still available
-    if (par("useAcks").boolValue() == false) {
-        time = (timeToCompute + dataMessage->getTransferTime() + dataMessage->getComputationTime() + par("ackMessageThreshold").doubleValue());
-
-        // The & inside the square brackets tells to capture all local variable
-        // by value
-        auto sendAgainCallback = [=]() {
-            sendAgainResponse(responseMessage->dup(), time);
-        };
-        // Save the timer in the timers map
-        veins::TimerManager::TimerHandle timer = timerManager.create(veins::TimerSpecification(sendAgainCallback).oneshotIn(time));
-        addTimer(currentDataPartitionId, timer);
-    }
 }
 
-void Worker::sendAgainResponse(ResponseMessage* response, double newTime)
+void Worker::sendAgainResponse(ResponseMessage* response, DataMessage* dataMessage, double newTime)
 {
     // Check if the response is still in cache
     auto key = std::pair<int, int>(response->getTaskID(), response->getPartitionID());
@@ -386,7 +371,7 @@ void Worker::sendAgainResponse(ResponseMessage* response, double newTime)
         // The & inside the square brackets tells to capture all local variable
         // by value
         auto callback = [=]() {
-            simulateResponseTime(newResponse->dup(), true);
+            simulateResponseTime(newResponse->dup(), dataMessage->dup(), true);
         };
         timerManager.create(veins::TimerSpecification(callback).oneshotAt(simTime()));
 
@@ -396,7 +381,7 @@ void Worker::sendAgainResponse(ResponseMessage* response, double newTime)
         // The & inside the square brackets tells to capture all local variable
         // by value
         auto sendAgainCallBack = [=]() {
-            sendAgainResponse(newResponse->dup(), time);
+            sendAgainResponse(newResponse->dup(), dataMessage->dup(), time);
         };
         // Rewrite the value of the timer in timers map
         veins::TimerManager::TimerHandle timer = timerManager.create(veins::TimerSpecification(sendAgainCallBack).oneshotIn(time));
@@ -414,7 +399,7 @@ void Worker::simulateAvailabilityTime(AvailabilityMessage* availabilityMessage)
     sendPacket(std::move(availabilityPkt));
 }
 
-void Worker::simulateResponseTime(ResponseMessage* responseMessage, bool sendAgain) {
+void Worker::simulateResponseTime(ResponseMessage* responseMessage, DataMessage* dataMessage, bool sendAgain) {
     if(responseMessage->getStillAvailable()) {
         getParentModule()->getDisplayString().setTagArg("i", 1, "blue");
     } else {
@@ -439,6 +424,21 @@ void Worker::simulateResponseTime(ResponseMessage* responseMessage, bool sendAga
     auto responsePkt = createPacket("response_message");
     responsePkt->insertAtBack(response);
     sendPacket(std::move(responsePkt));
+
+    // Generate ACK timer if parameter useAcks is false
+    // to achieve secure protocol manually and if I'm not still available
+    if (par("useAcks").boolValue() == false) {
+        double time = (dataMessage->getTransferTime() + dataMessage->getComputationTime() + par("ackMessageThreshold").doubleValue());
+
+        // The & inside the square brackets tells to capture all local variable
+        // by value
+        auto sendAgainCallback = [=]() {
+            sendAgainResponse(responseMessage->dup(), dataMessage->dup(), time);
+        };
+        // Save the timer in the timers map
+        veins::TimerManager::TimerHandle timer = timerManager.create(veins::TimerSpecification(sendAgainCallback).oneshotIn(time));
+        addTimer(currentDataPartitionId, timer);
+    }
 }
 
 void Worker::addTimer(int partitionID, veins::TimerManager::TimerHandle timer) {

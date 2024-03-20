@@ -56,7 +56,7 @@ namespace task_offloading {
         inet::L3Address getAddress();
         double getVehicleAngle();
         int getDataPartitionId();
-        int getTaskCpi();
+        double getTaskCpi();
         double getVehicleSpeed();
         double getVehiclePositionX();
         double getVehiclePositionY();
@@ -70,7 +70,7 @@ namespace task_offloading {
         void setAddress(inet::L3Address newAddress);
         void setVehicleAngle(double newAngle);
         void setDataPartitionId(int newPartitionId);
-        void setTaskCpi(int newCpi);
+        void setTaskCpi(double newCpi);
         void setVehicleSpeed(double newSpeed);
         void setVehiclePositionX(double newVehiclePositionX);
         void setVehiclePositionY(double newVehiclePositionY);
