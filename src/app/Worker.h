@@ -83,9 +83,9 @@ protected:
 protected:
     void handleHelpMessage(HelpMessage* helpMsg);
     void handleDataMessage(DataMessage* dataMsg);
-    void sendAgainResponse(ResponseMessage* data, DataMessage* dataMessage, double newTime);
+    void sendAgainResponse(ResponseMessage* response, double newTime);
     void simulateAvailabilityTime(AvailabilityMessage* availabilityMessage);
-    void simulateResponseTime(ResponseMessage* responseMessage, DataMessage* dataMessage, bool sendAgain);
+    void simulateResponseTime(ResponseMessage* responseMessage, bool sendAgain);
 
     void addTimer(int partitionID, veins::TimerManager::TimerHandle timer);
     veins::TimerManager::TimerHandle getTimer(int partitionID);
