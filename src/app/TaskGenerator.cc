@@ -386,7 +386,6 @@ void TaskGenerator::vehicleHandler()
         module->par("id") = 0;
         module->par("totalData") = par("computationLoad").doubleValue();
         module->par("minimumLoadRequested") = par("minimumVehicleLoadRequested").doubleValue();
-        module->par("computingDensity") = 3;
         module->finalizeParameters();
 
         // Create internals and start module

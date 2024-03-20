@@ -30,7 +30,7 @@ void Task::initialize() {
     this->loadBalancingId = par("loadBalancingId").intValue();
     this->availableReceivedCounter = par("availableReceivedCounter").intValue();
     this->responseReceivedCounter = par("responseReceivedCounter").intValue();
-    this->computingDensity = par("computingDensity").intValue();
+    this->computingDensity = par("computingDensity").doubleValue();
 
     // Signals initialization
     totalTaskTime = registerSignal("totalTimeTaskSignal");
@@ -127,7 +127,7 @@ double Task::getMinimumLoadRequested() {
  *
  * @return int
  */
-int Task::getComputingDensity() {
+double Task::getComputingDensity() {
     return this->computingDensity;
 }
 
@@ -212,7 +212,7 @@ void Task::setMinimumLoadRequested(double newMinimumLoad) {
  *
  * @return void
  */
-void Task::setComputingDensity(int newCpi) {
+void Task::setComputingDensity(double newCpi) {
     this->computingDensity = newCpi;
 }
 

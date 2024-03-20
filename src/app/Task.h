@@ -32,7 +32,7 @@ namespace task_offloading {
             int getAvailableReceivedCounter();
             int getResponseReceivedCounter();
             double getMinimumLoadRequested();
-            int getComputingDensity();
+            double getComputingDensity();
             void setId(int newId);
             void setTotalData(double newData);
             void setHelpReceivedCounter(int newCounter);
@@ -41,7 +41,7 @@ namespace task_offloading {
             void setAvailableReceivedCounter(int newCounter);
             void setResponseReceivedCounter(int newCounter);
             void setMinimumLoadRequested(double newMinimumLoad);
-            void setComputingDensity(int newCpi);
+            void setComputingDensity(double newCpi);
             void insertDataPartition(int partitionId);
             int getDataPartition(int partitionId);
             void removeDataPartition(int partitionId);
@@ -58,7 +58,7 @@ namespace task_offloading {
             int id;
             double totalData;
             double minimumLoadRequested;
-            int computingDensity;
+            double computingDensity;
             int helpReceivedCounter;
             long dataPartitionId;
             int loadBalancingId;
