@@ -263,7 +263,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
 
     // If the cache is not empty it resends the response message tied to this data message
     if(responseCache.find(key) != responseCache.end()){
-        double time = timeToCompute + dataMessage->getTransferTime() + dataMessage->getComputationTime() + par("ackMessageThreshold").doubleValue();
+        double time = timeToCompute + (dataMessage->getTransferTime() * dataMessage->getNumberOfVehicles() * dataMessage->getTotalFragments()) + par("ackMessageThreshold").doubleValue();
         sendAgainResponse(responseCache.at(key), time);
         return;
     } else {
@@ -335,7 +335,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     // Generate ACK timer if parameter useAcks is false
     // to achieve secure protocol manually and if I'm not still available
     if (par("useAcks").boolValue() == false) {
-        time = (timeToCompute + dataMessage->getTransferTime() + dataMessage->getComputationTime() + par("ackMessageThreshold").doubleValue());
+        time = timeToCompute + ((dataMessage->getTransferTime() / 2) * dataMessage->getNumberOfVehicles() * dataMessage->getTotalFragments()) + par("ackMessageThreshold").doubleValue();
 
         // The & inside the square brackets tells to capture all local variable
         // by value
