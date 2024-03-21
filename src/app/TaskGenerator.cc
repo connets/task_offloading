@@ -302,7 +302,7 @@ void TaskGenerator::balanceLoad()
 
                     // Set the time to compute as reverse of CDF of an exponential
                     // random variable to match the worst possible case
-                    timeToCompute = par("dataComputationThreshold").doubleValue() + (-log(1 - 0.99) * estimateTimeToCompute);
+                    timeToCompute = par("dataComputationThreshold").doubleValue() + (-log(1 - 0.99) * (1 / estimateTimeToCompute));
                     dataMessage->setComputationTime(timeToCompute);
 
                     // Save into the helper the data partition ID
@@ -314,7 +314,7 @@ void TaskGenerator::balanceLoad()
                         // Calculate bitrate conversion from megabit to megabyte
                         int dataPartitionFragments = std::ceil(dataMessage->getLoadToProcess() / 1500);
                         double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
-                        double transferTime = ((1500 / bitRate) * dataPartitionFragments) * 2;
+                        double transferTime = ((1500 / bitRate) * dataPartitionFragments * n_fragments * helpers.size()) * 2;
 
                         // Set the transfer time in data message
                         dataMessage->setTransferTime(transferTime);
@@ -733,6 +733,8 @@ void TaskGenerator::sendAgainData(DataMessage* data)
             newData->setCpi(data->getCpi());
             newData->setComputationTime(data->getComputationTime());
             newData->setResponsesExpected(data->getResponsesExpected());
+            newData->setNumberOfVehicles(data->getNumberOfVehicles());
+            newData->setTotalFragments(data->getTotalFragments());
 
             // Set the new data packet and chunk time of creation
             newData->setTimeOfPacketCreation(data->getTimeOfPacketCreation());
@@ -742,7 +744,7 @@ void TaskGenerator::sendAgainData(DataMessage* data)
             // Calculate bitrate conversion from megabit to megabyte
             int dataPartitionFragments = std::ceil(data->getLoadToProcess() / 1500);
             double bitRate = findModuleByPath(".^.wlan[*]")->par("bitrate").doubleValue() / 8.0;
-            double transferTime = ((1500 / bitRate) * dataPartitionFragments) * 2;
+            double transferTime = ((1500 / bitRate) * dataPartitionFragments * data->getTotalFragments() * helpers.size()) * 2;
 
             // Set new transfer time into data packet
             newData->setTransferTime(transferTime);

@@ -256,14 +256,14 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     double I = dataMessage->getLoadToProcess();
     double CR = cpuFreq;
 
-    double timeToCompute = 0.001 + exponential(CPI * I * (1 / CR));
+    double timeToCompute = 0.001 + exponential(1 / (CPI * I * (1 / CR)));
     EV << "TIME TO COMPUTE" << timeToCompute << endl;
 
     auto key = std::pair<int, int>(dataMessage->getTaskId(), dataMessage->getPartitionId());
 
     // If the cache is not empty it resends the response message tied to this data message
     if(responseCache.find(key) != responseCache.end()){
-        double time = timeToCompute + (dataMessage->getTransferTime() * dataMessage->getNumberOfVehicles() * dataMessage->getTotalFragments()) + par("ackMessageThreshold").doubleValue();
+        double time = timeToCompute + (dataMessage->getTransferTime() * dataMessage->getTotalFragments()) + par("ackMessageThreshold").doubleValue();
         sendAgainResponse(responseCache.at(key), time);
         return;
     } else {
@@ -335,7 +335,7 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     // Generate ACK timer if parameter useAcks is false
     // to achieve secure protocol manually and if I'm not still available
     if (par("useAcks").boolValue() == false) {
-        time = timeToCompute + ((dataMessage->getTransferTime() / 2) * dataMessage->getNumberOfVehicles() * dataMessage->getTotalFragments()) + par("ackMessageThreshold").doubleValue();
+        time = timeToCompute + ((dataMessage->getTransferTime() / 2) * dataMessage->getTotalFragments()) + par("ackMessageThreshold").doubleValue();
 
         // The & inside the square brackets tells to capture all local variable
         // by value
