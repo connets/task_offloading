@@ -30,6 +30,7 @@ namespace task_offloading {
     class HelperVehicleInfo {
     private:
         std::string index;
+        const char *workerId;
         double hostCurrentLoad;
         double hostCPUFreq;
         simtime_t createdAt;
@@ -47,7 +48,8 @@ namespace task_offloading {
 
     public:
         HelperVehicleInfo();
-        HelperVehicleInfo(std::string index, double load, double freq, inet::L3Address address);
+        //HelperVehicleInfo(std::string index, double load, double freq, inet::L3Address address);
+        HelperVehicleInfo(const char *workerId, double load, double freq, inet::L3Address address);
         virtual ~HelperVehicleInfo();
         std::string getIndex();
         double getCurrentLoad();

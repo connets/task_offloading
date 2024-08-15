@@ -20,8 +20,10 @@ namespace task_offloading;
 
 class ResponseMessage extends BasePacket {
     type = RESPONSE;
-    int hostIndex;
-    int generatorIndex;
+    //int hostIndex;
+    string generatorId;
+	string workerId;
+    //int generatorIndex;
     bool stillAvailable;
     double dataComputed;
     double timeToCompute;

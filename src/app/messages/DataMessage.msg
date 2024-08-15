@@ -20,6 +20,8 @@ namespace task_offloading;
 
 class DataMessage extends BasePacket {
     type = DATA;
+    string generatorId;
+	string workerId;
     double loadToProcess;
     double computationTime;
     double transferTime;

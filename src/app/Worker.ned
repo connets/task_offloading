@@ -54,6 +54,11 @@ simple Worker extends VeinsInetApplicationBase
         
         // Local port
         int servicePort = default(10020);
+         
+        // Generator port 
+        int generatorPort=9002;
+        //port Number
+        int portNumber=9003;
         
         // Statistics for collecting beacon messages
         @signal[stopBeaconMessages](type = simtime_t);

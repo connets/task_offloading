@@ -62,13 +62,15 @@ private:
     // Simulations signals
     // SECTION - Beaconing messages statistics
     simsignal_t stopBeaconMessages;
+    bool isForMe(const char *msgDestination);
 
 protected:
     simtime_t lastDroveAt;
-    std::map<int, HelperVehicleInfo> helpers;
+    //std::map<int, HelperVehicleInfo> helpers;
+    std::map<const char *, HelperVehicleInfo> helpers;
     std::map<int, Task*> tasks;
-    std::list<int> helpersOrderedList;
-    int generatorIndex;
+    std::list<const char*> helpersOrderedList;
+    //int generatorIndex;
     BusContext busState;
     BaseSorting* loadBalancingAlgorithm;
     int totalReponsesExpected;
@@ -80,6 +82,9 @@ protected:
     simsignal_t endOfLoadBalancing;
     simsignal_t transmissionTimePacket;
     simsignal_t transmissionTimeChunk;
+    int workerPort;
+    int portNumber;
+    const char *generatorId;
 
 protected:
     void handleAvailabilityMessage(AvailabilityMessage* okMsg);
@@ -90,5 +95,7 @@ protected:
     virtual void handleStartOperation(inet::LifecycleOperation* doneCallback) override;
     virtual void handleStopOperation(inet::LifecycleOperation* doneCallback) override;
     virtual void processPacket(std::shared_ptr<inet::Packet> pk) override;
+
+
 };
 }

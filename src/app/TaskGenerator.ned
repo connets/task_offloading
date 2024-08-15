@@ -68,6 +68,11 @@ simple TaskGenerator extends VeinsInetApplicationBase
         // Local port
         int servicePort = default(10020);
         
+     	// Worker Port
+        int workerPort=9003;
+        // port Number
+        int portNumber=9002;
+        
         // Maximum UDP byte length
         double UDPMaxLength @unit(byte) = default(65535B);
         

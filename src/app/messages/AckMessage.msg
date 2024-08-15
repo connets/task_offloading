@@ -20,7 +20,9 @@ namespace task_offloading;
 
 class AckMessage extends BasePacket {
     type = ACK;
-    int hostIndex;
+    //int hostIndex;
+    string generatorId;
+	string workerId;
     int taskID;
     int partitionID;
     inet::L3Address senderAddress;

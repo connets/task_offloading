@@ -60,7 +60,7 @@ void Worker::initialize(int stage)
         stillAvailableProbability = false;
 
         // Initialize the index of the generator
-        generatorIndex = 0;
+        //generatorIndex = 0;
 
         // Initialize the total data partitions I've received
         dataPartitionsReceived = 0;
@@ -77,6 +77,12 @@ void Worker::initialize(int stage)
         totalRetransmissions = registerSignal("totalRetransmissionsSignal");
         transmissionTimePacket = registerSignal("transmissionTimePacketSignal");
         transmissionTimeChunk = registerSignal("transmissionTimeChunkSignal");
+        generatorPort=par("generatorPort").intValue();
+        portNumber=par("portNumber").intValue();
+
+        //Worker id
+        workerId = getParentModule()->getFullName();
+
     }
 }
 
@@ -102,7 +108,7 @@ void Worker::processPacket(std::shared_ptr<inet::Packet> pk)
 {
     /************************************************************************
       Your application has received a data message from a task generator
-    ************************************************************************/
+     ************************************************************************/
     try {
         if (pk->hasData<BasePacket>()) {
             auto packet = pk->peekData<BasePacket>();
@@ -123,7 +129,8 @@ void Worker::processPacket(std::shared_ptr<inet::Packet> pk)
                 EV << "Message received with partition " << dataMessage->getPartitionId() << std::endl;
 
                 // Check if the data message is for me
-                if (dataMessage->getHostIndex() == getParentModule()->getIndex()) {
+                //if (dataMessage->getHostIndex() == getParentModule()->getIndex()) {
+                if(isForMe(dataMessage->getWorkerId())){
                     // Emit signal of transmission time
                     emit(transmissionTimePacket, (simTime() - dataMessage->getTimeOfPacketCreation()).dbl());
                     emit(transmissionTimeChunk, (simTime() - dataMessage->getTimeOfChunkCreation()).dbl());
@@ -138,7 +145,8 @@ void Worker::processPacket(std::shared_ptr<inet::Packet> pk)
                 AckMessage* ackMessage = dataFromPacket->dup();
 
                 // Check if the ack message is for me
-                if (ackMessage->getHostIndex() == getParentModule()->getIndex()) {
+                //if (ackMessage->getHostIndex() == getParentModule()->getIndex()) {
+                if(isForMe(ackMessage->getWorkerId())){
                     // Cancel the timer
                     veins::TimerManager::TimerHandle timer = getTimer(ackMessage->getPartitionID());
                     timerManager.cancel(timer);
@@ -211,7 +219,11 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
     cpuFreq = CPUFreq;
 
     // If I met requirements send an available message
+    EV << "Current Load:" << currentVehicleLoad << std::endl;
+    EV << "MinimumLoadRequest" << minimumLoadRequested << std::endl;
     if (currentVehicleLoad >= minimumLoadRequested) {
+        //EV << "I'm ready to work" << std::endl;
+
         // Start task availability timer
         setTaskAvailabilityTimer(helpMessage->getId(), helpMessage->getTaskSize());
 
@@ -222,10 +234,12 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
         auto available = makeShared<AvailabilityMessage>();
 
         // Save the ID of the host that generates the task
-        generatorIndex = helpMessage->getGeneratorIndex();
+        //generatorIndex = helpMessage->getGeneratorIndex();
 
         // Populate the message
-        available->setHostID(getParentModule()->getIndex());
+        //available->setHostID(getParentModule()->getIndex());
+        available->setWorkerId(workerId);
+        available->setGeneratorId(helpMessage->getGeneratorId());
         available->setIndex(getParentModule()->getName());
         available->setAvailableLoad(currentVehicleLoad);
         available->setCpuFreq(cpuFreq);
@@ -246,6 +260,8 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
             simulateAvailabilityTime(available->dup());
         };
         timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
+    }else{
+        //EV << "Sorry, I can't work!"<< std::endl;
     }
 }
 
@@ -281,8 +297,8 @@ void Worker::handleDataMessage(DataMessage* dataMessage)
     auto responseMessage = makeShared<ResponseMessage>();
 
     // Populate the response message
-    responseMessage->setHostIndex(getParentModule()->getIndex());
-    responseMessage->setGeneratorIndex(generatorIndex);
+    responseMessage->setWorkerId(workerId);
+    responseMessage->setGeneratorId(dataMessage->getGeneratorId());
 
     // If this is the last data partition then set the probability I'll
     // be still available, otherwise set it to true to prevent the vehicle
@@ -368,8 +384,9 @@ void Worker::sendAgainResponse(ResponseMessage* response, double newTime)
          * single node "read" as already received                                 *
          *************************************************************************/
 
-        newResponse->setHostIndex(response->getHostIndex());
-        newResponse->setGeneratorIndex(response->getGeneratorIndex());
+        //newResponse->setHostIndex(response->getHostIndex());
+        newResponse->setWorkerId(workerId);
+        newResponse->setGeneratorId(response->getGeneratorId());
         newResponse->setStillAvailable(response->getStillAvailable());
         newResponse->setDataComputed(response->getDataComputed());
         newResponse->setTimeToCompute(response->getTimeToCompute());
@@ -411,9 +428,10 @@ void Worker::simulateAvailabilityTime(AvailabilityMessage* availabilityMessage)
 
     auto availabilityPkt = createPacket("availability_message");
     availabilityPkt->insertAtBack(availability);
-    sendPacket(std::move(availabilityPkt));
-}
 
+    sendPacket(std::move(availabilityPkt), generatorPort);
+
+}
 void Worker::simulateResponseTime(ResponseMessage* responseMessage, bool sendAgain) {
     if(responseMessage->getStillAvailable()) {
         getParentModule()->getDisplayString().setTagArg("i", 1, "blue");
@@ -453,4 +471,9 @@ veins::TimerManager::TimerHandle Worker::getTimer(int partitionID) {
     } else {
         return -1;
     }
+}
+bool Worker::isForMe(const char *msgDestination){
+
+    return strcmp(msgDestination, workerId)==0;
+
 }

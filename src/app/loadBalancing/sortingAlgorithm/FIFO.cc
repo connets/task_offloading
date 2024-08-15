@@ -27,14 +27,14 @@ FIFO::~FIFO() {
     //
 }
 
-bool cmpFIFO(std::pair<int, HelperVehicleInfo> &a, std::pair<int, HelperVehicleInfo> &b) {
+bool cmpFIFO(std::pair<const char *, HelperVehicleInfo> &a, std::pair<const char *, HelperVehicleInfo> &b) {
     return a.second.getCreatedAt() < b.second.getCreatedAt();
 }
 
-std::list<int> FIFO::sort(const std::map<int, HelperVehicleInfo> &map) {
-    std::list<int> l;
+std::list<const char *> FIFO::sort(const std::map<const char *, HelperVehicleInfo> &map) {
+    std::list<const char *> l;
 
-    std::vector<std::pair<int, HelperVehicleInfo>> pairVector;
+    std::vector<std::pair<const char *, HelperVehicleInfo>> pairVector;
 
     // Copy the IDs of the map into the vector
     for (auto &it : map) {

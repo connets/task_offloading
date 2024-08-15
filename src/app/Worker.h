@@ -63,6 +63,7 @@ private:
     // Simulations signals
     // SECTION - Beaconing messages statistics
     simsignal_t stopBeaconMessages;
+    bool isForMe(const char *msgDestination);
 
 protected:
     simtime_t lastDroveAt;
@@ -70,7 +71,7 @@ protected:
     int currentDataPartitionId;
     double availableLoad;
     bool stillAvailableProbability;
-    int generatorIndex;
+    //int generatorIndex;
     std::map<int, TotalComputationTimerMessage*> taskAvailabilityTimers;
     std::map<std::pair<int,int>, ResponseMessage*> responseCache;
     std::map<int, veins::TimerManager::TimerHandle> timers;
@@ -79,6 +80,11 @@ protected:
     simsignal_t totalRetransmissions;
     simsignal_t transmissionTimePacket;
     simsignal_t transmissionTimeChunk;
+    int generatorPort;
+    int portNumber;
+    const char *workerId;
+
+
 
 protected:
     void handleHelpMessage(HelpMessage* helpMsg);

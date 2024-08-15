@@ -21,6 +21,10 @@ namespace task_offloading;
 class AvailabilityMessage extends BasePacket {
     type = AVAILABILITY;
 	int hostID;
+	//Set
+	//int generatorIndex;
+	string generatorId;
+	string workerId;
 	string index;
 	double availableLoad;
 	double cpuFreq;

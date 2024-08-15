@@ -26,7 +26,7 @@ HelperVehicleInfo::HelperVehicleInfo() {
     this->vehicleComputationTimer = 0;
 }
 
-HelperVehicleInfo::HelperVehicleInfo(std::string index, double load, double freq, inet::L3Address address) {
+HelperVehicleInfo::HelperVehicleInfo(const char *index, double load, double freq, inet::L3Address address) {
     this->index = index;
     this->hostCurrentLoad = load;
     this->hostCPUFreq = freq;

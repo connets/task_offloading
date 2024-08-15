@@ -36,53 +36,53 @@ network task_offloading
         @display("bgb=3500,3500");
     submodules:
         radioMedium: Ieee80211DimensionalRadioMedium {
-            @display("p=64,224");
+            @display("p=2831.232,868.99194");
         }
-        
+
         loadBalancingAlgorithm: <default("FIFO")> like ISorting {
-            @display("i=block/cogwheel;p=248,140");
+            @display("i=block/cogwheel;p=1352.544,2004.2878");
         }
 
         obstacles: ObstacleControl {
-            @display("p=616.704,378.43198");
+            @display("p=1303.4879,1478.688");
         }
-        
+
         annotations: AnnotationManager {
-            @display("p=644.73596,378.43198");
+            @display("p=2193.504,2095.3918");
         }
-        
+
         connectionManager: ConnectionManager {
             parameters:
-                @display("p=150,0;i=abstract/multicast");
+                @display("p=1948.2239,1576.7999;i=abstract/multicast");
         }
-        
+
         world: BaseWorldUtility {
             parameters:
                 playgroundSizeX = veins_eval_by_version(veins_omnetpp_buildnum(), "playgroundSizeX", 1525, "parent.playgroundSizeX");
                 playgroundSizeY = veins_eval_by_version(veins_omnetpp_buildnum(), "playgroundSizeY", 1525, "parent.playgroundSizeY");
                 playgroundSizeZ = veins_eval_by_version(veins_omnetpp_buildnum(), "playgroundSizeZ", 1525, "parent.playgroundSizeZ");
-                @display("p=413.472,329.37598;i=misc/globe");
+                @display("p=1681.9199,1114.272;i=misc/globe");
         }
-        
+
         manager: VeinsInetManager {
             parameters:
-                @display("p=897.0239,455.52");
+                @display("p=672.76794,1478.688");
         }
-        
+
         roadsCanvasVisualizer: RoadsCanvasVisualizer {
-            @display("p=679.77594,329.37598");
+            @display("p=2067.3599,490.55997");
         }
-        
+
         generator[0]: TaskGeneratorVehicle {
-            @display("p=532.608,490.55997");
+            @display("p=1737.9839,2726.1118");
         }
-        
+
         worker[0]: WorkerVehicle {
-            @display("p=469.53598,406.464");
+            @display("p=1149.3119,2726.1118");
         }
-        
+
         beaconer[0]: BeaconerVehicle {
-            @display("p=469.53598,406.464");
+            @display("p=469.53598,2726.1118");
         }
 
     connections allowunconnected:
