@@ -240,7 +240,7 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
         //available->setHostID(getParentModule()->getIndex());
         available->setWorkerId(workerId);
         available->setGeneratorId(helpMessage->getGeneratorId());
-        available->setIndex(getParentModule()->getName());
+        //available->setIndex(getParentModule()->getName());
         available->setAvailableLoad(currentVehicleLoad);
         available->setCpuFreq(cpuFreq);
         available->setVehicleAngle(traciVehicle->getAngle());
@@ -456,7 +456,7 @@ void Worker::simulateResponseTime(ResponseMessage* responseMessage, bool sendAga
 
     auto responsePkt = createPacket("response_message");
     responsePkt->insertAtBack(response);
-    sendPacket(std::move(responsePkt));
+    sendPacket(std::move(responsePkt), generatorPort);
 }
 
 void Worker::addTimer(int partitionID, veins::TimerManager::TimerHandle timer) {

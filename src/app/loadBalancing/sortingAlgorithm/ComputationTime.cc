@@ -28,14 +28,14 @@ ComputationTime::~ComputationTime() {
     //
 }
 
-bool cmpComputationTime(std::pair<const char *, HelperVehicleInfo> &a, std::pair<const char *, HelperVehicleInfo> &b) {
+bool cmpComputationTime(std::pair<std::string, HelperVehicleInfo> &a, std::pair<std::string, HelperVehicleInfo> &b) {
     return a.second.getTotalComputationTime(a.second.getTaskCpi()) < b.second.getTotalComputationTime(b.second.getTaskCpi());
 }
 
-std::list<const char *> ComputationTime::sort(const std::map<const char *, HelperVehicleInfo> &map) {
-    std::list<const char *> l;
+std::list<std::string> ComputationTime::sort(const std::map<std::string, HelperVehicleInfo> &map) {
+    std::list<std::string> l;
 
-    std::vector<std::pair<const char *, HelperVehicleInfo>> pairVector;
+    std::vector<std::pair<std::string, HelperVehicleInfo>> pairVector;
 
     // Copy the IDs of the map into the vector
     for (auto &it : map) {

@@ -67,9 +67,10 @@ private:
 protected:
     simtime_t lastDroveAt;
     //std::map<int, HelperVehicleInfo> helpers;
-    std::map<const char *, HelperVehicleInfo> helpers;
+    //std::map<const char *, HelperVehicleInfo> helpers;
+    std::map<std::string, HelperVehicleInfo> helpers;
     std::map<int, Task*> tasks;
-    std::list<const char*> helpersOrderedList;
+    std::list<std::string> helpersOrderedList;
     //int generatorIndex;
     BusContext busState;
     BaseSorting* loadBalancingAlgorithm;

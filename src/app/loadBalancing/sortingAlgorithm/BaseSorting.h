@@ -26,7 +26,7 @@ namespace task_offloading {
         BaseSorting();
         virtual ~BaseSorting();
         //virtual std::list<int> sort(const std::map<int, HelperVehicleInfo> &map) = 0;
-        virtual std::list<const char *> sort(const std::map<const char *, HelperVehicleInfo> &map) = 0;
+        virtual std::list<std::string> sort(const std::map<std::string, HelperVehicleInfo> &map) = 0;
     };
 }
 

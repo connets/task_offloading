@@ -144,13 +144,12 @@ void TaskGenerator::processPacket(std::shared_ptr<inet::Packet> pk)
                         ackMessage->setTaskID(responseMessage->getTaskID());
                         ackMessage->setPartitionID(responseMessage->getPartitionID());
                         ackMessage->setChunkLength(B(100));
-                        //Da vedere
-                        L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
-                        ackMessage->setSenderAddress(generator);
+                       // L3Address generator = getModuleFromPar<Ipv4InterfaceData>(par("interfaceTableModule"), this)->getIPAddress();
+                        //ackMessage->setSenderAddress(generator);
 
                         auto ackPkt = createPacket("ack_message");
                         ackPkt->insertAtBack(ackMessage);
-                        sendPacket(std::move(ackPkt),workerPort);
+                        sendPacket(std::move(ackPkt), workerPort);
                     }
 
                     handleResponseMessage(responseMessage);
@@ -305,7 +304,7 @@ void TaskGenerator::balanceLoad()
                     // dataMessage->setSenderAddress(generator);
                     //dataMessage->setHostIndex(i);
                     dataMessage->setGeneratorId(generatorId);
-                    dataMessage->setWorkerId(helperWorkerId);
+                    dataMessage->setWorkerId(helperWorkerId.c_str());
                     dataMessage->setTaskId(tasks[0]->getId());
                     dataMessage->setTaskSize(tasks[0]->getTotalData());
                     dataMessage->setPartitionId(tasks[0]->getDataPartitionId());
@@ -411,7 +410,6 @@ void TaskGenerator::vehicleHandler()
     int currentBusState = busState.getCurrentState();
     // Check if there's more data
     bool moreDataToLoad = tasks[0]->getTotalData() > 0;
-
     // Check if we reach the time of the first help message
     if ((currentBusState == 0) && moreDataToLoad && helpers.size() == 0) {
         // Color the bus icon in red
@@ -450,6 +448,7 @@ void TaskGenerator::vehicleHandler()
             if (helpers.size() > 0 && busState.getCurrentState() == 1) {
                 // Call to load balancing function
                 balanceLoad();
+
             } else if (helpers.size() == 0) {
                 // Disable load balancing
                 busState.setState(new Help);
@@ -460,6 +459,7 @@ void TaskGenerator::vehicleHandler()
 
         // Schedule the message -> simTime + availability msgs threshold
         timerManager.create(veins::TimerSpecification(callback).oneshotIn(time));
+
     } else if (tasks[0]->getTotalData() <= 0) {
         // Color the bus in white when computation ends
         getParentModule()->getDisplayString().setTagArg("i", 1, "white");
@@ -528,7 +528,7 @@ void TaskGenerator::handleAvailabilityMessage(AvailabilityMessage* availabilityM
         //std::string currentHostIndex = availabilityMessage->getIndex() + std::to_string(availabilityMessage->getHostID());
 
         const char *workerId = availabilityMessage->getWorkerId();
-
+        EV <<"WorkerId: "<< workerId<< endl;
         double currentLoad = availabilityMessage->getAvailableLoad();
         double CPUFreq = availabilityMessage->getCpuFreq();
         L3Address address = availabilityMessage->getSenderAddress();
@@ -545,7 +545,9 @@ void TaskGenerator::handleAvailabilityMessage(AvailabilityMessage* availabilityM
         helpers[availabilityMessage->getWorkerId()].setTaskCpi(tasks[0]->getComputingDensity());
         helpers[availabilityMessage->getWorkerId()].setVehiclePositionX(vehiclePosX);
         helpers[availabilityMessage->getWorkerId()].setVehiclePositionY(vehiclePosY);
-
+        for(auto e: helpers){
+            EV<<"Helper: "<<e.first<<endl;
+        }
         int previousAvailability = tasks[0]->getAvailableReceivedCounter();
         previousAvailability++;
         tasks[0]->setAvailableReceivedCounter(previousAvailability);
@@ -556,9 +558,13 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
 {
     // Search the vehicle in the map
     auto found = helpers.find(responseMessage->getWorkerId());
-
+    for(auto e: helpers){
+               EV<<"Helper: "<<e.first<<endl;
+    }
     // Check if I've not already received this data partition
     auto dataCheck = tasks[0]->getDataPartition(responseMessage->getPartitionID());
+    EV <<"Found: "<< (found != helpers.end()) <<" WorkerId: "<< responseMessage->getWorkerId()<< endl;
+    EV <<"dataCheck: "<< dataCheck << " PartionId: "<<responseMessage->getPartitionID()<< endl;
 
     // If the auto is found in the map and the partition id coincide with response message then
     // handle the response otherwise get rid of it
@@ -599,6 +605,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         double localData = tasks[0]->getTotalData() - responseMessage->getDataComputed();
         tasks[0]->setTotalData(localData);
 
+        EV<<"TASK[0]: "<<tasks[0]->getTotalData()<< endl;
         EV<<"DATA TASK REMAINED "<<localData<< endl;
         EV<<"HELPERS REMAINED "<<helpers.size()<< endl;
         // If there's no more data then emit signal for task finished

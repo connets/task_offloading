@@ -26,7 +26,7 @@ namespace task_offloading {
     public:
         ComputationTime();
         virtual ~ComputationTime();
-        std::list<const char *> sort(const std::map<const char *, HelperVehicleInfo> &map) override;
+        std::list<std::string> sort(const std::map<std::string, HelperVehicleInfo> &map) override;
     };
 }
 

@@ -25,7 +25,7 @@ class AvailabilityMessage extends BasePacket {
 	//int generatorIndex;
 	string generatorId;
 	string workerId;
-	string index;
+	//string index;
 	double availableLoad;
 	double cpuFreq;
 	inet::L3Address senderAddress;
