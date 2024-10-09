@@ -36,6 +36,7 @@
 
 using namespace task_offloading;
 using namespace inet;
+//std::cout << "  " << << std::endl;
 
 Define_Module(task_offloading::TaskGenerator);
 
@@ -122,6 +123,7 @@ void TaskGenerator::processPacket(std::shared_ptr<inet::Packet> pk)
                     handleAvailabilityMessage(availabilityMessage);
                 }*/
                 if(isForMe(availabilityMessage->getGeneratorId())){
+                    EV << "HO RICEVUTO UN AVAILABILITY MESSAGE" << std::endl;
                     handleAvailabilityMessage(availabilityMessage);
                 }
             }
@@ -133,6 +135,8 @@ void TaskGenerator::processPacket(std::shared_ptr<inet::Packet> pk)
 
                 // Check if the response message is for me
                 if(isForMe(responseMessage->getGeneratorId())){
+                    EV << "HO RICEVUTO UNA RESPONSE MESSAGE" << std::endl;
+
                 //if (responseMessage->getGeneratorIndex() == getParentModule()->getIndex()) {
                     // Schedule the ack message for each data partition
                     if (par("useAcks").boolValue() == false) {
@@ -149,6 +153,8 @@ void TaskGenerator::processPacket(std::shared_ptr<inet::Packet> pk)
 
                         auto ackPkt = createPacket("ack_message");
                         ackPkt->insertAtBack(ackMessage);
+                        EV << "INVIO L'ACK DI CONFERMA" << std::endl;
+
                         sendPacket(std::move(ackPkt), workerPort);
                     }
 
@@ -548,6 +554,7 @@ void TaskGenerator::handleAvailabilityMessage(AvailabilityMessage* availabilityM
         for(auto e: helpers){
             EV<<"Helper: "<<e.first<<endl;
         }
+
         int previousAvailability = tasks[0]->getAvailableReceivedCounter();
         previousAvailability++;
         tasks[0]->setAvailableReceivedCounter(previousAvailability);
@@ -558,6 +565,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
 {
     // Search the vehicle in the map
     auto found = helpers.find(responseMessage->getWorkerId());
+    //lista dei worker disponibili
     for(auto e: helpers){
                EV<<"Helper: "<<e.first<<endl;
     }
@@ -605,7 +613,7 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
         double localData = tasks[0]->getTotalData() - responseMessage->getDataComputed();
         tasks[0]->setTotalData(localData);
 
-        EV<<"TASK[0]: "<<tasks[0]->getTotalData()<< endl;
+        EV<<"TASK[0]: "<<tasks[0]->getTotalData() << endl;
         EV<<"DATA TASK REMAINED "<<localData<< endl;
         EV<<"HELPERS REMAINED "<<helpers.size()<< endl;
         // If there's no more data then emit signal for task finished
@@ -614,7 +622,6 @@ void TaskGenerator::handleResponseMessage(ResponseMessage* responseMessage)
 
             // Color the bus in white
             getParentModule()->getDisplayString().setTagArg("i", 1, "white");
-
             // Emit signal for load balancing rounds and set the load balancing ID to 0
             tasks[0]->emit(tasks[0]->loadBalancingRound, totalRoundsOfLoadBalancing);
             tasks[0]->setLoadBalancingId(0);

@@ -211,7 +211,6 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
     // Check my current load
     double currentVehicleLoad = par("randomVehicleFreeLoadPercentage").doubleValue() * par("commonVehicleLoad").doubleValue();
     availableLoad = availableLoad - currentVehicleLoad;
-
     // Check my current CPU freq
     double CPUFreq = par("randomVehicleCpuFreq").doubleValue();
 
@@ -220,8 +219,8 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
 
     // If I met requirements send an available message
     EV << "Current Load:" << currentVehicleLoad << std::endl;
-    EV << "MinimumLoadRequest" << minimumLoadRequested << std::endl;
-    if (currentVehicleLoad >= minimumLoadRequested) {
+    EV << "MinimumLoadRequest: " << minimumLoadRequested << std::endl;
+    if (availableLoad >= minimumLoadRequested) {
         //EV << "I'm ready to work" << std::endl;
 
         // Start task availability timer

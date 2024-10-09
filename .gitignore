@@ -80,3 +80,5 @@ vim files
 *.ipynb
 
 simulations/results*
+/.DS_Store
+**/.DS_Store
