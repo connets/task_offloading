@@ -153,12 +153,12 @@ void TaskGenerator::processPacket(std::shared_ptr<inet::Packet> pk)
 
                         auto ackPkt = createPacket("ack_message");
                         ackPkt->insertAtBack(ackMessage);
-                        EV << "INVIO L'ACK DI CONFERMA" << std::endl;
 
                         sendPacket(std::move(ackPkt), workerPort);
                     }
 
                     handleResponseMessage(responseMessage);
+
                 }
             }
 
@@ -772,7 +772,8 @@ void TaskGenerator::sendAgainData(DataMessage* data)
             newData->setResponsesExpected(data->getResponsesExpected());
             newData->setNumberOfVehicles(data->getNumberOfVehicles());
             newData->setTotalFragments(data->getTotalFragments());
-
+            newData->setGeneratorId(data->getGeneratorId());
+            newData->setWorkerId(data->getWorkerId());
             // Set the new data packet and chunk time of creation
             newData->setTimeOfPacketCreation(data->getTimeOfPacketCreation());
             newData->setTimeOfChunkCreation(simTime());

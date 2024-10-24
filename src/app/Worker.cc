@@ -240,7 +240,7 @@ void Worker::handleHelpMessage(HelpMessage* helpMessage)
         available->setWorkerId(workerId);
         available->setGeneratorId(helpMessage->getGeneratorId());
         //available->setIndex(getParentModule()->getName());
-        available->setAvailableLoad(currentVehicleLoad);
+        available->setAvailableLoad(availableLoad);
         available->setCpuFreq(cpuFreq);
         available->setVehicleAngle(traciVehicle->getAngle());
         available->setVehicleSpeed(traciVehicle->getSpeed());
